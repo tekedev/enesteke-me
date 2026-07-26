@@ -1,16 +1,27 @@
-# React + Vite
+# enesteke.me — Developer Portfolio Website
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+> **Personal Web Portfolio by Enes Teke (tekedev)**
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🏛️ Executive Summary
 
-## React Compiler
+**enesteke.me** is the official personal portfolio website showcasing 20+ full-stack, AI, and FinTech engineering projects built by Enes Teke. Features GLSL chromatic aberration hero animations, Three.js 3D perspective project carousel, and glassmorphic UI components.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the Oxlint configuration
+## ⚡ Key Features
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+- **Custom GLSL Hero Shader:** Simplex noise surface deformation with fresnel glow and chromatic aberration.
+- **Three.js 3D Carousel:** Curved perspective 3D texture plane carousel with drag/scroll interaction.
+- **Responsive Design System:** Dark-mode HSL color palette and modern typography.
+
+---
+
+## 🛠️ Tech Stack
+
+- **Frontend:** React 19, Vite, Three.js, Motion (Framer Motion), Lucide React
+- **Styling:** Custom Vanilla CSS3 Design Tokens & Keyframe Animations
+- **Deployment:** Oracle Cloud VPS (Nginx, SSL/TLS)
+---
+*Engineered by **Enes Teke (tekedev)**.*
