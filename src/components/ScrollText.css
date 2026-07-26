@@ -1,0 +1,20 @@
+.KV__scrollText {
+  position: fixed;
+  right: 2rem;
+  bottom: 3rem;
+  z-index: 90;
+  writing-mode: vertical-rl;
+  font-family: var(--font-mono);
+  font-size: 0.725rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+@media (max-width: 768px) {
+  .KV__scrollText {
+    display: none;
+  }
+}

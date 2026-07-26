@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>tekedev — 54 Project Command Center</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #07070a;
+      --surface: #0e0e14;
+      --card: #13131c;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-hover: rgba(99, 91, 255, 0.4);
+      --text: #ffffff;
+      --text-muted: #8a8f9d;
+      --accent-indigo: #635bff;
+      --accent-cyan: #00e5e5;
+      --accent-green: #10b981;
+      --accent-red: #f43f5e;
+      --accent-amber: #f59e0b;
+      --font-heading: 'Space Grotesk', sans-serif;
+      --font-body: 'Inter', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      line-height: 1.5;
+      padding-bottom: 5rem;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(14, 14, 20, 0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 1.25rem 2rem;
+    }
+
+    .header-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .logo {
+      font-family: var(--font-heading);
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .logo-dot {
+      width: 12px;
+      height: 12px;
+      background: var(--accent-cyan);
+      border-radius: 50%;
+      box-shadow: 0 0 12px var(--accent-cyan);
+    }
+
+    .stats-bar {
+      display: flex;
+      gap: 1.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+    }
+
+    .stat-badge {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      padding: 0.35rem 0.85rem;
+      border-radius: 99px;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .stat-val { font-weight: 700; color: var(--accent-cyan); }
+
+    .controls {
+      max-width: 1400px;
+      margin: 2rem auto 1rem;
+      padding: 0 2rem;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .search-box {
+      flex: 1;
+      min-width: 280px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 0.75rem 1.25rem;
+      color: #fff;
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .search-box:focus {
+      border-color: var(--accent-indigo);
+    }
+
+    .filter-tabs {
+      display: flex;
+      gap: 0.5rem;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 0.6rem 1.1rem;
+      border-radius: 10px;
+      cursor: pointer;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .tab-btn.active, .tab-btn:hover {
+      background: var(--accent-indigo);
+      color: #fff;
+      border-color: var(--accent-indigo);
+    }
+
+    .grid {
+      max-width: 1400px;
+      margin: 1.5rem auto;
+      padding: 0 2rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: var(--border-hover);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+    }
+
+    .card-num {
+      position: absolute;
+      top: 1.25rem;
+      right: 1.25rem;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      background: rgba(255,255,255,0.04);
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+    }
+
+    .card-cat {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent-cyan);
+      margin-bottom: 0.5rem;
+    }
+
+    .card-title {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 0.35rem;
+      padding-right: 2.5rem;
+    }
+
+    .card-path {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+      word-break: break-all;
+    }
+
+    .card-desc {
+      font-size: 0.88rem;
+      color: #c8cdd8;
+      margin-bottom: 1rem;
+      line-height: 1.5;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .tag {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      color: var(--text-muted);
+    }
+
+    .rec-badge {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 8px;
+      margin-bottom: 1.25rem;
+      display: inline-block;
+      width: 100%;
+      text-align: center;
+    }
+
+    .rec-public { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .rec-private { background: rgba(99, 91, 255, 0.15); color: #818cf8; border: 1px solid rgba(99, 91, 255, 0.3); }
+    .rec-offgrid { background: rgba(244, 63, 94, 0.15); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.3); }
+
+    .choice-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0.4rem;
+    }
+
+    .choice-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 0.5rem 0.2rem;
+      border-radius: 8px;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+
+    .choice-btn:hover { border-color: #fff; color: #fff; }
+    
+    .choice-btn.selected-public { background: var(--accent-green) !important; color: #000 !important; font-weight: 700; border-color: var(--accent-green) !important; }
+    .choice-btn.selected-private { background: var(--accent-indigo) !important; color: #fff !important; font-weight: 700; border-color: var(--accent-indigo) !important; }
+    .choice-btn.selected-offgrid { background: var(--accent-red) !important; color: #fff !important; font-weight: 700; border-color: var(--accent-red) !important; }
+
+    .summary-footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(14, 14, 20, 0.95);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid var(--border);
+      padding: 1rem 2rem;
+      z-index: 200;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 100vw;
+    }
+
+    .save-btn {
+      background: linear-gradient(135deg, var(--accent-indigo), var(--accent-cyan));
+      color: #fff;
+      font-family: var(--font-heading);
+      font-weight: 700;
+      padding: 0.75rem 2rem;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .save-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(0,229,229,0.3);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-dot"></span>
+        tekedev Command Center — 54 Projects
+      </div>
+      <div class="stats-bar">
+        <div class="stat-badge">Total: <span class="stat-val" id="cnt-total">54</span></div>
+        <div class="stat-badge">🌐 Public: <span class="stat-val" id="cnt-public">0</span></div>
+        <div class="stat-badge">🔒 Private: <span class="stat-val" id="cnt-private">0</span></div>
+        <div class="stat-badge">☣️ Off-Grid: <span class="stat-val" id="cnt-offgrid">0</span></div>
+      </div>
+    </div>
+  </header>
+
+  <div class="controls">
+    <input type="text" id="search" class="search-box" placeholder="Proje adı, teknoloji veya açıklama ara..." oninput="render()">
+    <div class="filter-tabs" id="filters">
+      <button class="tab-btn active" onclick="setCategory('ALL')">HEPSİ (54)</button>
+      <button class="tab-btn" onclick="setCategory('AI')">AI & Otomasyon</button>
+      <button class="tab-btn" onclick="setCategory('FINTECH')">FinTech & Trading</button>
+      <button class="tab-btn" onclick="setCategory('MOBILE_WEB')">Mobil & Web</button>
+      <button class="tab-btn" onclick="setCategory('TOOLS')">Araçlar & Botlar</button>
+      <button class="tab-btn" onclick="setCategory('CREATIVE')">Yaratıcı & Ar-Ge</button>
+    </div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="summary-footer">
+    <div>
+      <strong>Karar Özeti:</strong> <span id="summary-text">54 projeden seçim yapılıyor...</span>
+    </div>
+    <button class="save-btn" onclick="copyFinalList()">📋 Seçimleri Kopyala & Onayla</button>
+  </div>
+
+  <script>
+    const projectsData = [
+      // AI & Otomasyon
+      { id: 1, name: "NEXUS AI Content Command Center", cat: "AI", path: "Desktop\\Gemini Reverse", desc: "260+ Google hesabı yöneten, 17-tab'lı devasa AI içerik üretim paneli.", tags: ["Python", "FastAPI", "Playwright", "SQLite"], rec: "private", recReason: "Öneri: 🔒 Private (Reverse-Engineering içerir)" },
+      { id: 2, name: "HAREKI Studio", cat: "AI", path: "Desktop\\hareki.com\\harekistudio-main", desc: "Marka web sitesini analiz edip Editorial DNA çıkaran SaaS platformu.", tags: ["Next.js 16", "Supabase", "Stripe", "OpenAI"], rec: "public", recReason: "Öneri: 🌐 Public (Ticari Vitrin SaaS)" },
+      { id: 3, name: "CLASSIFY Video Intelligence", cat: "AI", path: "Desktop\\insta otoindir ve sınıflandır", desc: "Instagram video indirip Gemini AI ile transkribe ve kategorize eden pipeline.", tags: ["Python", "Flask", "Gemini AI", "MoviePy"], rec: "public", recReason: "Öneri: 🌐 Public (Güçlü AI Pipeline)" },
+      { id: 4, name: "TEKE.APP Landing", cat: "AI", path: "Desktop\\Gemini Reverse\\teke-app", desc: "AI sosyal medya platformu lansman landing sayfası.", tags: ["HTML5", "CSS3", "JavaScript", "Vercel"], rec: "public", recReason: "Öneri: 🌐 Public (Temiz Landing Page)" },
+      { id: 5, name: "STUDIO TEKE.APP Backend", cat: "AI", path: "Desktop\\Gemini Reverse\\studio-teke-app", desc: "Vertex AI (Gemini + Imagen 4.0) görsel ve içerik üretim stüdyosu.", tags: ["FastAPI", "Vertex AI", "Oracle Cloud"], rec: "private", recReason: "Öneri: 🔒 Private (API Key ve Altyapı)" },
+      { id: 6, name: "FECİR Platform", cat: "AI", path: "Desktop\\Fecir Kesit Platformu", desc: "İçerik yönetim platformu + Facebook/Instagram otomasyonu.", tags: ["FastAPI", "React", "PostgreSQL", "Meta API"], rec: "private", recReason: "Öneri: 🔒 Private (Meta API Token'ları)" },
+      { id: 7, name: "Gemini Video Bot", cat: "AI", path: "projects\\gemini-video-bot", desc: "Gemini AI kullanarak otomatik video içerik üreten bot.", tags: ["Python", "Gemini API"], rec: "private", recReason: "Öneri: 🔒 Private (Otomasyon Botu)" },
+      { id: 8, name: "PixelPerfect Convert", cat: "AI", path: "Desktop\\...Projeler\\pixelperfect-convert", desc: "AI destekli tasarım ve arayüz dönüştürücü uygulama.", tags: ["React 19", "Google GenAI"], rec: "public", recReason: "Öneri: 🌐 Public (Modern React 19 Tool)" },
+      { id: 9, name: "Gemini Watermark Remover", cat: "AI", path: "Desktop\\Gemini Watermark Remover", desc: "Görsellerdeki filigranları yapay zeka ile silen algoritma.", tags: ["Python", "Image Processing"], rec: "private", recReason: "Öneri: 🔒 Private (Etik Gri Alan)" },
+      { id: 10, name: "Cloud Video Classifier", cat: "AI", path: "projects\\video-classifier", desc: "Google Cloud Video Intelligence ile içerik tarayıcı.", tags: ["Python", "Flask", "GCP Intelligence"], rec: "public", recReason: "Öneri: 🌐 Public (Cloud AI Entegrasyonu)" },
+      { id: 11, name: "ReDiet AI Platform", cat: "AI", path: "projects\\ReDiet-main.zip", desc: "Yapay zeka destekli diyet ve beslenme yönetim platformu.", tags: ["Python", "React Native", "AI Nutrition"], rec: "public", recReason: "Öneri: 🌐 Public (Full-Stack Mobil App)" },
+      { id: 12, name: "Hermes CLI Proxy", cat: "AI", path: "Desktop\\Hermes için Gpt modeli...", desc: "GPT modelleri için geliştirilmiş CLI proxy yazılımı.", tags: ["Node.js", "Python"], rec: "private", recReason: "Öneri: 🔒 Private (Proxy Altyapısı)" },
+      { id: 13, name: "Gemini Watermark v2", cat: "AI", path: "Desktop\\Gemini Watermark2", desc: "Filigran temizleyici 2. geliştirilmiş versiyon.", tags: ["Python"], rec: "private", recReason: "Öneri: 🔒 Private" },
+      { id: 14, name: "Gemini Tier 1 API Test", cat: "AI", path: "Desktop\\Gemini Tier 1 Api Test...", desc: "Gemini API hız, gecikme ve limit test aracı.", tags: ["Python", "API Benchmark"], rec: "public", recReason: "Öneri: 🌐 Public (Utility Benchmark)" },
+      { id: 15, name: "Vertex API Kütüphanesi", cat: "AI", path: "Desktop\\Vertex api", desc: "Google Vertex AI servisleri için özel API istemcisi.", tags: ["Python", "GCP Vertex"], rec: "private", recReason: "Öneri: 🔒 Private" },
+      { id: 16, name: "AI Dock Pro", cat: "AI", path: "projects\\ai-dock-pro", desc: "AI modelleri için Docker konteynerizasyon projesi.", tags: ["Docker", "Python"], rec: "public", recReason: "Öneri: 🌐 Public (DevOps Entegrasyonu)" },
+
+      // FinTech & Trading
+      { id: 17, name: "WHALETRACE BIST Tracker", cat: "FINTECH", path: "Desktop\\Tavan-Taban-Balina Takip", desc: "BIST borsası balina hareketleri ve canlı Telegram alarmları.", tags: ["Python", "FastAPI", "Telethon", "Docker"], rec: "public", recReason: "Öneri: 🌐 Public (BIST FinTech Amiral Gemisi)" },
+      { id: 18, name: "VISIONTRADER Bot", cat: "FINTECH", path: "Desktop\\...Projeler\\Al-Sat Botu", desc: "Ekran okuma, Computer Vision (CV) ve OCR ile borsa botu.", tags: ["OpenCV", "EasyOCR", "Python"], rec: "public", recReason: "Öneri: 🌐 Public (Harika CV Showcase)" },
+      { id: 19, name: "STOCKPULSE Telegram Bot", cat: "FINTECH", path: "Desktop\\...Projeler\\TG Borsa Bildirim", desc: "7 teknik indikatörlü borsa sinyal bildirim botu.", tags: ["Python", "Telethon", "Technical Analysis"], rec: "public", recReason: "Öneri: 🌐 Public (Aktif Deployed Bot)" },
+      { id: 20, name: "MIDAS AI Trader", cat: "FINTECH", path: "projects\\midas-ai-trader", desc: "Altın piyasası için AI duyarlılık ve teknik analiz sinyali.", tags: ["Python", "Playwright", "RSI/MACD"], rec: "private", recReason: "Öneri: 🔒 Private (Özgün Strateji)" },
+      { id: 21, name: "Auto Crypto Software", cat: "FINTECH", path: "Desktop\\Auto Kripto Yazılımı", desc: "Kripto borsaları için otomatik alım-satım algoritması.", tags: ["Python", "WebSockets", "Binance API"], rec: "private", recReason: "Öneri: 🔒 Private (Özel Algoritma)" },
+      { id: 22, name: "Market Fiyat Takip", cat: "FINTECH", path: "projects\\marketfiyattakip", desc: "Market ürün fiyatlarını takip ve karşılaştırma sistemi.", tags: ["Python", "SQLite"], rec: "private", recReason: "Öneri: 🔒 Private" },
+      { id: 23, name: "TEFAS Fon Analiz", cat: "FINTECH", path: "Desktop\\Tefas Fon Araştırması", desc: "TEFAS fon fiyatları ve performans analiz aracı.", tags: ["Python", "Pandas"], rec: "public", recReason: "Öneri: 🌐 Public (Veri Analitiği)" },
+      { id: 24, name: "Okey Rizikolu Sistem", cat: "FINTECH", path: "Desktop\\...Projeler\\101 okey rizikolu", desc: "Oyun içi olasılık ve risk hesaplama motoru.", tags: ["Python", "Math Engine"], rec: "private", recReason: "Öneri: 🔒 Private" },
+      { id: 25, name: "Kazanç Takip Paneli", cat: "FINTECH", path: "Desktop\\...Projeler\\Kazanç Sayfamız", desc: "Kişisel ve proje bazlı finansal gelir takip ekranı.", tags: ["HTML", "CSS", "JS"], rec: "private", recReason: "Öneri: 🔒 Private (Kişisel Veri)" },
+
+      // Mobil & Web
+      { id: 26, name: "📱 SMS Kampanya & CRM", cat: "MOBILE_WEB", path: "Desktop\\...Projeler\\SMS Kampanya...", desc: "Toplu SMS kampanya yönetimi ve rehber CRM mobil uygulaması.", tags: ["Flutter", "Dart", "Mobile CRM"], rec: "public", recReason: "Öneri: 🌐 Public (Ana Mobil Uygulama Vitrini)" },
+      { id: 27, name: "MAPFORGE Lead Suite", cat: "MOBILE_WEB", path: "Desktop\\gmaps_pro", desc: "B2B lead toplama, SMS ve WhatsApp otomasyon yazılımı.", tags: ["Python", "PyQt6", "FastAPI", "Playwright"], rec: "private", recReason: "Öneri: 🔒 Private (Scraping & Outreach)" },
+      { id: 28, name: "SHOPFLOW Dashboard", cat: "MOBILE_WEB", path: "projects\\shopflow", desc: "Çoklu mağaza e-ticaret yönetim ve analitik paneli.", tags: ["Next.js", "TypeScript", "Prisma", "Postgres"], rec: "public", recReason: "Öneri: 🌐 Public (Full-Stack Next.js 16)" },
+      { id: 29, name: "enesteke.me Portfolio", cat: "MOBILE_WEB", path: "Desktop\\.me projeleri\\enesteke.me", desc: "Hyliox tarzı kişisel portfolio web sitesi.", tags: ["React", "Vite", "Framer Motion"], rec: "public", recReason: "Öneri: 🌐 Public (Ana Portfolio)" },
+      { id: 30, name: "Turkish Industry Scraper", cat: "MOBILE_WEB", path: "Desktop\\...Projeler\\turkish industry", desc: "Türk sanayi firmaları veri toplama masaüstü yazılımı.", tags: ["Python", "CustomTkinter"], rec: "public", recReason: "Öneri: 🌐 Public (Data Scraper GUI)" },
+      { id: 31, name: "PDF Editor Utility", cat: "MOBILE_WEB", path: "projects\\pdf-editor", desc: "PDF birleştirme, bölme ve dönüştürme aracı.", tags: ["JavaScript", "Node.js"], rec: "public", recReason: "Öneri: 🌐 Public (Faydalı Araç)" },
+      { id: 32, name: "E-Ticaret Modülü", cat: "MOBILE_WEB", path: "Desktop\\...Projeler\\E-Ticaret Kısmı", desc: "Modüler e-ticaret sepet ve ödeme sistemi parçası.", tags: ["React", "Node.js"], rec: "public", recReason: "Öneri: 🌐 Public" },
+      { id: 33, name: "İslami Video Sitesi", cat: "MOBILE_WEB", path: "Desktop\\İslami Video Paylaşım Sitesi", desc: "Video akış ve kategorize etme web portalı.", tags: ["React", "HTML/CSS"], rec: "public", recReason: "Öneri: 🌐 Public" },
+      { id: 34, name: "Mega to Drive Transfer", cat: "MOBILE_WEB", path: "Desktop\\...Projeler\\mega to drive", desc: "Mega hesabındaki verileri Google Drive'a aktaran bot.", tags: ["Python", "Cloud API"], rec: "public", recReason: "Öneri: 🌐 Public" },
+      { id: 35, name: "Yorum Takip Sistemi", cat: "MOBILE_WEB", path: "projects\\yorum-takip-sistemi", desc: "Sosyal medya gönderi yorumlarını takip eden sistem.", tags: ["Python", "Flask"], rec: "private", recReason: "Öneri: 🔒 Private" },
+
+      // Araçlar & Botlar
+      { id: 36, name: "SHADOWMAPS Multi-Profile", cat: "TOOLS", path: "projects\\gmail-oto-yonetim\\shadowmaps", desc: "100+ izole Firefox profili, proxy ve VPN yönetici uygulaması.", tags: ["Electron", "Node.js", "SQLite"], rec: "private", recReason: "Öneri: 🔒 Private (Browser Automation)" },
+      { id: 37, name: "Instagram DM Bot", cat: "TOOLS", path: "projects\\instagram-dm-bot", desc: "Instagram DM otomatik yanıt ve mesajlaşma botu.", tags: ["Python", "Instagrapi"], rec: "private", recReason: "Öneri: 🔒 Private (ToS Riski)" },
+      { id: 38, name: "Instagram Warmer", cat: "TOOLS", path: "projects\\instagram-warmer", desc: "Yeni Instagram hesaplarını otomatik ısıtan sistem.", tags: ["Python"], rec: "private", recReason: "Öneri: 🔒 Private (ToS Riski)" },
+      { id: 39, name: "LinkedIn Bots", cat: "TOOLS", path: "Desktop\\LinkedIn Bots", desc: "LinkedIn bağlantı ve mesaj otomasyonu.", tags: ["Python", "Selenium"], rec: "private", recReason: "Öneri: 🔒 Private (ToS Riski)" },
+      { id: 40, name: "WhatsApp Account Warmer", cat: "TOOLS", path: "projects\\whatsapp-account-warmer", desc: "WhatsApp numaralarını ısınma moduna alan script.", tags: ["Python"], rec: "private", recReason: "Öneri: 🔒 Private (ToS Riski)" },
+      { id: 41, name: "Codex CLI Tool", cat: "TOOLS", path: "Desktop\\...Projeler\\codexcli", desc: "Özel komut satırı terminal yardımcı yazılımı.", tags: ["Python", "CLI"], rec: "public", recReason: "Öneri: 🌐 Public (CLI Tool Showcase)" },
+      { id: 42, name: "Copilot API Reverse", cat: "TOOLS", path: "Desktop\\...Projeler\\git-copilot-api...", desc: "GitHub Copilot API uç noktalarını taklit eden proxy.", tags: ["Python"], rec: "private", recReason: "Öneri: 🔒 Private (Reverse Eng)" },
+      { id: 43, name: "Oracle Keepalive Daemon", cat: "TOOLS", path: "Desktop\\oracle hesaplarının...", desc: "Oracle Cloud Free Tier sunucularının geri alınmasını önleyen yük oluşturucu.", tags: ["Bash", "Python"], rec: "public", recReason: "Öneri: 🌐 Public (Çok Yararlı Script)" },
+      { id: 44, name: "OTO DM Engine", cat: "TOOLS", path: "Desktop\\OTO_DM", desc: "Toplu DM gönderme motoru altyapısı.", tags: ["Python"], rec: "private", recReason: "Öneri: 🔒 Private" },
+      { id: 45, name: "Search API Service", cat: "TOOLS", path: "Desktop\\search api", desc: "Özel arama motoru API uç noktası servisi.", tags: ["Python", "FastAPI"], rec: "public", recReason: "Öneri: 🌐 Public" },
+      { id: 46, name: "API Kasa Security", cat: "TOOLS", path: "Desktop\\API_Kasa", desc: "Güvenli API anahtarı ve şifreli veri kasası.", tags: ["Python", "Cryptography"], rec: "private", recReason: "Öneri: 🔒 Private (Hassas Kasa)" },
+      { id: 47, name: "Atatürk Otomasyon", cat: "TOOLS", path: "Desktop\\Ataturk_Otomasyon", desc: "Özel otomasyon ve betik modülleri kütüphanesi.", tags: ["Python"], rec: "private", recReason: "Öneri: 🔒 Private" },
+      { id: 48, name: "Clawcode Compiler Tool", cat: "TOOLS", path: "Desktop\\clawcode", desc: "Kod işleme ve dönüştürme aracı.", tags: ["C++", "Python"], rec: "public", recReason: "Öneri: 🌐 Public" },
+      { id: 49, name: "Codex Account Switcher", cat: "TOOLS", path: "Desktop\\Codex Account Switcher", desc: "Masaüstü hızlı hesap değiştirme yazılımı.", tags: ["Python", "Tkinter"], rec: "private", recReason: "Öneri: 🔒 Private" },
+      { id: 50, name: "Mernis Tooling", cat: "TOOLS", path: "Desktop\\Mernis", desc: "Mernis sorgulama ve veri işleme yazılımı.", tags: ["Python"], rec: "offgrid", recReason: "Öneri: ☣️ Off-Grid Engine (Hassas Veri / GitHub'a Yükleme)" },
+
+      // Yaratıcı & Ar-Ge
+      { id: 51, name: "NEBULA 3D Galaxy", cat: "CREATIVE", path: "Desktop\\Galaksi Sitesi2", desc: "WebGL ve Three.js ile N-body parçacık galaksi simülasyonu.", tags: ["Three.js", "WebGL", "JavaScript"], rec: "public", recReason: "Öneri: 🌐 Public (3D WebGL Büyüleyici Vitrin)" },
+      { id: 52, name: "LOVECRAFT Interaktif Web", cat: "CREATIVE", path: "Desktop\\...Projeler\\irem.ninja", desc: "12+ mini oyun içeren interaktif romantik web uygulaması.", tags: ["Vanilla JS", "Firebase", "PWA"], rec: "public", recReason: "Öneri: 🌐 Public (Yaratıcılık Göstergesi)" },
+      { id: 53, name: "Rainbow Effect Canvas", cat: "CREATIVE", path: "Desktop\\Rainbow effect", desc: "Tuval (Canvas) üzerinde dinamik gökkuşağı efekti.", tags: ["HTML5 Canvas", "CSS3"], rec: "public", recReason: "Öneri: 🌐 Public" },
+      { id: 54, name: "WiFi Body Detection Ar-Ge", cat: "CREATIVE", path: "Desktop\\...Projeler\\wifi sinyalleriyle...", desc: "WiFi sinyal dalgalanmalarıyla insan beden ve hareket tespiti.", tags: ["Python", "Signal Processing", "Ar-Ge"], rec: "public", recReason: "Öneri: 🌐 Public (Çok Dikkat Çekici İnovatif Ar-Ge)" }
+    ];
+
+    // User selections memory (default to recommendations)
+    const STORAGE_KEY = 'tekedev_project_selections';
+    const userSelections = {};
+
+    // Kaydedilmiş seçimleri yükle, yoksa önerileri kullan
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        projectsData.forEach(p => userSelections[p.id] = parsed[p.id] || p.rec);
+      } catch (e) {
+        projectsData.forEach(p => userSelections[p.id] = p.rec);
+      }
+    } else {
+      projectsData.forEach(p => userSelections[p.id] = p.rec);
+    }
+
+    function saveToStorage() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(userSelections));
+    }
+
+    let currentCategory = 'ALL';
+
+    function setCategory(cat) {
+      currentCategory = cat;
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      render();
+    }
+
+    function selectOption(id, choice) {
+      userSelections[id] = choice;
+      saveToStorage();
+      render();
+    }
+
+    function render() {
+      const grid = document.getElementById('grid');
+      const search = document.getElementById('search').value.toLowerCase();
+      grid.innerHTML = '';
+
+      let filtered = projectsData.filter(p => {
+        const matchesCat = (currentCategory === 'ALL' || p.cat === currentCategory);
+        const matchesSearch = p.name.toLowerCase().includes(search) ||
+                              p.desc.toLowerCase().includes(search) ||
+                              p.tags.some(t => t.toLowerCase().includes(search));
+        return matchesCat && matchesSearch;
+      });
+
+      filtered.forEach(p => {
+        const selected = userSelections[p.id];
+        const card = document.createElement('div');
+        card.className = 'card';
+        
+        let recBadgeClass = 'rec-public';
+        if (p.rec === 'private') recBadgeClass = 'rec-private';
+        if (p.rec === 'offgrid') recBadgeClass = 'rec-offgrid';
+
+        card.innerHTML = `
+          <div>
+            <div class="card-num">#${p.id}</div>
+            <div class="card-cat">${p.cat}</div>
+            <div class="card-title">${p.name}</div>
+            <div class="card-path">📁 ${p.path}</div>
+            <div class="card-desc">${p.desc}</div>
+            <div class="tags">${p.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>
+          </div>
+          <div>
+            <div class="rec-badge ${recBadgeClass}">${p.recReason}</div>
+            <div class="choice-group">
+              <button class="choice-btn ${selected === 'public' ? 'selected-public' : ''}" onclick="selectOption(${p.id}, 'public')">🌐 Public</button>
+              <button class="choice-btn ${selected === 'private' ? 'selected-private' : ''}" onclick="selectOption(${p.id}, 'private')">🔒 Private</button>
+              <button class="choice-btn ${selected === 'offgrid' ? 'selected-offgrid' : ''}" onclick="selectOption(${p.id}, 'offgrid')">☣️ Off-Grid</button>
+            </div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+
+      updateStats();
+    }
+
+    function updateStats() {
+      let pub = 0, priv = 0, off = 0;
+      Object.values(userSelections).forEach(val => {
+        if (val === 'public') pub++;
+        if (val === 'private') priv++;
+        if (val === 'offgrid') off++;
+      });
+
+      document.getElementById('cnt-total').innerText = projectsData.length;
+      document.getElementById('cnt-public').innerText = pub;
+      document.getElementById('cnt-private').innerText = priv;
+      document.getElementById('cnt-offgrid').innerText = off;
+
+      document.getElementById('summary-text').innerText = 
+        `🌐 ${pub} Public Vitrin  |  🔒 ${priv} Private Bulut Yedeği  |  ☣️ ${off} Off-Grid (Yerelde Dursun)`;
+    }
+
+    function copyFinalList() {
+      const summaryObj = {
+        public: [],
+        private: [],
+        offgrid: []
+      };
+
+      projectsData.forEach(p => {
+        const choice = userSelections[p.id];
+        summaryObj[choice].push({ id: p.id, name: p.name, path: p.path });
+      });
+
+      const text = JSON.stringify(summaryObj, null, 2);
+      navigator.clipboard.writeText(text);
+      alert("✅ Seçimlerin hafızaya kopyalandı!\n\nÖzet:\n" + document.getElementById('summary-text').innerText + "\n\nŞimdi sohbet ekranına geçip 'Tamamdır seçtim' yazabilirsin!");
+    }
+
+    // Initial render
+    render();
+  </script>
+</body>
+</html>

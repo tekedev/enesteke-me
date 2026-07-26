@@ -1,0 +1,78 @@
+.SlotButton__button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.8rem 1.8rem;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  overflow: hidden;
+  cursor: pointer;
+  transition: background-color 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              border-color 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 0.2s ease;
+}
+
+.SlotButton__button:hover {
+  background-color: #ffffff;
+  border-color: #ffffff;
+  color: #000000;
+  transform: translateY(-2px);
+}
+
+.SlotButton__text_wrapper {
+  position: relative;
+  display: block;
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.SlotButton__button:hover .SlotButton__text_wrapper {
+  transform: translateY(-100%);
+}
+
+.SlotButton__text {
+  display: block;
+  color: inherit;
+  white-space: nowrap;
+  transition: color 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              opacity 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.SlotButton__button:hover .SlotButton__text {
+  opacity: 0;
+}
+
+.SlotButton__text_hover {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  display: block;
+  color: #000000;
+  opacity: 0;
+  white-space: nowrap;
+  transition: opacity 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.SlotButton__button:hover .SlotButton__text_hover {
+  opacity: 1;
+}
+
+.SlotButton__button--accent {
+  background: var(--accent-gradient);
+  border: none;
+  box-shadow: 0 0 25px rgba(99, 91, 255, 0.4);
+}
+
+.SlotButton__button--accent:hover {
+  background: #00e5e5;
+  color: #000000;
+  box-shadow: 0 0 35px rgba(0, 229, 229, 0.6);
+}

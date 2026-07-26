@@ -1,0 +1,71 @@
+.TopScrollIndicator__top_scroll_indicator {
+  position: fixed;
+  left: 2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  pointer-events: auto;
+}
+
+@media (max-width: 950px) {
+  .TopScrollIndicator__top_scroll_indicator {
+    display: none;
+  }
+}
+
+.TopScrollIndicator__section_list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.TopScrollIndicator__section_item {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  opacity: 0.4;
+  transition: opacity 0.3s ease;
+}
+
+.TopScrollIndicator__section_item:hover,
+.TopScrollIndicator__section_item.is-active {
+  opacity: 1;
+}
+
+.TopScrollIndicator__section_line {
+  position: relative;
+  width: 2px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.2);
+  transition: height 0.3s ease, background 0.3s ease;
+}
+
+.TopScrollIndicator__section_item.is-active .TopScrollIndicator__section_line {
+  height: 36px;
+  background: var(--accent-secondary);
+  box-shadow: 0 0 10px var(--accent-secondary);
+}
+
+.TopScrollIndicator__section_label {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  color: #ffffff;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.TopScrollIndicator__section_item:hover .TopScrollIndicator__section_label,
+.TopScrollIndicator__section_item.is-active .TopScrollIndicator__section_label {
+  opacity: 1;
+  transform: translateY(-50%) translateX(4px);
+}

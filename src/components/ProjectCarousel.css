@@ -1,0 +1,134 @@
+/* ═══════════════════════════════════════════
+   3D PROJECT CAROUSEL — Alche Studio Style
+   ═══════════════════════════════════════════ */
+
+.carousel-section {
+  position: relative;
+  width: 100vw;
+  min-height: 100vh;
+  background: #000000;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.carousel-header {
+  position: absolute;
+  top: 2rem;
+  left: clamp(1.5rem, 4vw, 3rem);
+  z-index: 5;
+  display: flex;
+  align-items: baseline;
+  gap: 1.5rem;
+}
+
+.carousel-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.25em;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.carousel-counter {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.carousel-canvas {
+  flex: 1;
+  width: 100%;
+  min-height: 55vh;
+  cursor: grab;
+  touch-action: none;
+}
+
+.carousel-canvas:active {
+  cursor: grabbing;
+}
+
+.carousel-info {
+  position: absolute;
+  bottom: 5rem;
+  left: clamp(1.5rem, 4vw, 3rem);
+  z-index: 5;
+  max-width: 500px;
+}
+
+.carousel-meta {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.carousel-year {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.carousel-cat {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: #00e5e5;
+}
+
+.carousel-title {
+  font-family: var(--font-heading);
+  font-size: clamp(1.5rem, 4vw, 3rem);
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 1rem;
+  line-height: 1.1;
+}
+
+.carousel-tags {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.carousel-tag {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  padding: 0.3rem 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.carousel-hint {
+  position: absolute;
+  bottom: 2rem;
+  right: clamp(1.5rem, 4vw, 3rem);
+  z-index: 5;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.25);
+}
+
+/* ═══ More Works Link ═══ */
+.more-works-link {
+  position: absolute;
+  bottom: 2rem;
+  right: clamp(6rem, 12vw, 12rem);
+  z-index: 5;
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: color 0.3s;
+}
+
+.more-works-link:hover {
+  color: #00e5e5;
+}
+
+@media (max-width: 768px) {
+  .carousel-canvas { min-height: 40vh; }
+  .carousel-info { bottom: 4rem; }
+  .carousel-hint { display: none; }
+}
