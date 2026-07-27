@@ -23,7 +23,6 @@ dist-ssr
 *.sln
 *.sw?
 
-
 # Safety & Privacy Rules (NO PERSONAL DATA / NO SECRETS)
 *.pdf
 *.doc
@@ -43,7 +42,7 @@ dist-ssr
 *.log
 *.vcf
 
-# Sensitive Directories
+# Sensitive / Temporary Directories
 data/
 uploads/
 downloads/
@@ -53,6 +52,9 @@ logs/
 private/
 secrets/
 .env/
+scratch/
+screenshots/
+reports/
 
 # Build & Dependencies
 node_modules/
