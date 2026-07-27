@@ -46,6 +46,7 @@
   margin-top: 32px;
   align-items: center;
   flex-wrap: wrap;
+  width: fit-content;
 }
 
 .heroPrimaryCta {
@@ -92,9 +93,9 @@
   [data-monogram-safe-area] {
     position: fixed;
     right: 0;
-    bottom: 74px;
-    width: 24vw;
-    height: 18vh;
+    bottom: 84px;
+    width: 54px;
+    height: 54px;
     pointer-events: none;
   }
 }
