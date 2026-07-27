@@ -41,7 +41,11 @@ export default function WorksSection() {
             const isEven = index % 2 === 0;
 
             return (
-              <div key={project.id} className={styles.projectScene}>
+              <div
+                key={project.id}
+                data-project-slug={project.slug}
+                className={styles.projectScene}
+              >
                 {/* Top Metadata */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
                   <span style={{ fontSize: '12px', color: '#73736e', letterSpacing: '0.2em' }}>
@@ -97,10 +101,10 @@ export default function WorksSection() {
                         <div style={{ fontSize: '10px', color: '#73736e', letterSpacing: '0.15em' }}>
                           // EDITORIAL DNA PIPELINE FLOW
                         </div>
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '20px 0', fontSize: '11px', color: '#f5f5f2' }}>
-                          <span style={{ border: '1px solid rgba(255,255,255,0.2)', padding: '6px 12px' }}>WEBSITE URL</span>
+                        <div className={styles.pipelineFlow}>
+                          <span className={styles.pipelineStep}>WEBSITE URL</span>
                           <span style={{ color: '#d7ff00' }}>➔ VECTOR RAG ➔</span>
-                          <span style={{ border: '1px solid #d7ff00', padding: '6px 12px', color: '#d7ff00' }}>EDITORIAL DNA</span>
+                          <span className={styles.pipelineActive}>EDITORIAL DNA</span>
                         </div>
                         <div style={{ fontSize: '10px', color: '#73736e' }}>
                           SAAS PLATFORM: HAREKI.COM

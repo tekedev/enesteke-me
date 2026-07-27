@@ -34,8 +34,8 @@ export default function ManifestoSection() {
   }, []);
 
   const line1Opacity = isReducedMotion ? 1 : Math.min(1, scrollProgress * 2.5);
-  const line2Opacity = isReducedMotion ? 1 : Math.max(0.2, Math.min(1, (scrollProgress - 0.25) * 2.5));
-  const line3Opacity = isReducedMotion ? 1 : Math.max(0.2, Math.min(1, (scrollProgress - 0.5) * 2.5));
+  const line2Opacity = isReducedMotion ? 0.75 : Math.max(0.3, Math.min(1, (scrollProgress - 0.2) * 2.5));
+  const line3Opacity = isReducedMotion ? 0.75 : Math.max(0.2, Math.min(1, (scrollProgress - 0.4) * 2.5));
 
   return (
     <section
@@ -45,17 +45,17 @@ export default function ManifestoSection() {
         position: 'relative',
         zIndex: 2,
         backgroundColor: '#000000',
-        minHeight: isReducedMotion ? 'auto' : 'clamp(105svh, 115svh, 130svh)',
+        minHeight: isReducedMotion ? 'auto' : 'clamp(105svh, 115svh, 125svh)',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
-        padding: 'calc(var(--header-height) + 40px) var(--page-padding) 80px',
+        padding: 'calc(var(--header-height) + 40px) var(--page-padding) 60px',
         fontFamily: "var(--font-family-mono)",
         scrollMarginTop: 'calc(var(--header-height) + 24px)',
       }}
     >
       <div style={{ maxWidth: '1200px', margin: '0 auto', width: '100%' }}>
-        <div style={{ fontSize: '11px', letterSpacing: '0.25em', color: '#73736e', marginBottom: '32px', textTransform: 'uppercase' }}>
+        <div style={{ fontSize: '11px', letterSpacing: '0.25em', color: '#73736e', marginBottom: '24px', textTransform: 'uppercase' }}>
           ENGINEERING PRINCIPLES & MANIFESTO
         </div>
 
@@ -67,7 +67,7 @@ export default function ManifestoSection() {
               fontWeight: 300,
               lineHeight: 1.02,
               letterSpacing: '-0.03em',
-              color: `rgba(245, 245, 242, ${0.2 + line1Opacity * 0.8})`,
+              color: `rgba(245, 245, 242, ${0.3 + line1Opacity * 0.7})`,
               margin: 0,
               textTransform: 'uppercase',
               transition: isReducedMotion ? 'none' : 'color 0.3s ease',
@@ -84,7 +84,7 @@ export default function ManifestoSection() {
               fontWeight: 300,
               lineHeight: 1.02,
               letterSpacing: '-0.03em',
-              color: `rgba(245, 245, 242, ${0.2 + line2Opacity * 0.8})`,
+              color: `rgba(245, 245, 242, ${0.3 + line2Opacity * 0.7})`,
               margin: 0,
               textTransform: 'uppercase',
               transition: isReducedMotion ? 'none' : 'color 0.3s ease',
@@ -100,7 +100,7 @@ export default function ManifestoSection() {
               fontWeight: 300,
               lineHeight: 1.02,
               letterSpacing: '-0.03em',
-              color: isReducedMotion || line3Opacity > 0.6 ? '#d7ff00' : 'rgba(245, 245, 242, 0.3)',
+              color: isReducedMotion || line3Opacity > 0.6 ? '#d7ff00' : 'rgba(245, 245, 242, 0.4)',
               margin: 0,
               textTransform: 'uppercase',
               transition: isReducedMotion ? 'none' : 'color 0.3s ease',

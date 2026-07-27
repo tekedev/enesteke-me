@@ -233,34 +233,44 @@ export default function ETMonogramScene({
     canvasEl.addEventListener('webglcontextlost', handleContextLost);
     canvasEl.addEventListener('webglcontextrestored', handleContextRestored);
 
+    renderer = new THREE.WebGLRenderer({
+      canvas: canvasEl,
+      antialias: true,
+      powerPreference: 'high-performance',
+      alpha: true,
+    });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(width, height);
+    renderer.setClearColor(0x000000, 1);
+
     const renderTarget = new THREE.WebGLRenderTarget(width, height, {
-      format: THREE.RGBAFormat,
-      type: THREE.FloatType,
       minFilter: THREE.LinearFilter,
       magFilter: THREE.LinearFilter,
+      format: THREE.RGBAFormat,
     });
 
-    const bgScene = new THREE.Scene();
     const bgCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+    const bgScene = new THREE.Scene();
     const bgGeometry = new THREE.PlaneGeometry(2, 2);
+
     const bgMaterial = new THREE.ShaderMaterial({
       vertexShader: bgVertexShader,
       fragmentShader: bgFragmentShader,
       uniforms: {
-        uTime: { value: 0 },
-        uScreenAspectRatio: { value: width / height },
         uMouse: { value: new THREE.Vector2(0, 0) },
+        uTime: { value: 0 },
         uNoiseScale: { value: noiseScale },
-        uBgContrast: { value: 1.0 },
+        uScreenAspectRatio: { value: width / height },
+        uBgContrast: { value: 0.12 },
       },
       depthWrite: false,
     });
     bgMaterialRef.current = bgMaterial;
     bgScene.add(new THREE.Mesh(bgGeometry, bgMaterial));
 
+    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+    camera.position.z = 18;
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 1000);
-    camera.position.set(0, 0, 15);
 
     const shape = new THREE.Shape();
     shape.moveTo(-3.0, 4.0);
@@ -300,7 +310,7 @@ export default function ETMonogramScene({
       color: 0xd7ff00,
       wireframe: true,
       transparent: true,
-      opacity: 0.10,
+      opacity: isMobile ? 0.03 : 0.06,
     });
     const outlineMesh = new THREE.Mesh(geometry, outlineMaterial);
 

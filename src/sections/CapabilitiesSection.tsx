@@ -19,8 +19,12 @@ export default function CapabilitiesSection() {
 
         {/* Responsive Typographic Rows */}
         <div style={{ display: 'flex', flexDirection: 'column' }}>
-          {capabilities.map((cap) => (
-            <div key={cap.number} className={styles.capRow}>
+          {capabilities.map((cap, idx) => (
+            <div
+              key={cap.number}
+              data-capability-index={idx === 0 ? '01' : cap.number}
+              className={styles.capRow}
+            >
               {/* Number */}
               <div style={{ fontSize: '16px', color: '#d7ff00', fontWeight: 600 }}>
                 [{cap.number}]

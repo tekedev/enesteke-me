@@ -10,7 +10,7 @@
   align-items: center;
   z-index: 9999;
   font-family: var(--font-family-mono);
-  background-color: rgba(0, 0, 0, 0.92);
+  background-color: rgba(0, 0, 0, 0.95);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   mix-blend-mode: normal;
@@ -64,8 +64,8 @@
 
 .mobileMenuTrigger {
   display: none;
-  background: none;
-  border: 1px solid #d7ff00;
+  background: transparent;
+  border: 1px solid rgba(215, 255, 0, 0.45);
   color: #d7ff00;
   font-family: var(--font-family-mono);
   font-size: 11px;

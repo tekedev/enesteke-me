@@ -87,10 +87,10 @@ export default function HeroSection({
         </div>
         <h1 className={styles.heroTitle}>
           ENGINEERING SYSTEMS <br />
-          <span style={{ color: '#d7ff00', fontWeight: 400 }}>THAT THINK & SCALE.</span>
+          THAT <span style={{ color: '#d7ff00' }}>THINK</span> & SCALE.
         </h1>
         <p className={styles.heroBio}>
-          {profile.bio}
+          Full-stack developer and AI engineer building production systems across agentic AI, computer vision and real-time data.
         </p>
 
         {/* Refined Minimal Text Links (44px touch targets) */}
