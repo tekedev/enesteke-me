@@ -1,111 +1,81 @@
 import React, { useEffect, useState } from 'react';
 
 interface LoadingScreenProps {
-  onLoaded?: () => void;
+  onLoaded: () => void;
 }
 
 export default function LoadingScreen({ onLoaded }: LoadingScreenProps) {
-  const [progress, setProgress] = useState<number>(0);
-  const [isFading, setIsFading] = useState<boolean>(false);
+  const [progress, setProgress] = useState(0);
+  const [fade, setFade] = useState(false);
+  const [showLoader, setShowLoader] = useState(true);
+
+  const isE2E = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('e2e') === '1';
 
   useEffect(() => {
-    const startTime = Date.now();
-    const duration = 1200;
+    if (isE2E) {
+      setProgress(100);
+      setFade(true);
+      onLoaded();
+      const timer = setTimeout(() => setShowLoader(false), 200);
+      return () => clearTimeout(timer);
+    }
 
     const interval = setInterval(() => {
-      const elapsed = Date.now() - startTime;
-      const pct = Math.min(100, Math.floor((elapsed / duration) * 100));
-      setProgress(pct);
-
-      if (pct >= 100) {
-        clearInterval(interval);
-        setTimeout(() => setIsFading(true), 150);
-        setTimeout(() => {
-          if (onLoaded) onLoaded();
-        }, 650);
-      }
-    }, 20);
+      setProgress((prev) => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          setFade(true);
+          onLoaded();
+          setTimeout(() => setShowLoader(false), 600);
+          return 100;
+        }
+        return prev + 20;
+      });
+    }, 100);
 
     return () => clearInterval(interval);
-  }, [onLoaded]);
+  }, [onLoaded, isE2E]);
+
+  if (!showLoader) return null;
 
   return (
     <div
+      data-app-loader="true"
       style={{
         position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100vw',
-        height: '100vh',
+        inset: 0,
         backgroundColor: '#000000',
-        zIndex: 99999,
+        zIndex: 100000,
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
-        padding: '40px 50px',
-        opacity: isFading ? 0 : 1,
-        pointerEvents: isFading ? 'none' : 'auto',
-        transition: 'opacity 0.5s cubic-bezier(0.65, 0, 0.35, 1)',
-        fontFamily: "'IBM Plex Mono', 'JetBrains Mono', monospace",
+        padding: '60px var(--page-padding)',
+        fontFamily: "var(--font-family-mono)",
         color: '#f5f5f2',
+        opacity: fade ? 0 : 1,
+        transition: 'opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
+        pointerEvents: fade ? 'none' : 'auto',
       }}
     >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span style={{ fontSize: '11px', letterSpacing: '0.2em', color: '#73736e', textTransform: 'uppercase' }}>
-          ENES TEKE <span style={{ color: '#d7ff00', marginLeft: '6px' }}>●</span>
-        </span>
-        <span style={{ fontSize: '11px', letterSpacing: '0.15em', color: '#73736e' }}>
-          SYSTEM INITIALIZING...
-        </span>
+      <div style={{ fontSize: '11px', letterSpacing: '0.2em', color: '#73736e' }}>
+        SYSTEM INITIALIZING...
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-        <svg viewBox="0 0 100 100" style={{ width: '80px', height: '80px', marginBottom: '20px' }}>
-          <path
-            d="M 74 22 H 26 V 78 H 74"
-            fill="none"
-            stroke="#f5f5f2"
-            strokeWidth="3"
-            strokeLinecap="round"
-            style={{
-              strokeDasharray: 200,
-              strokeDashoffset: 200 - (progress / 100) * 200,
-              transition: 'stroke-dashoffset 0.1s linear',
-            }}
-          />
-          <path
-            d="M 26 50 H 64"
-            fill="none"
-            stroke="#d7ff00"
-            strokeWidth="3"
-            strokeLinecap="round"
-            style={{
-              strokeDasharray: 100,
-              strokeDashoffset: 100 - (progress / 100) * 100,
-              transition: 'stroke-dashoffset 0.1s linear',
-            }}
-          />
-        </svg>
-        <span style={{ fontSize: '12px', letterSpacing: '0.12em', color: '#b3b3ad', fontWeight: 300 }}>
+      <div style={{ maxWidth: '800px' }}>
+        <div style={{ fontFamily: "var(--font-family-sans)", fontSize: 'clamp(2rem, 5vw, 4rem)', fontWeight: 300, lineHeight: 1.1, textTransform: 'uppercase', marginBottom: '20px' }}>
           BUILDING INTELLIGENT PRODUCTS
-        </span>
+        </div>
+        <div style={{ fontSize: '12px', color: '#d7ff00', letterSpacing: '0.15em' }}>
+          CORE ENGINE / GLSL SHADERS
+        </div>
       </div>
 
-      <div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', fontSize: '11px', color: '#73736e' }}>
-          <span>CORE ENGINE / GLSL SHADERS</span>
-          <span style={{ color: '#d7ff00', fontWeight: 600 }}>{progress}%</span>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '20px' }}>
+        <div style={{ fontSize: '11px', color: '#73736e' }}>
+          TRT / UTC+3
         </div>
-        <div style={{ width: '100%', height: '2px', backgroundColor: 'rgba(255,255,255,0.08)', position: 'relative' }}>
-          <div
-            style={{
-              width: `${progress}%`,
-              height: '100%',
-              backgroundColor: '#d7ff00',
-              boxShadow: '0 0 10px rgba(215, 255, 0, 0.4)',
-              transition: 'width 0.1s linear',
-            }}
-          />
+        <div style={{ fontSize: '48px', fontFamily: "var(--font-family-sans)", fontWeight: 300, color: '#f5f5f2' }}>
+          {progress}%
         </div>
       </div>
     </div>

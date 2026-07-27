@@ -34,30 +34,30 @@ export default function StaticMonogramFallback({ visible = false }: StaticMonogr
         style={{
           maxWidth: '42vw',
           maxHeight: '42vh',
-          filter: 'drop-shadow(0 0 20px rgba(215, 255, 0, 0.12))',
+          filter: 'drop-shadow(0 0 16px rgba(215, 255, 0, 0.10))',
         }}
       >
-        {/* Sculptural 3D Depth Silhouette of ET Monogram */}
+        {/* Sculptural 3D Silhouette of Unified ET Monogram */}
         <path
-          d="M 22 22 L 88 22 L 88 36 L 72 36 L 72 88 L 58 88 L 58 74 L 38 74 L 38 60 L 60 60 L 60 46 L 38 46 L 38 36 L 22 36 Z"
-          fill="rgba(255, 255, 255, 0.04)"
-          stroke="rgba(255, 255, 255, 0.15)"
+          d="M 20 20 L 92 20 L 92 34 L 74 34 L 74 90 L 58 90 L 58 74 L 38 74 L 38 60 L 60 60 L 60 46 L 38 46 L 38 34 L 20 34 Z"
+          fill="rgba(255, 255, 255, 0.03)"
+          stroke="rgba(255, 255, 255, 0.12)"
           strokeWidth="1"
         />
         <path
-          d="M 20 20 L 86 20 L 86 34 L 70 34 L 70 86 L 56 86 L 56 72 L 36 72 L 36 58 L 58 58 L 58 44 L 36 44 L 36 34 L 20 34 Z"
-          fill="rgba(20, 20, 24, 0.6)"
+          d="M 18 18 L 90 18 L 90 32 L 72 32 L 72 88 L 56 88 L 56 72 L 36 72 L 36 60 L 58 60 L 58 46 L 36 46 L 36 32 L 18 32 Z"
+          fill="rgba(18, 18, 22, 0.6)"
           stroke="#f5f5f2"
-          strokeWidth="1.6"
+          strokeWidth="1.5"
           strokeLinejoin="round"
         />
         <path
-          d="M 20 20 L 86 20 L 86 34 L 70 34 L 70 86 L 56 86 L 56 72 L 36 72 L 36 58 L 58 58 L 58 44 L 36 44 L 36 34 L 20 34 Z"
+          d="M 18 18 L 90 18 L 90 32 L 72 32 L 72 88 L 56 88 L 56 72 L 36 72 L 36 60 L 58 60 L 58 46 L 36 46 L 36 32 L 18 32 Z"
           fill="none"
           stroke="#d7ff00"
           strokeWidth="0.8"
           strokeDasharray="3 3"
-          opacity="0.6"
+          opacity="0.5"
         />
       </svg>
     </div>

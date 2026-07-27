@@ -125,17 +125,17 @@ export default function ETMonogramScene({
   const getScrollTransform = (state: string) => {
     switch (state) {
       case 'works':
-        return { posX: isMobile ? 0 : 5.1, posY: isMobile ? -3.0 : -0.8, scale: isMobile ? 0.4 : 0.52, bgContrast: 0.12, wireframeOpacity: 0.018 };
+        return { posX: isMobile ? 0 : 5.3, posY: isMobile ? -3.0 : -1.2, scale: isMobile ? 0.35 : 0.40, bgContrast: 0.12, wireframeOpacity: 0.008 };
       case 'manifesto':
-        return { posX: isMobile ? 0 : 4.8, posY: isMobile ? -2.0 : -1.5, scale: isMobile ? 0.45 : 0.62, bgContrast: 0.08, wireframeOpacity: 0.012 };
+        return { posX: isMobile ? 0 : 5.0, posY: isMobile ? -2.0 : -1.6, scale: isMobile ? 0.40 : 0.46, bgContrast: 0.08, wireframeOpacity: 0.006 };
       case 'hero':
       default:
         return {
-          posX: isMobile ? 1.65 : 4.6,
-          posY: isMobile ? -2.75 : 0.05,
-          scale: isMobile ? 0.44 : 0.82,
-          bgContrast: 0.22,
-          wireframeOpacity: isMobile ? 0.018 : 0.045
+          posX: isMobile ? 2.05 : 4.7,
+          posY: isMobile ? -3.45 : 0.05,
+          scale: isMobile ? 0.28 : 0.76,
+          bgContrast: isMobile ? 0.18 : 0.22,
+          wireframeOpacity: isMobile ? 0.008 : 0.035
         };
     }
   };
@@ -235,22 +235,22 @@ export default function ETMonogramScene({
     camera.position.z = 18;
     const scene = new THREE.Scene();
 
-    // Create Unified 3D ET Monogram Shape
+    // Create Unified 3D ET Monogram Shape (E + T interlocking)
     const shape = new THREE.Shape();
-    shape.moveTo(-3.0, 4.0);
-    shape.lineTo(3.6, 4.0);
-    shape.lineTo(3.6, 2.6);
-    shape.lineTo(2.0, 2.6);
-    shape.lineTo(2.0, -4.0);
-    shape.lineTo(0.6, -4.0);
-    shape.lineTo(0.6, -2.6);
-    shape.lineTo(-1.4, -2.6);
-    shape.lineTo(-1.4, -0.6);
-    shape.lineTo(0.8, -0.6);
-    shape.lineTo(0.8, 0.8);
-    shape.lineTo(-1.4, 0.8);
-    shape.lineTo(-1.4, 2.6);
-    shape.lineTo(-3.0, 2.6);
+    shape.moveTo(-3.2, 4.0);
+    shape.lineTo(3.8, 4.0);
+    shape.lineTo(3.8, 2.6);
+    shape.lineTo(2.2, 2.6);
+    shape.lineTo(2.2, -4.0);
+    shape.lineTo(0.8, -4.0);
+    shape.lineTo(0.8, -2.6);
+    shape.lineTo(-1.6, -2.6);
+    shape.lineTo(-1.6, -0.7);
+    shape.lineTo(0.6, -0.7);
+    shape.lineTo(0.6, 0.7);
+    shape.lineTo(-1.6, 0.7);
+    shape.lineTo(-1.6, 2.6);
+    shape.lineTo(-3.2, 2.6);
     shape.closePath();
 
     const extrudeSettings = {
@@ -276,7 +276,7 @@ export default function ETMonogramScene({
       color: 0xd7ff00,
       wireframe: true,
       transparent: true,
-      opacity: isMobile ? 0.018 : 0.045,
+      opacity: isMobile ? 0.008 : 0.035,
     });
     const outlineMesh = new THREE.Mesh(geometry, outlineMaterial);
 

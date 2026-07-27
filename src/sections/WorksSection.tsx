@@ -99,7 +99,7 @@ export default function WorksSection() {
                     )}
 
                     {index === 1 && (
-                      /* Variation 2: Architecture Data Flow Diagram (2x2 Asymmetric Grid) */
+                      /* Variation 2: Architecture Data Flow Diagram with Connecting SVG Lines */
                       <>
                         <div style={{ fontSize: '10px', color: '#73736e', letterSpacing: '0.15em' }}>
                           // EDITORIAL DNA PIPELINE FLOW
