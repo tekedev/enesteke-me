@@ -48,7 +48,7 @@ export default function HeroSection({
             aria-expanded={controlsOpen}
             aria-controls="scene-controls-panel"
             style={{
-              background: controlsOpen ? 'rgba(215, 255, 0, 0.15)' : 'rgba(0,0,0,0.6)',
+              background: controlsOpen ? 'rgba(215, 255, 0, 0.15)' : 'rgba(0,0,0,0.72)',
               color: controlsOpen ? '#d7ff00' : '#b3b3ad',
               border: controlsOpen ? '1px solid #d7ff00' : '1px solid rgba(255,255,255,0.15)',
               padding: '8px 16px',
@@ -81,7 +81,7 @@ export default function HeroSection({
       )}
 
       {/* Main Editorial Headline */}
-      <div style={{ maxWidth: '1000px', pointerEvents: 'auto', margin: '30px 0' }}>
+      <div className={styles.heroContent}>
         <div style={{ fontSize: '11px', letterSpacing: '0.25em', color: '#73736e', marginBottom: '16px', textTransform: 'uppercase' }}>
           SYSTEMS ENGINEER & CREATIVE DEVELOPER
         </div>

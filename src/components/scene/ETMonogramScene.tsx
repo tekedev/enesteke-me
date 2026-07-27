@@ -54,7 +54,7 @@ void main() {
   
   vec2 mouseOffset = uMouse * 0.05;
   float n = snoise((st + mouseOffset) * uNoiseScale + uTime * 0.05);
-  float val = (n + 1.0) * 0.5 * uBgContrast * 0.18;
+  float val = (n + 1.0) * 0.5 * uBgContrast * 0.15;
   
   gl_FragColor = vec4(vec3(val), 1.0);
 }
@@ -87,16 +87,16 @@ void main() {
   vec3 viewDir = normalize(vViewPosition);
   
   // Fresnel Specular Edge Highlight
-  float fresnel = pow(1.0 - max(0.0, dot(normal, viewDir)), 2.5);
+  float fresnel = pow(1.0 - max(0.0, dot(normal, viewDir)), 2.8);
   
-  // High Contrast Metallic Surface Tint (Base Deep Gray with White Specular)
-  vec3 baseColor = vec3(0.24, 0.24, 0.28);
-  vec3 specularColor = vec3(0.95, 0.95, 1.0);
-  vec3 limeRim = vec3(0.84, 1.0, 0.0) * 0.35;
+  // Premium Studio Neutral Metallic Surface Tint
+  vec3 baseColor = vec3(0.10, 0.105, 0.12);
+  vec3 specularColor = vec3(0.92, 0.92, 0.98);
+  vec3 limeRim = vec3(0.84, 1.0, 0.0) * 0.06;
   
-  vec3 finalColor = mix(baseColor, specularColor, fresnel * 0.85) + limeRim * fresnel;
+  vec3 finalColor = mix(baseColor, specularColor, fresnel * 0.75) + limeRim * fresnel;
   
-  gl_FragColor = vec4(finalColor, 0.92);
+  gl_FragColor = vec4(finalColor, 0.94);
 }
 `;
 
@@ -125,17 +125,17 @@ export default function ETMonogramScene({
   const getScrollTransform = (state: string) => {
     switch (state) {
       case 'works':
-        return { posX: isMobile ? 0 : -6.0, posY: isMobile ? -3.0 : 0.5, scale: isMobile ? 0.5 : 0.65, bgContrast: 0.12, wireframeOpacity: 0.05 };
+        return { posX: isMobile ? 0 : 5.1, posY: isMobile ? -3.0 : -0.8, scale: isMobile ? 0.4 : 0.52, bgContrast: 0.12, wireframeOpacity: 0.018 };
       case 'manifesto':
-        return { posX: isMobile ? 0 : 0, posY: isMobile ? -2.0 : -0.5, scale: isMobile ? 0.55 : 0.85, bgContrast: 0.08, wireframeOpacity: 0.04 };
+        return { posX: isMobile ? 0 : 4.8, posY: isMobile ? -2.0 : -1.5, scale: isMobile ? 0.45 : 0.62, bgContrast: 0.08, wireframeOpacity: 0.012 };
       case 'hero':
       default:
         return {
-          posX: isMobile ? 1.4 : 4.2,
-          posY: isMobile ? -1.8 : 0.1,
-          scale: isMobile ? 0.75 : 1.1,
-          bgContrast: 0.28,
-          wireframeOpacity: isMobile ? 0.08 : 0.12
+          posX: isMobile ? 1.65 : 4.6,
+          posY: isMobile ? -2.75 : 0.05,
+          scale: isMobile ? 0.44 : 0.82,
+          bgContrast: 0.22,
+          wireframeOpacity: isMobile ? 0.018 : 0.045
         };
     }
   };
@@ -224,7 +224,7 @@ export default function ETMonogramScene({
         uTime: { value: 0 },
         uNoiseScale: { value: noiseScale },
         uScreenAspectRatio: { value: width / height },
-        uBgContrast: { value: 0.28 },
+        uBgContrast: { value: 0.22 },
       },
       depthWrite: false,
     });
@@ -235,24 +235,26 @@ export default function ETMonogramScene({
     camera.position.z = 18;
     const scene = new THREE.Scene();
 
-    // Create 3D ET Monogram Shape
+    // Create Unified 3D ET Monogram Shape
     const shape = new THREE.Shape();
     shape.moveTo(-3.0, 4.0);
-    shape.lineTo(3.0, 4.0);
-    shape.lineTo(3.0, 2.6);
-    shape.lineTo(-1.2, 2.6);
-    shape.lineTo(-1.2, 0.8);
-    shape.lineTo(2.2, 0.8);
-    shape.lineTo(2.2, -0.6);
-    shape.lineTo(-1.2, -0.6);
-    shape.lineTo(-1.2, -2.6);
-    shape.lineTo(3.0, -2.6);
-    shape.lineTo(3.0, -4.0);
-    shape.lineTo(-3.0, -4.0);
+    shape.lineTo(3.6, 4.0);
+    shape.lineTo(3.6, 2.6);
+    shape.lineTo(2.0, 2.6);
+    shape.lineTo(2.0, -4.0);
+    shape.lineTo(0.6, -4.0);
+    shape.lineTo(0.6, -2.6);
+    shape.lineTo(-1.4, -2.6);
+    shape.lineTo(-1.4, -0.6);
+    shape.lineTo(0.8, -0.6);
+    shape.lineTo(0.8, 0.8);
+    shape.lineTo(-1.4, 0.8);
+    shape.lineTo(-1.4, 2.6);
+    shape.lineTo(-3.0, 2.6);
     shape.closePath();
 
     const extrudeSettings = {
-      steps: 4, depth: 1.8, bevelEnabled: true, bevelThickness: 0.45, bevelSize: 0.35, bevelSegments: 16
+      steps: 4, depth: 1.4, bevelEnabled: true, bevelThickness: 0.35, bevelSize: 0.25, bevelSegments: 12
     };
     const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
     geometry.center();
@@ -274,7 +276,7 @@ export default function ETMonogramScene({
       color: 0xd7ff00,
       wireframe: true,
       transparent: true,
-      opacity: isMobile ? 0.08 : 0.12,
+      opacity: isMobile ? 0.018 : 0.045,
     });
     const outlineMesh = new THREE.Mesh(geometry, outlineMaterial);
 
@@ -314,6 +316,9 @@ export default function ETMonogramScene({
 
       if (!firstRenderSignaled) {
         firstRenderSignaled = true;
+        if (containerRef.current) {
+          containerRef.current.setAttribute('data-scene-ready', 'true');
+        }
         if (onSceneReadyRef.current) onSceneReadyRef.current();
       }
     };
@@ -424,13 +429,15 @@ export default function ETMonogramScene({
   return (
     <div
       ref={containerRef}
+      data-scene-layer="true"
+      data-scene-ready="false"
       style={{
         position: 'fixed',
         top: 0,
         left: 0,
         width: '100vw',
         height: '100vh',
-        zIndex: 1,
+        zIndex: 2,
         pointerEvents: 'none',
         overflow: 'hidden',
         backgroundColor: '#000000',

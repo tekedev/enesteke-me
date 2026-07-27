@@ -12,6 +12,12 @@
   background-color: transparent;
 }
 
+.heroContent {
+  max-width: min(58vw, 980px);
+  pointer-events: auto;
+  margin: 30px 0;
+}
+
 .controlsTrigger {
   display: inline-block;
 }
@@ -70,6 +76,10 @@
 }
 
 @media (max-width: 900px) {
+  .heroContent {
+    max-width: 100%;
+  }
+
   .controlsTrigger {
     display: none !important;
   }

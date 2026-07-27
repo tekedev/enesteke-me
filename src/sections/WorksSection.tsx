@@ -5,7 +5,6 @@ import styles from './WorksSection.module.css';
 
 export default function WorksSection() {
   const featured = projects.slice(0, 4);
-  const isMobile = typeof window !== 'undefined' && window.innerWidth <= 600;
 
   return (
     <section id="works" className={styles.section}>
@@ -100,22 +99,32 @@ export default function WorksSection() {
                     )}
 
                     {index === 1 && (
-                      /* Variation 2: Architecture Data Flow Diagram */
+                      /* Variation 2: Architecture Data Flow Diagram (2x2 Asymmetric Grid) */
                       <>
                         <div style={{ fontSize: '10px', color: '#73736e', letterSpacing: '0.15em' }}>
                           // EDITORIAL DNA PIPELINE FLOW
                         </div>
-                        <div className={styles.pipelineFlow}>
-                          <span className={styles.pipelineNode}>WEBSITE URL</span>
-                          <span style={{ color: '#d7ff00' }}>{isMobile ? '↓' : '➔'}</span>
-                          <span className={styles.pipelineNode}>CONTENT CRAWLER</span>
-                          <span style={{ color: '#d7ff00' }}>{isMobile ? '↓' : '➔'}</span>
-                          <span className={styles.pipelineNode}>VECTOR RAG</span>
-                          <span style={{ color: '#d7ff00' }}>{isMobile ? '↓' : '➔'}</span>
-                          <span className={styles.pipelineNodeActive}>EDITORIAL DNA</span>
+                        <div className={styles.pipelineCanvas}>
+                          <div className={styles.pipelineNode}>
+                            <span style={{ color: '#73736e', fontSize: '10px', display: 'block' }}>INPUT</span>
+                            WEBSITE URL
+                          </div>
+                          <div className={styles.pipelineNode} style={{ justifySelf: 'end' }}>
+                            <span style={{ color: '#73736e', fontSize: '10px', display: 'block' }}>STAGE 01</span>
+                            CONTENT CRAWLER
+                          </div>
+                          <div className={styles.pipelineNode}>
+                            <span style={{ color: '#73736e', fontSize: '10px', display: 'block' }}>STAGE 02</span>
+                            VECTOR RAG
+                          </div>
+                          <div className={styles.pipelineNodeActive} style={{ justifySelf: 'end' }}>
+                            <span style={{ color: '#d7ff00', opacity: 0.8, fontSize: '10px', display: 'block' }}>OUTPUT</span>
+                            EDITORIAL DNA
+                          </div>
                         </div>
-                        <div style={{ fontSize: '10px', color: '#73736e' }}>
-                          SAAS PLATFORM: HAREKI.COM
+                        <div style={{ fontSize: '10px', color: '#73736e', display: 'flex', justifyContent: 'space-between' }}>
+                          <span>SAAS PLATFORM: HAREKI.COM</span>
+                          <span style={{ color: '#d7ff00' }}>ACTIVE PIPELINE ✓</span>
                         </div>
                       </>
                     )}
