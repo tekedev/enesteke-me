@@ -1,35 +1,25 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 interface SystemControlsProps {
-  onParamsChange?: (params: { roughness: number; noiseScale: number }) => void;
+  roughness: number;
+  setRoughness: (val: number) => void;
+  noiseScale: number;
+  setNoiseScale: (val: number) => void;
 }
 
-export default function SystemControls({ onParamsChange }: SystemControlsProps) {
-  const [roughness, setRoughness] = useState<number>(0.10);
-  const [noiseScale, setNoiseScale] = useState<number>(9.00);
-
-  const handleRoughness = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = parseFloat(e.target.value);
-    setRoughness(val);
-    if (onParamsChange) onParamsChange({ roughness: val, noiseScale });
-  };
-
-  const handleNoiseScale = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = parseFloat(e.target.value);
-    setNoiseScale(val);
-    if (onParamsChange) onParamsChange({ roughness, noiseScale: val });
-  };
-
+export default function SystemControls({
+  roughness,
+  setRoughness,
+  noiseScale,
+  setNoiseScale,
+}: SystemControlsProps) {
   return (
     <div
       style={{
-        position: 'absolute',
-        top: '100px',
-        right: 'var(--page-padding)',
         width: '220px',
-        backgroundColor: 'rgba(8, 8, 8, 0.85)',
+        backgroundColor: 'rgba(8, 8, 8, 0.95)',
         backdropFilter: 'blur(8px)',
-        border: '1px solid rgba(255, 255, 255, 0.1)',
+        border: '1px solid rgba(255, 255, 255, 0.15)',
         borderRadius: '2px',
         padding: '14px',
         fontFamily: "var(--font-family-mono)",
@@ -56,7 +46,7 @@ export default function SystemControls({ onParamsChange }: SystemControlsProps) 
           max="0.80"
           step="0.01"
           value={roughness}
-          onChange={handleRoughness}
+          onChange={(e) => setRoughness(parseFloat(e.target.value))}
           style={{ width: '100%', accentColor: '#d7ff00', cursor: 'pointer' }}
         />
       </div>
@@ -72,7 +62,7 @@ export default function SystemControls({ onParamsChange }: SystemControlsProps) 
           max="20.00"
           step="0.50"
           value={noiseScale}
-          onChange={handleNoiseScale}
+          onChange={(e) => setNoiseScale(parseFloat(e.target.value))}
           style={{ width: '100%', accentColor: '#d7ff00', cursor: 'pointer' }}
         />
       </div>

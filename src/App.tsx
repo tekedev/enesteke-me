@@ -1,15 +1,13 @@
-import React, { useState, lazy, Suspense } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { Routes, Route } from 'react-router-dom';
-import LoadingScreen from './components/layout/LoadingScreen';
+import Lenis from 'lenis';
+
 import Navbar from './components/layout/Navbar';
-import WebGLFallback from './components/common/WebGLFallback';
-import FooterSection from './sections/FooterSection';
+import LoadingScreen from './components/layout/LoadingScreen';
 import ErrorBoundary from './components/common/ErrorBoundary';
+import WebGLFallback from './components/common/WebGLFallback';
 
-// Lazy-loaded WebGL 3D Heavy Chunk
 const ETMonogramScene = lazy(() => import('./components/scene/ETMonogramScene'));
-
-// Lazy-loaded Route Page Chunks
 const HomePage = lazy(() => import('./pages/HomePage'));
 const WorkArchivePage = lazy(() => import('./pages/WorkArchivePage'));
 const ProjectDetailPage = lazy(() => import('./pages/ProjectDetailPage'));
@@ -18,51 +16,75 @@ const ContactPage = lazy(() => import('./pages/ContactPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
 export default function App() {
-  const [isLoading, setIsLoading] = useState(true);
-  const [webglFailed, setWebglFailed] = useState(false);
-  const [sceneParams, setSceneParams] = useState({ roughness: 0.10, noiseScale: 9.00 });
+  const [roughness, setRoughness] = useState<number>(0.10);
+  const [noiseScale, setNoiseScale] = useState<number>(9.00);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [webglFailed, setWebglFailed] = useState<boolean>(false);
+  const [scrollState, setScrollState] = useState<'hero' | 'works' | 'manifesto'>('hero');
+
+  // Smooth Scrolling with Lenis
+  useEffect(() => {
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      orientation: 'vertical',
+      gestureOrientation: 'vertical',
+      smoothWheel: true,
+    });
+
+    function raf(time: number) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+
+    return () => {
+      lenis.destroy();
+    };
+  }, []);
 
   return (
     <ErrorBoundary>
-      <div style={{ backgroundColor: '#000000', color: '#f5f5f2', minHeight: '100vh', position: 'relative' }}>
-        {/* Initial Loading Screen */}
-        {isLoading && <LoadingScreen onLoaded={() => setIsLoading(false)} />}
+      {loading && <LoadingScreen onLoaded={() => setLoading(false)} />}
 
-        {/* Fixed Navigation Header */}
-        <Navbar />
+      <Navbar />
 
-        {/* WebGL 3D Monogram & Shader Canvas - Lazy Loaded */}
-        <Suspense fallback={<WebGLFallback />}>
-          {!webglFailed ? (
-            <ETMonogramScene
-              roughness={sceneParams.roughness}
-              noiseScale={sceneParams.noiseScale}
-              onContextLost={() => setWebglFailed(true)}
-            />
-          ) : (
-            <WebGLFallback />
-          )}
+      {/* WebGL Scene or Static 2D Fallback with Retry */}
+      {webglFailed ? (
+        <WebGLFallback onRetry={() => setWebglFailed(false)} />
+      ) : (
+        <Suspense fallback={null}>
+          <ETMonogramScene
+            roughness={roughness}
+            noiseScale={noiseScale}
+            scrollState={scrollState}
+            onContextLost={() => setWebglFailed(true)}
+          />
         </Suspense>
+      )}
 
-        {/* Route-Based Code Splitting */}
-        <Suspense fallback={
-          <div style={{ minHeight: '100vh', backgroundColor: '#000', color: '#73736e', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "var(--font-family-mono)", fontSize: '11px' }}>
-            LOADING ROUTE ARCHITECTURE...
-          </div>
-        }>
-          <Routes>
-            <Route path="/" element={<HomePage onParamsChange={setSceneParams} />} />
-            <Route path="/work" element={<WorkArchivePage />} />
-            <Route path="/work/:slug" element={<ProjectDetailPage />} />
-            <Route path="/about" element={<AboutPage />} />
-            <Route path="/contact" element={<ContactPage />} />
-            <Route path="*" element={<NotFoundPage />} />
-          </Routes>
-        </Suspense>
-
-        {/* Footer */}
-        <FooterSection />
-      </div>
+      {/* Main Page Routes */}
+      <Suspense fallback={<div style={{ minHeight: '100vh', backgroundColor: '#000000' }} />}>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <HomePage
+                roughness={roughness}
+                setRoughness={setRoughness}
+                noiseScale={noiseScale}
+                setNoiseScale={setNoiseScale}
+                onSceneStateChange={setScrollState}
+              />
+            }
+          />
+          <Route path="/work" element={<WorkArchivePage />} />
+          <Route path="/work/:slug" element={<ProjectDetailPage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </Suspense>
     </ErrorBoundary>
   );
 }

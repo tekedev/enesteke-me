@@ -7,55 +7,62 @@ export default function CapabilitiesSection() {
       id="capabilities"
       style={{
         position: 'relative',
-        zIndex: 3,
+        zIndex: 2,
         backgroundColor: '#000000',
-        padding: 'var(--section-gap) var(--page-padding)',
-        borderTop: '1px solid var(--line-secondary)',
+        padding: '120px var(--page-padding)',
+        fontFamily: "var(--font-family-mono)",
       }}
     >
       <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
-        <div style={{ fontFamily: "var(--font-family-mono)", fontSize: '11px', letterSpacing: '0.2em', color: '#73736e', marginBottom: '20px' }}>
-          03 / SYSTEMS & EXPERTISE
+        {/* Section Header */}
+        <div style={{ marginBottom: '80px', borderBottom: '1px solid var(--line-secondary)', paddingBottom: '24px' }}>
+          <div style={{ fontSize: '11px', letterSpacing: '0.2em', color: '#73736e', marginBottom: '12px' }}>
+            ENGINEERING CAPABILITIES & FOCUS
+          </div>
+          <h2 style={{ fontFamily: "var(--font-family-sans)", fontSize: 'clamp(2.2rem, 5vw, 4.5rem)', fontWeight: 300, color: '#f5f5f2', textTransform: 'uppercase', margin: 0, lineHeight: 1.05 }}>
+            TECHNICAL DOMAINS & <br />
+            <span style={{ color: '#d7ff00' }}>SYSTEM FOCUS</span>
+          </h2>
         </div>
 
-        <h2 style={{ fontFamily: "var(--font-family-sans)", fontSize: "var(--font-section)", fontWeight: 300, color: '#f5f5f2', textTransform: 'uppercase', marginBottom: '60px', lineHeight: 1.05 }}>
-          DOMAINS OF <br />
-          <span style={{ color: '#b3b3ad' }}>APPLIED INTELLIGENCE</span>
-        </h2>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0px' }}>
+        {/* Clean Typographic Rows (No Box Chips) */}
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
           {capabilities.map((cap) => (
             <div
               key={cap.number}
               style={{
-                padding: '40px 0',
-                borderTop: '1px solid var(--line-secondary)',
                 display: 'grid',
-                gridTemplateColumns: '100px 1.5fr 2.5fr',
-                gap: '30px',
+                gridTemplateColumns: '80px 2.5fr 3.5fr',
+                gap: '40px',
                 alignItems: 'flex-start',
+                padding: '60px 0',
+                borderTop: '1px solid var(--line-secondary)',
               }}
             >
-              <div style={{ fontFamily: "var(--font-family-mono)", fontSize: '16px', color: '#d7ff00', fontWeight: 600 }}>
-                {cap.number}
+              {/* Number */}
+              <div style={{ fontSize: '16px', color: '#d7ff00', fontWeight: 600 }}>
+                [{cap.number}]
               </div>
 
+              {/* Title & Description */}
               <div>
-                <h3 style={{ fontFamily: "var(--font-family-sans)", fontSize: '24px', color: '#f5f5f2', fontWeight: 400, textTransform: 'uppercase', marginBottom: '12px' }}>
+                <h3 style={{ fontFamily: "var(--font-family-sans)", fontSize: 'clamp(1.8rem, 3.5vw, 3.2rem)', fontWeight: 300, color: '#f5f5f2', margin: 0, marginBottom: '12px', lineHeight: 1.1 }}>
                   {cap.title}
                 </h3>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                  {cap.technologies.map((tech, i) => (
-                    <span key={i} style={{ fontSize: '10px', fontFamily: "var(--font-family-mono)", color: '#73736e', background: 'rgba(255,255,255,0.04)', padding: '3px 8px', borderRadius: '2px' }}>
-                      {tech}
-                    </span>
-                  ))}
-                </div>
+                <p style={{ color: '#b3b3ad', fontSize: '14px', lineHeight: 1.7, margin: 0 }}>
+                  {cap.description}
+                </p>
               </div>
 
-              <p style={{ fontFamily: "var(--font-family-mono)", fontSize: '13px', color: '#b3b3ad', lineHeight: 1.6, margin: 0 }}>
-                {cap.description}
-              </p>
+              {/* Typographic Inline Focus (Slash Separated Text Line) */}
+              <div>
+                <div style={{ fontSize: '10px', color: '#73736e', letterSpacing: '0.2em', marginBottom: '12px' }}>
+                  CORE STACK & FRAMEWORKS
+                </div>
+                <div style={{ fontSize: '13px', color: '#f5f5f2', letterSpacing: '0.08em', lineHeight: 1.8, textTransform: 'uppercase' }}>
+                  {cap.technologies.join(' / ')}
+                </div>
+              </div>
             </div>
           ))}
         </div>

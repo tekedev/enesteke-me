@@ -1,4 +1,6 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
+import { profile } from '../data/portfolioData';
 
 export default function FooterSection() {
   const scrollToTop = () => {
@@ -7,42 +9,122 @@ export default function FooterSection() {
 
   return (
     <footer
+      id="footer"
       style={{
         position: 'relative',
-        zIndex: 3,
+        zIndex: 2,
         backgroundColor: '#000000',
-        padding: '60px var(--page-padding) 30px',
-        borderTop: '1px solid var(--line-secondary)',
+        padding: '120px 0 60px',
         fontFamily: "var(--font-family-mono)",
+        color: '#f5f5f2',
+        borderTop: '1px solid var(--line-secondary)',
       }}
     >
-      <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
-        <div style={{ overflow: 'hidden', marginBottom: '40px' }}>
-          <div
-            style={{
-              fontSize: 'clamp(3rem, 15vw, 16rem)',
-              fontFamily: "var(--font-family-sans)",
-              fontWeight: 800,
-              color: 'rgba(255, 255, 255, 0.05)',
-              letterSpacing: '-0.04em',
-              lineHeight: 0.8,
-              textTransform: 'uppercase',
-              userSelect: 'none',
-            }}
-          >
-            ENES TEKE
-          </div>
+      {/* Top CTA Area */}
+      <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 var(--page-padding)', marginBottom: '100px' }}>
+        <div style={{ fontSize: '11px', letterSpacing: '0.2em', color: '#73736e', marginBottom: '20px' }}>
+          CONTACT / COLLABORATION
+        </div>
+        <h2
+          style={{
+            fontFamily: "var(--font-family-sans)",
+            fontSize: 'clamp(2.8rem, 6.5vw, 7.2rem)',
+            fontWeight: 300,
+            lineHeight: 0.95,
+            letterSpacing: '-0.04em',
+            color: '#f5f5f2',
+            textTransform: 'uppercase',
+            marginBottom: '32px',
+          }}
+        >
+          HAVE A SYSTEM <br />
+          <span style={{ color: '#d7ff00' }}>WORTH BUILDING?</span>
+        </h2>
+        <Link
+          to="/contact"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+            backgroundColor: '#d7ff00',
+            color: '#000000',
+            padding: '14px 32px',
+            fontSize: '12px',
+            fontFamily: "var(--font-family-mono)",
+            fontWeight: 600,
+            letterSpacing: '0.15em',
+            textDecoration: 'none',
+            borderRadius: '2px',
+          }}
+        >
+          LET’S TALK ↗
+        </Link>
+      </div>
+
+      {/* Giant Full-Viewport Width Brand Display Text */}
+      <div
+        style={{
+          width: '100%',
+          overflow: 'hidden',
+          borderTop: '1px solid var(--line-secondary)',
+          borderBottom: '1px solid var(--line-secondary)',
+          padding: '40px 0',
+          textAlign: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <div
+          style={{
+            fontFamily: "var(--font-family-sans)",
+            fontSize: 'clamp(3.5rem, 14vw, 16rem)',
+            fontWeight: 300,
+            lineHeight: 0.85,
+            letterSpacing: '-0.04em',
+            color: '#f5f5f2',
+            textTransform: 'uppercase',
+            whiteSpace: 'nowrap',
+            opacity: 0.9,
+          }}
+        >
+          ENES TEKE
+        </div>
+      </div>
+
+      {/* Bottom Footer Info Bar */}
+      <div
+        style={{
+          maxWidth: '1400px',
+          margin: '0 auto',
+          padding: '40px var(--page-padding) 0',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '24px',
+          fontSize: '11px',
+          color: '#73736e',
+        }}
+      >
+        <div>
+          DIRECT: <a href={`mailto:${profile.email}`} style={{ color: '#f5f5f2', textDecoration: 'none' }}>{profile.email}</a>
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px', fontSize: '11px', color: '#73736e' }}>
-          <div>
-            © 2026 ENES TEKE — ALL RIGHTS RESERVED.
-          </div>
+        <div style={{ display: 'flex', gap: '20px' }}>
+          {profile.socials.map((s) => (
+            <a
+              key={s.name}
+              href={s.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: '#b3b3ad', textDecoration: 'none' }}
+            >
+              {s.name} ↗
+            </a>
+          ))}
+        </div>
 
-          <div>
-            FULL-STACK PRODUCTS & AGENTIC AI SYSTEMS
-          </div>
-
+        <div style={{ display: 'flex', gap: '30px', alignItems: 'center' }}>
+          <span>TRT / UTC+3</span>
           <button
             onClick={scrollToTop}
             style={{
@@ -52,7 +134,7 @@ export default function FooterSection() {
               fontFamily: "var(--font-family-mono)",
               fontSize: '11px',
               cursor: 'pointer',
-              letterSpacing: '0.15em',
+              letterSpacing: '0.1em',
             }}
           >
             BACK TO TOP ↑
