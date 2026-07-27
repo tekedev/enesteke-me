@@ -150,14 +150,18 @@ export default function ETMonogramScene({
   const mountRef = useRef<HTMLDivElement>(null);
   const logoMaterialRef = useRef<THREE.ShaderMaterial | null>(null);
   const bgMaterialRef = useRef<THREE.ShaderMaterial | null>(null);
+  const renderSingleFrameRef = useRef<(() => void) | null>(null);
 
-  // Dynamic Uniform Updates on Prop Changes (without tearing down WebGL scene)
+  // Dynamic Uniform Updates (if reduced motion, trigger single frame re-render)
   useEffect(() => {
     if (logoMaterialRef.current) {
       logoMaterialRef.current.uniforms.uRoughness.value = roughness;
     }
     if (bgMaterialRef.current) {
       bgMaterialRef.current.uniforms.uNoiseScale.value = noiseScale;
+    }
+    if (renderSingleFrameRef.current) {
+      renderSingleFrameRef.current();
     }
   }, [roughness, noiseScale]);
 
@@ -184,11 +188,19 @@ export default function ETMonogramScene({
     container.appendChild(renderer.domElement);
 
     const canvasEl = renderer.domElement;
+
+    // WebGL Context Lost & Restored Handlers
     const handleContextLost = (e: Event) => {
       e.preventDefault();
       if (onContextLost) onContextLost();
     };
+    const handleContextRestored = () => {
+      if (renderer) {
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      }
+    };
     canvasEl.addEventListener('webglcontextlost', handleContextLost);
+    canvasEl.addEventListener('webglcontextrestored', handleContextRestored);
 
     const renderTarget = new THREE.WebGLRenderTarget(width, height, {
       format: THREE.RGBAFormat,
@@ -269,22 +281,39 @@ export default function ETMonogramScene({
     let currRot = { x: 0, y: 0 };
 
     const handleMouseMove = (e: MouseEvent) => {
-      if (prefersReducedMotion) return;
       targetMouse.x = (e.clientX / width) * 2 - 1;
       targetMouse.y = -(e.clientY / height) * 2 + 1;
     };
-    window.addEventListener('mousemove', handleMouseMove);
+
+    // Single Frame Render Function (used in Reduced Motion & Static Updates)
+    const renderPass = (time: number = 0) => {
+      bgMaterial.uniforms.uTime.value = time;
+      if (renderer) {
+        renderer.setRenderTarget(renderTarget);
+        renderer.render(bgScene, bgCamera);
+
+        renderer.setRenderTarget(null);
+        renderer.render(bgScene, bgCamera);
+
+        renderer.autoClear = false;
+        renderer.render(scene, camera);
+        renderer.autoClear = true;
+      }
+    };
+    renderSingleFrameRef.current = () => renderPass(0);
 
     const clock = new THREE.Clock();
     let animId: number;
     let isPaused = false;
 
-    const animate = () => {
-      if (isPaused) return;
-      animId = requestAnimationFrame(animate);
-      const time = clock.getElapsedTime();
+    if (!prefersReducedMotion) {
+      window.addEventListener('mousemove', handleMouseMove);
 
-      if (!prefersReducedMotion) {
+      const animate = () => {
+        if (isPaused) return;
+        animId = requestAnimationFrame(animate);
+        const time = clock.getElapsedTime();
+
         currRot.x += (-targetMouse.y * 0.35 - currRot.x) * 0.05;
         currRot.y += (targetMouse.x * 0.35 - currRot.y) * 0.05;
 
@@ -292,36 +321,28 @@ export default function ETMonogramScene({
         q.setFromEuler(new THREE.Euler(currRot.x + Math.sin(time * 0.3) * 0.02, currRot.y + Math.cos(time * 0.25) * 0.02, 0));
         logoGroup.quaternion.slerp(q, 0.08);
 
-        bgMaterial.uniforms.uTime.value = time;
         bgMaterial.uniforms.uMouse.value.lerp(targetMouse, 0.04);
-      }
+        renderPass(time);
+      };
+      animate();
 
-      renderer.setRenderTarget(renderTarget);
-      renderer.render(bgScene, bgCamera);
-
-      renderer.setRenderTarget(null);
-      renderer.render(bgScene, bgCamera);
-
-      renderer.autoClear = false;
-      renderer.render(scene, camera);
-      renderer.autoClear = true;
-    };
-    animate();
-
-    // Tab Visibility Change Pause & Resume
-    const handleVisibilityChange = () => {
-      if (document.hidden) {
-        isPaused = true;
-        cancelAnimationFrame(animId);
-      } else {
-        if (isPaused) {
-          isPaused = false;
-          clock.start();
-          animate();
+      const handleVisibilityChange = () => {
+        if (document.hidden) {
+          isPaused = true;
+          cancelAnimationFrame(animId);
+        } else {
+          if (isPaused) {
+            isPaused = false;
+            clock.start();
+            animate();
+          }
         }
-      }
-    };
-    document.addEventListener('visibilitychange', handleVisibilityChange);
+      };
+      document.addEventListener('visibilitychange', handleVisibilityChange);
+    } else {
+      // REDUCED MOTION: Render EXACTLY ONCE without RAF loop or mouse listeners!
+      renderPass(0);
+    }
 
     // Throttled Resize Handler
     let resizeTimeout: number;
@@ -332,29 +353,36 @@ export default function ETMonogramScene({
         height = window.innerHeight;
         camera.aspect = width / height;
         camera.updateProjectionMatrix();
-        renderer.setSize(width, height);
-        renderTarget.setSize(width, height);
+        if (renderer) {
+          renderer.setSize(width, height);
+          renderTarget.setSize(width, height);
+        }
         logoMaterial.uniforms.uTrnsWinRes.value.set(width, height);
         bgMaterial.uniforms.uScreenAspectRatio.value = width / height;
+        if (prefersReducedMotion) {
+          renderPass(0);
+        }
       }, 100);
     };
     window.addEventListener('resize', handleResize);
 
     return () => {
       canvasEl.removeEventListener('webglcontextlost', handleContextLost);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      canvasEl.removeEventListener('webglcontextrestored', handleContextRestored);
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('resize', handleResize);
       window.clearTimeout(resizeTimeout);
       cancelAnimationFrame(animId);
-      renderer.dispose();
+      if (renderer) {
+        renderer.dispose();
+      }
       renderTarget.dispose();
       bgGeometry.dispose();
       bgMaterial.dispose();
       geometry.dispose();
       logoMaterial.dispose();
       outlineMaterial.dispose();
-      if (container.contains(renderer.domElement)) {
+      if (renderer && container.contains(renderer.domElement)) {
         container.removeChild(renderer.domElement);
       }
     };
