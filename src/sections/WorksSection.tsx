@@ -99,14 +99,14 @@ export default function WorksSection() {
                     )}
 
                     {index === 1 && (
-                      /* Variation 2: Architecture Data Flow Diagram with Explicit Arrow Markers */
+                      /* Variation 2: Architecture Data Flow Diagram with Correct Flow Arrow Sequence */
                       <>
                         <div style={{ fontSize: '10px', color: '#73736e', letterSpacing: '0.15em', display: 'flex', justifyContent: 'space-between' }}>
                           <span>// EDITORIAL DNA PIPELINE FLOW</span>
                           <span style={{ color: '#d7ff00' }}>4 PIPELINE STAGES</span>
                         </div>
                         <div className={styles.pipelineCanvas}>
-                          {/* SVG Flow Arrows Overlay */}
+                          {/* SVG Flow Arrows Overlay: Step 1 -> Step 2 -> Step 3 -> Step 4 */}
                           <svg
                             style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 1 }}
                             viewBox="0 0 400 240"
@@ -122,27 +122,34 @@ export default function WorksSection() {
                                 <path d="M0,0 L7,3.5 L0,7 Z" fill="rgba(215,255,0,.78)" />
                               </marker>
                             </defs>
-                            {/* Top Stage 01 Arrow */}
-                            <path d="M 140 40 L 250 40" stroke="rgba(245, 245, 242, 0.34)" strokeWidth="1.25" strokeDasharray="5 7" markerEnd="url(#pipeline-arrow)" />
-                            {/* Vertical Right Arrow */}
-                            <path d="M 320 70 L 320 170" stroke="rgba(245, 245, 242, 0.34)" strokeWidth="1.25" markerEnd="url(#pipeline-arrow)" />
-                            {/* Bottom Active Output Arrow */}
-                            <path d="M 250 200 L 140 200" stroke="rgba(215, 255, 0, 0.72)" strokeWidth="1.25" strokeDasharray="5 7" markerEnd="url(#pipeline-arrow-active)" />
+                            {/* Path 1: WEBSITE URL (Top-Left) -> CONTENT CRAWLER (Top-Right) */}
+                            <path d="M 140 40 L 235 40" stroke="rgba(245, 245, 242, 0.34)" strokeWidth="1.25" strokeDasharray="5 7" markerEnd="url(#pipeline-arrow)" />
+                            {/* Path 2: CONTENT CRAWLER (Top-Right) -> VECTOR RAG (Bottom-Left) */}
+                            <path d="M 310 60 V 125 H 145 V 195" stroke="rgba(245, 245, 242, 0.34)" strokeWidth="1.25" markerEnd="url(#pipeline-arrow)" />
+                            {/* Path 3: VECTOR RAG (Bottom-Left) -> EDITORIAL DNA (Bottom-Right Active Output) */}
+                            <path d="M 145 200 L 235 200" stroke="rgba(215, 255, 0, 0.72)" strokeWidth="1.25" strokeDasharray="5 7" markerEnd="url(#pipeline-arrow-active)" />
                           </svg>
 
-                          <div className={styles.pipelineNode}>
+                          {/* Step 1: Input */}
+                          <div data-pipeline-step="1" className={styles.pipelineNode}>
                             <span style={{ color: '#73736e', fontSize: '10px', display: 'block' }}>[INPUT]</span>
                             WEBSITE URL
                           </div>
-                          <div className={styles.pipelineNode} style={{ justifySelf: 'end' }}>
+
+                          {/* Step 2: Crawler */}
+                          <div data-pipeline-step="2" className={styles.pipelineNode} style={{ justifySelf: 'end' }}>
                             <span style={{ color: '#73736e', fontSize: '10px', display: 'block' }}>[STAGE 01]</span>
                             CONTENT CRAWLER
                           </div>
-                          <div className={styles.pipelineNode}>
+
+                          {/* Step 3: Vector RAG */}
+                          <div data-pipeline-step="3" className={styles.pipelineNode}>
                             <span style={{ color: '#73736e', fontSize: '10px', display: 'block' }}>[STAGE 02]</span>
                             VECTOR RAG
                           </div>
-                          <div className={styles.pipelineNodeActive} style={{ justifySelf: 'end' }}>
+
+                          {/* Step 4: Output */}
+                          <div data-pipeline-step="4" className={styles.pipelineNodeActive} style={{ justifySelf: 'end' }}>
                             <span style={{ color: '#d7ff00', opacity: 0.8, fontSize: '10px', display: 'block' }}>[OUTPUT]</span>
                             EDITORIAL DNA
                           </div>
