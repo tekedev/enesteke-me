@@ -44,6 +44,8 @@ dist-ssr
 
 # Sensitive / Temporary Directories
 data/
+!src/data/
+!src/data/**
 uploads/
 downloads/
 vcards/

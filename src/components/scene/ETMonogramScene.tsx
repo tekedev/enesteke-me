@@ -14,6 +14,7 @@ varying vec2 vUv;
 uniform float uTime;
 uniform float uScreenAspectRatio;
 uniform vec2 uMouse;
+uniform float uNoiseScale;
 
 vec3 mod289(vec3 x){return x-floor(x*(1.0/289.0))*289.0;}
 vec4 mod289(vec4 x){return x-floor(x*(1.0/289.0))*289.0;}
@@ -64,7 +65,7 @@ void main(void){
   float tn=uTime*0.06;
   float t=uTime*0.06;
   vec2 aspUv=(vUv+uMouse*0.03)*vec2(uScreenAspectRatio,1.0)-0.5;
-  vec2 nuv=aspUv*0.5;
+  vec2 nuv=aspUv*(uNoiseScale * 0.05);
   float n1=noise3D(vec3(nuv+1234.0,tn+0.0));
   float n2=noise3D(vec3(nuv+5678.0,tn+10.0));
   vec2 uv=aspUv*0.6+vec2(n1,n2)*0.6;
@@ -75,7 +76,6 @@ void main(void){
   col.w+=noise3D(vec3(aspUv+noise3D(vec3(nuv+1234.0,t*0.0)),t*0.04+3.0));
   col=col*0.5+0.5;
   
-  // High-contrast Neutral Studio Monochrome with subtle Acid Lime Accent (#d7ff00)
   vec3 monoColor = vec3(col.x * 0.3 + col.y * 0.4 + col.z * 0.3);
   vec3 acidAccent = vec3(0.84, 1.0, 0.0);
   vec3 finalBg = mix(monoColor, acidAccent, 0.03 * sin(uTime * 0.4));
@@ -98,7 +98,6 @@ void main() {
 }
 `;
 
-// Clean physical glass refraction shader WITHOUT chromatic aberration artifacts
 const logoFragmentShader = `
 uniform sampler2D uTrnsTex;
 uniform vec2 uTrnsWinRes;
@@ -121,18 +120,15 @@ void main() {
   vec2 trnsUv = gl_FragCoord.xy / uTrnsWinRes.xy;
   vec3 normal = normalize(vNormal);
   
-  // Single-pass neutral physical refraction (No chromatic aberration split)
   vec2 refractNormal = normal.xy * (1.0 - normal.z * 0.6);
   vec2 refractUv = trnsUv - refractNormal * 0.06;
   vec3 glassRefract = texture2D(uTrnsTex, refractUv).rgb;
 
-  // Specular Reflection
   vec3 viewDir = normalize(vViewPos);
   vec3 L = normalize(vec3(-0.8, 1.0, 0.8));
   vec3 H = normalize(viewDir + L);
   float spec = ggx(dot(normal, H), 0.005 + uRoughness * 0.3);
 
-  // Neutral Glass Composition with Subtle Acid Lime Specular Highlight
   vec3 specCol = vec3(0.84, 1.0, 0.0) * spec * 0.6 + vec3(spec * 0.4);
   vec3 finalColor = glassRefract * 0.95 + specCol;
 
@@ -152,13 +148,25 @@ export default function ETMonogramScene({
   onContextLost,
 }: ETMonogramSceneProps) {
   const mountRef = useRef<HTMLDivElement>(null);
+  const logoMaterialRef = useRef<THREE.ShaderMaterial | null>(null);
+  const bgMaterialRef = useRef<THREE.ShaderMaterial | null>(null);
+
+  // Dynamic Uniform Updates on Prop Changes (without tearing down WebGL scene)
+  useEffect(() => {
+    if (logoMaterialRef.current) {
+      logoMaterialRef.current.uniforms.uRoughness.value = roughness;
+    }
+    if (bgMaterialRef.current) {
+      bgMaterialRef.current.uniforms.uNoiseScale.value = noiseScale;
+    }
+  }, [roughness, noiseScale]);
 
   useEffect(() => {
     const container = mountRef.current;
     if (!container) return;
 
-    // Check prefers-reduced-motion
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const isMobile = window.innerWidth <= 768;
 
     let width = window.innerWidth;
     let height = window.innerHeight;
@@ -172,7 +180,7 @@ export default function ETMonogramScene({
     }
 
     renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, prefersReducedMotion ? 1.0 : 1.5));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.0 : 1.25));
     container.appendChild(renderer.domElement);
 
     const canvasEl = renderer.domElement;
@@ -182,7 +190,6 @@ export default function ETMonogramScene({
     };
     canvasEl.addEventListener('webglcontextlost', handleContextLost);
 
-    // Render Target for Refraction
     const renderTarget = new THREE.WebGLRenderTarget(width, height, {
       format: THREE.RGBAFormat,
       type: THREE.FloatType,
@@ -190,7 +197,6 @@ export default function ETMonogramScene({
       magFilter: THREE.LinearFilter,
     });
 
-    // Background Scene
     const bgScene = new THREE.Scene();
     const bgCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
     const bgGeometry = new THREE.PlaneGeometry(2, 2);
@@ -201,17 +207,17 @@ export default function ETMonogramScene({
         uTime: { value: 0 },
         uScreenAspectRatio: { value: width / height },
         uMouse: { value: new THREE.Vector2(0, 0) },
+        uNoiseScale: { value: noiseScale },
       },
       depthWrite: false,
     });
+    bgMaterialRef.current = bgMaterial;
     bgScene.add(new THREE.Mesh(bgGeometry, bgMaterial));
 
-    // Main 3D Logo Scene
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 1000);
     camera.position.set(0, 0, 15);
 
-    // Geometric ET Shape Geometry
     const shape = new THREE.Shape();
     shape.moveTo(-3.0, 4.0);
     shape.lineTo(3.0, 4.0);
@@ -233,7 +239,6 @@ export default function ETMonogramScene({
     const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
     geometry.center();
 
-    // Logo Material
     const logoMaterial = new THREE.ShaderMaterial({
       vertexShader: logoVertexShader,
       fragmentShader: logoFragmentShader,
@@ -244,10 +249,9 @@ export default function ETMonogramScene({
       },
       transparent: true,
     });
+    logoMaterialRef.current = logoMaterial;
 
     const mesh = new THREE.Mesh(geometry, logoMaterial);
-
-    // Subtle Acid-Lime Wireframe Overlay
     const outlineMaterial = new THREE.MeshBasicMaterial({
       color: 0xd7ff00,
       wireframe: true,
@@ -261,7 +265,6 @@ export default function ETMonogramScene({
     logoGroup.add(outlineMesh);
     scene.add(logoGroup);
 
-    // Mouse Tracking
     let targetMouse = new THREE.Vector2(0, 0);
     let currRot = { x: 0, y: 0 };
 
@@ -274,8 +277,10 @@ export default function ETMonogramScene({
 
     const clock = new THREE.Clock();
     let animId: number;
+    let isPaused = false;
 
     const animate = () => {
+      if (isPaused) return;
       animId = requestAnimationFrame(animate);
       const time = clock.getElapsedTime();
 
@@ -291,37 +296,56 @@ export default function ETMonogramScene({
         bgMaterial.uniforms.uMouse.value.lerp(targetMouse, 0.04);
       }
 
-      // Render 1: Background into renderTarget
       renderer.setRenderTarget(renderTarget);
       renderer.render(bgScene, bgCamera);
 
-      // Render 2: Background to screen
       renderer.setRenderTarget(null);
       renderer.render(bgScene, bgCamera);
 
-      // Render 3: 3D Monogram overlay
       renderer.autoClear = false;
       renderer.render(scene, camera);
       renderer.autoClear = true;
     };
     animate();
 
+    // Tab Visibility Change Pause & Resume
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        isPaused = true;
+        cancelAnimationFrame(animId);
+      } else {
+        if (isPaused) {
+          isPaused = false;
+          clock.start();
+          animate();
+        }
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // Throttled Resize Handler
+    let resizeTimeout: number;
     const handleResize = () => {
-      width = window.innerWidth;
-      height = window.innerHeight;
-      camera.aspect = width / height;
-      camera.updateProjectionMatrix();
-      renderer.setSize(width, height);
-      renderTarget.setSize(width, height);
-      logoMaterial.uniforms.uTrnsWinRes.value.set(width, height);
-      bgMaterial.uniforms.uScreenAspectRatio.value = width / height;
+      window.clearTimeout(resizeTimeout);
+      resizeTimeout = window.setTimeout(() => {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
+        renderer.setSize(width, height);
+        renderTarget.setSize(width, height);
+        logoMaterial.uniforms.uTrnsWinRes.value.set(width, height);
+        bgMaterial.uniforms.uScreenAspectRatio.value = width / height;
+      }, 100);
     };
     window.addEventListener('resize', handleResize);
 
     return () => {
       canvasEl.removeEventListener('webglcontextlost', handleContextLost);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('resize', handleResize);
+      window.clearTimeout(resizeTimeout);
       cancelAnimationFrame(animId);
       renderer.dispose();
       renderTarget.dispose();
@@ -334,7 +358,8 @@ export default function ETMonogramScene({
         container.removeChild(renderer.domElement);
       }
     };
-  }, [roughness, noiseScale, onContextLost]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [onContextLost]);
 
   return (
     <div

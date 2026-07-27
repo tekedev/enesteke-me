@@ -25,15 +25,15 @@ export default function WorkArchivePage() {
           zIndex: 3,
           backgroundColor: '#000000',
           minHeight: '100vh',
-          padding: '120px var(--page-padding) var(--section-gap)',
+          padding: '140px var(--page-padding) var(--section-gap)',
           fontFamily: "var(--font-family-mono)",
         }}
       >
         <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
           {/* Header */}
-          <div style={{ marginBottom: '60px' }}>
-            <div style={{ fontSize: '11px', letterSpacing: '0.2em', color: '#73736e', marginBottom: '16px' }}>
-              WORK / ARCHIVE
+          <div style={{ marginBottom: '80px' }}>
+            <div style={{ fontSize: '11px', letterSpacing: '0.22em', color: '#73736e', marginBottom: '20px' }}>
+              WORK ARCHIVE / 12 VERIFIED SYSTEMS
             </div>
             <h1
               style={{
@@ -42,20 +42,21 @@ export default function WorkArchivePage() {
                 fontWeight: 300,
                 color: '#f5f5f2',
                 textTransform: 'uppercase',
-                lineHeight: 1.05,
-                marginBottom: '24px',
+                lineHeight: 1.02,
+                marginBottom: '28px',
+                letterSpacing: '-0.02em',
               }}
             >
-              PRODUCTS, EXPERIMENTS <br />
-              <span style={{ color: '#b3b3ad' }}>AND AI SYSTEMS.</span>
+              SELECTED WORK, <br />
+              <span style={{ color: '#d7ff00' }}>AI AGENTS & ENGINES</span>
             </h1>
-            <p style={{ color: '#73736e', fontSize: '14px', maxWidth: '600px', lineHeight: 1.6 }}>
-              A selection of 12 verified production systems, SaaS applications, and data engines built across AI automation, FinTech, and WebGL.
+            <p style={{ color: '#b3b3ad', fontSize: '15px', maxWidth: '650px', lineHeight: 1.7 }}>
+              Production SaaS platforms, multi-model AI workflows, real-time stock market data engines, and WebGL applications.
             </p>
           </div>
 
           {/* Filter Bar */}
-          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '40px' }}>
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: '60px', borderBottom: '1px solid var(--line-secondary)', paddingBottom: '24px' }}>
             {categories.map((cat) => {
               const count = cat === 'ALL' ? projects.length : projects.filter(p => p.category === cat).length;
               return (
@@ -65,8 +66,8 @@ export default function WorkArchivePage() {
                   style={{
                     background: filter === cat ? '#d7ff00' : 'transparent',
                     color: filter === cat ? '#000000' : '#b3b3ad',
-                    border: filter === cat ? '1px solid #d7ff00' : '1px solid rgba(255,255,255,0.15)',
-                    padding: '6px 14px',
+                    border: filter === cat ? '1px solid #d7ff00' : '1px solid rgba(255,255,255,0.12)',
+                    padding: '6px 18px',
                     fontSize: '11px',
                     fontFamily: "var(--font-family-mono)",
                     cursor: 'pointer',
@@ -81,69 +82,68 @@ export default function WorkArchivePage() {
             })}
           </div>
 
-          {/* Archive Grid */}
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))',
-              gap: '30px',
-            }}
-          >
+          {/* Large Editorial Rows Presentation */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0px' }}>
             {filtered.map((project) => (
               <Link
                 key={project.id}
                 to={`/work/${project.slug}`}
                 style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                  backgroundColor: '#080808',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  padding: '30px',
-                  borderRadius: '2px',
+                  display: 'grid',
+                  gridTemplateColumns: '80px 2.5fr 3.5fr 1.5fr',
+                  gap: '30px',
+                  alignItems: 'center',
+                  padding: '48px 0',
+                  borderTop: '1px solid var(--line-secondary)',
                   textDecoration: 'none',
-                  transition: 'border-color 0.2s ease, transform 0.2s ease',
+                  transition: 'background-color 0.2s ease',
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = '#d7ff00';
-                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.02)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
-                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.backgroundColor = 'transparent';
                 }}
               >
+                {/* Number & Year */}
                 <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px', fontSize: '11px', color: '#73736e' }}>
-                    <span>{project.number}</span>
-                    <span style={{ color: '#d7ff00' }}>{project.year}</span>
+                  <div style={{ fontSize: '16px', color: '#d7ff00', fontWeight: 600, marginBottom: '4px' }}>
+                    {project.number}
                   </div>
-
-                  <h2 style={{ fontFamily: "var(--font-family-sans)", fontSize: '24px', color: '#f5f5f2', fontWeight: 400, marginBottom: '6px' }}>
-                    {project.title}
-                  </h2>
-
-                  <div style={{ fontSize: '11px', color: '#b3b3ad', marginBottom: '16px' }}>
-                    {project.subtitle}
+                  <div style={{ fontSize: '11px', color: '#73736e' }}>
+                    {project.year}
                   </div>
-
-                  <p style={{ fontSize: '12px', color: '#73736e', lineHeight: 1.6, marginBottom: '24px' }}>
-                    {project.description}
-                  </p>
                 </div>
 
+                {/* Title & Subtitle */}
                 <div>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '20px' }}>
-                    {project.technologies.slice(0, 4).map((tech, i) => (
-                      <span key={i} style={{ fontSize: '10px', color: '#b3b3ad', background: 'rgba(255,255,255,0.05)', padding: '2px 6px', borderRadius: '2px' }}>
+                  <h2 style={{ fontFamily: "var(--font-family-sans)", fontSize: '32px', color: '#f5f5f2', fontWeight: 400, margin: 0, lineHeight: 1.1 }}>
+                    {project.title}
+                  </h2>
+                  <span style={{ fontSize: '12px', color: '#73736e', marginTop: '6px', display: 'block' }}>
+                    {project.subtitle}
+                  </span>
+                </div>
+
+                {/* Description & Tech Pills */}
+                <div>
+                  <p style={{ fontSize: '13px', color: '#b3b3ad', lineHeight: 1.6, marginBottom: '12px', margin: 0 }}>
+                    {project.description}
+                  </p>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '10px' }}>
+                    {project.technologies.slice(0, 5).map((tech, i) => (
+                      <span key={i} style={{ fontSize: '10px', color: '#73736e', background: 'rgba(255,255,255,0.04)', padding: '2px 8px', borderRadius: '2px' }}>
                         {tech}
                       </span>
                     ))}
                   </div>
+                </div>
 
-                  <div style={{ fontSize: '11px', color: '#d7ff00', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    VIEW DETAILS →
-                  </div>
+                {/* Action CTA */}
+                <div style={{ textAlign: 'right' }}>
+                  <span style={{ display: 'inline-block', fontSize: '11px', color: '#d7ff00', border: '1px solid rgba(215, 255, 0, 0.3)', padding: '6px 14px', borderRadius: '2px' }}>
+                    INSPECT ARCHITECTURE →
+                  </span>
                 </div>
               </Link>
             ))}

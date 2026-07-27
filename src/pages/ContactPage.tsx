@@ -3,18 +3,24 @@ import { profile } from '../data/portfolioData';
 import SEO from '../components/common/SEO';
 
 export default function ContactPage() {
-  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
-  const [submitted, setSubmitted] = useState(false);
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSendMail = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) {
+    if (!name.trim() || !email.trim() || !message.trim()) {
       setError('Please fill in all required fields.');
       return;
     }
     setError('');
-    setSubmitted(true);
+
+    const subject = encodeURIComponent(`Project Inquiry from ${name}`);
+    const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`);
+    const mailtoUrl = `mailto:${profile.email}?subject=${subject}&body=${body}`;
+
+    window.location.href = mailtoUrl;
   };
 
   return (
@@ -60,114 +66,111 @@ export default function ContactPage() {
             </p>
           </div>
 
-          {/* Form / Direct Mailto Choice */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '50px' }}>
-            {/* Contact Form */}
+            {/* Form */}
             <div>
-              {submitted ? (
-                <div style={{ backgroundColor: 'rgba(215, 255, 0, 0.1)', border: '1px solid #d7ff00', padding: '24px', borderRadius: '2px', color: '#d7ff00', fontSize: '13px' }}>
-                  ✓ Message transmitted successfully. I will respond within 24 hours.
-                </div>
-              ) : (
-                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                  {error && (
-                    <div style={{ color: '#ff4d4d', fontSize: '11px' }}>
-                      ⚠️ {error}
-                    </div>
-                  )}
-
-                  <div>
-                    <label htmlFor="name" style={{ display: 'block', fontSize: '10px', color: '#73736e', marginBottom: '6px' }}>
-                      YOUR NAME *
-                    </label>
-                    <input
-                      id="name"
-                      type="text"
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      style={{
-                        width: '100%',
-                        backgroundColor: '#080808',
-                        border: '1px solid rgba(255,255,255,0.15)',
-                        padding: '10px 14px',
-                        color: '#f5f5f2',
-                        fontSize: '12px',
-                        fontFamily: "var(--font-family-mono)",
-                        borderRadius: '2px',
-                        outline: 'none',
-                      }}
-                      required
-                    />
+              <form onSubmit={handleSendMail} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                {error && (
+                  <div style={{ color: '#ff4d4d', fontSize: '11px' }}>
+                    ⚠️ {error}
                   </div>
+                )}
 
-                  <div>
-                    <label htmlFor="email" style={{ display: 'block', fontSize: '10px', color: '#73736e', marginBottom: '6px' }}>
-                      YOUR EMAIL ADDRESS *
-                    </label>
-                    <input
-                      id="email"
-                      type="email"
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      style={{
-                        width: '100%',
-                        backgroundColor: '#080808',
-                        border: '1px solid rgba(255,255,255,0.15)',
-                        padding: '10px 14px',
-                        color: '#f5f5f2',
-                        fontSize: '12px',
-                        fontFamily: "var(--font-family-mono)",
-                        borderRadius: '2px',
-                        outline: 'none',
-                      }}
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label htmlFor="message" style={{ display: 'block', fontSize: '10px', color: '#73736e', marginBottom: '6px' }}>
-                      PROJECT DETAILS & MESSAGE *
-                    </label>
-                    <textarea
-                      id="message"
-                      rows={5}
-                      value={formData.message}
-                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                      style={{
-                        width: '100%',
-                        backgroundColor: '#080808',
-                        border: '1px solid rgba(255,255,255,0.15)',
-                        padding: '10px 14px',
-                        color: '#f5f5f2',
-                        fontSize: '12px',
-                        fontFamily: "var(--font-family-mono)",
-                        borderRadius: '2px',
-                        outline: 'none',
-                        resize: 'vertical',
-                      }}
-                      required
-                    />
-                  </div>
-
-                  <button
-                    type="submit"
+                <div>
+                  <label htmlFor="name" style={{ display: 'block', fontSize: '10px', color: '#73736e', marginBottom: '6px' }}>
+                    YOUR NAME *
+                  </label>
+                  <input
+                    id="name"
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                     style={{
-                      padding: '12px 24px',
-                      backgroundColor: '#d7ff00',
-                      color: '#000000',
-                      fontWeight: 600,
+                      width: '100%',
+                      backgroundColor: '#080808',
+                      border: '1px solid rgba(255,255,255,0.15)',
+                      padding: '10px 14px',
+                      color: '#f5f5f2',
                       fontSize: '12px',
                       fontFamily: "var(--font-family-mono)",
-                      border: 'none',
-                      cursor: 'pointer',
                       borderRadius: '2px',
-                      transition: 'opacity 0.2s',
+                      outline: 'none',
                     }}
-                  >
-                    SEND MESSAGE →
-                  </button>
-                </form>
-              )}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="email" style={{ display: 'block', fontSize: '10px', color: '#73736e', marginBottom: '6px' }}>
+                    YOUR EMAIL ADDRESS *
+                  </label>
+                  <input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    style={{
+                      width: '100%',
+                      backgroundColor: '#080808',
+                      border: '1px solid rgba(255,255,255,0.15)',
+                      padding: '10px 14px',
+                      color: '#f5f5f2',
+                      fontSize: '12px',
+                      fontFamily: "var(--font-family-mono)",
+                      borderRadius: '2px',
+                      outline: 'none',
+                    }}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="message" style={{ display: 'block', fontSize: '10px', color: '#73736e', marginBottom: '6px' }}>
+                    PROJECT DETAILS & MESSAGE *
+                  </label>
+                  <textarea
+                    id="message"
+                    rows={5}
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    style={{
+                      width: '100%',
+                      backgroundColor: '#080808',
+                      border: '1px solid rgba(255,255,255,0.15)',
+                      padding: '10px 14px',
+                      color: '#f5f5f2',
+                      fontSize: '12px',
+                      fontFamily: "var(--font-family-mono)",
+                      borderRadius: '2px',
+                      outline: 'none',
+                      resize: 'vertical',
+                    }}
+                    required
+                  />
+                </div>
+
+                <div style={{ fontSize: '11px', color: '#73736e', lineHeight: 1.4 }}>
+                  ℹ️ Submitting this form will open your default email application with your pre-filled inquiry addressed to <span style={{ color: '#d7ff00' }}>{profile.email}</span>.
+                </div>
+
+                <button
+                  type="submit"
+                  style={{
+                    padding: '12px 24px',
+                    backgroundColor: '#d7ff00',
+                    color: '#000000',
+                    fontWeight: 600,
+                    fontSize: '12px',
+                    fontFamily: "var(--font-family-mono)",
+                    border: 'none',
+                    cursor: 'pointer',
+                    borderRadius: '2px',
+                    transition: 'opacity 0.2s',
+                  }}
+                >
+                  OPEN EMAIL CLIENT →
+                </button>
+              </form>
             </div>
 
             {/* Direct Information */}
