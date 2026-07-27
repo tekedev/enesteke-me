@@ -87,20 +87,20 @@ export default function HeroSection({
       {/* Main Editorial Headline */}
       <div className={styles.heroContent}>
         <div style={{ fontSize: '11px', letterSpacing: '0.25em', color: '#73736e', marginBottom: '16px', textTransform: 'uppercase' }}>
-          SYSTEMS ENGINEER & CREATIVE DEVELOPER
+          SYSTEMS ENGINEER / CREATIVE DEVELOPER
         </div>
         <h1 className={styles.heroTitle}>
           ENGINEERING SYSTEMS <br />
           THAT <span style={{ color: '#d7ff00' }}>THINK</span> & SCALE.
         </h1>
         <p className={styles.heroBio}>
-          Full-stack developer and AI engineer building production systems across agentic AI, computer vision and real-time data.
+          Designing products, systems and interfaces with intelligence, structure and motion.
         </p>
 
         {/* Refined Minimal Text Links (44px touch targets) */}
         <div data-hero-actions="true" className={styles.heroCtaGroup}>
           <Link to="/work" className={styles.heroPrimaryCta}>
-            EXPLORE ARCHIVE <span style={{ color: '#d7ff00' }}>→</span>
+            VIEW WORK <span style={{ color: '#d7ff00' }}>→</span>
           </Link>
           <Link to="/contact" className={styles.heroSecondaryCta}>
             GET IN TOUCH

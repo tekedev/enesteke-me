@@ -49,14 +49,24 @@ float snoise(vec2 v){
 }
 
 void main() {
-  vec2 st = vUv;
+  vec2 st = vUv - 0.5;
   st.x *= uScreenAspectRatio;
   
-  vec2 mouseOffset = uMouse * 0.05;
-  float n = snoise((st + mouseOffset) * uNoiseScale + uTime * 0.05);
-  float val = (n + 1.0) * 0.5 * uBgContrast * 0.15;
+  // Interactive Curvature Space Shift
+  float dist = length(st);
+  vec2 mouseOffset = uMouse * 0.12;
+  vec2 warpedUv = st + mouseOffset * (1.0 - dist);
   
-  gl_FragColor = vec4(vec3(val), 1.0);
+  // Curved Spatial Grid Sub-structure
+  vec2 grid = abs(fract(warpedUv * uNoiseScale - uTime * 0.03) - 0.5);
+  float line = smoothstep(0.0, 0.04, min(grid.x, grid.y));
+  float gridFactor = (1.0 - line) * 0.08 * uBgContrast;
+  
+  // Hacimsel Simplex Background Noise
+  float n = snoise(warpedUv * uNoiseScale * 0.5 + uTime * 0.04);
+  float noiseVal = (n + 1.0) * 0.5 * uBgContrast * 0.18;
+  
+  gl_FragColor = vec4(vec3(noiseVal + gridFactor), 1.0);
 }
 `;
 
@@ -359,15 +369,15 @@ export default function ETMonogramScene({
         bgMaterial.uniforms.uBgContrast.value += (target.bgContrast - bgMaterial.uniforms.uBgContrast.value) * 0.05;
 
         if (!isMobile) {
-          currRot.x += (-targetMouse.y * 0.35 - currRot.x) * 0.05;
-          currRot.y += (targetMouse.x * 0.35 - currRot.y) * 0.05;
+          currRot.x += (-targetMouse.y * 0.45 - currRot.x) * 0.06;
+          currRot.y += (targetMouse.x * 0.45 - currRot.y) * 0.06;
         }
 
         const q = new THREE.Quaternion();
         q.setFromEuler(new THREE.Euler(currRot.x + Math.sin(time * 0.3) * 0.02, currRot.y + Math.cos(time * 0.25) * 0.02, 0));
         logoGroup.quaternion.slerp(q, 0.08);
 
-        bgMaterial.uniforms.uMouse.value.lerp(targetMouse, 0.04);
+        bgMaterial.uniforms.uMouse.value.lerp(targetMouse, 0.05);
         renderPass(time);
       };
       animate();

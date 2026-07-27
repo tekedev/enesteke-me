@@ -1,0 +1,30 @@
+.footer {
+  position: relative;
+  z-index: 2;
+  background-color: #000000;
+  padding: 120px var(--page-padding) 60px;
+  font-family: var(--font-family-mono);
+  border-top: 1px solid var(--line-secondary);
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.headline {
+  font-family: var(--font-family-sans);
+  font-size: clamp(2.8rem, 8vw, 7.2rem);
+  font-weight: 300;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  color: #f5f5f2;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+@media (max-width: 900px) {
+  .footer {
+    padding: 80px var(--page-padding) 40px;
+  }
+}
