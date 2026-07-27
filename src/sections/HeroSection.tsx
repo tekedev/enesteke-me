@@ -18,6 +18,7 @@ export default function HeroSection({
   setNoiseScale,
 }: HeroSectionProps) {
   const [controlsOpen, setControlsOpen] = useState(false);
+  const isE2E = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('e2e') === '1';
 
   // Close controls dropdown on Escape key
   useEffect(() => {
@@ -32,6 +33,9 @@ export default function HeroSection({
 
   return (
     <section id="hero" className={styles.hero}>
+      {/* E2E Monogram Safe Area Target (Only rendered in E2E mode for automated testing) */}
+      {isE2E && <div data-monogram-safe-area="true" aria-hidden="true" />}
+
       {/* Top Header Status Line */}
       <div style={{ pointerEvents: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -94,7 +98,7 @@ export default function HeroSection({
         </p>
 
         {/* Refined Minimal Text Links (44px touch targets) */}
-        <div className={styles.heroCtaGroup}>
+        <div data-hero-actions="true" className={styles.heroCtaGroup}>
           <Link to="/work" className={styles.heroPrimaryCta}>
             EXPLORE ARCHIVE <span style={{ color: '#d7ff00' }}>→</span>
           </Link>
@@ -105,7 +109,7 @@ export default function HeroSection({
       </div>
 
       {/* Bottom Footer Status Line */}
-      <div style={{ pointerEvents: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderTop: '1px solid var(--line-secondary)', paddingTop: '20px' }}>
+      <div data-hero-status="true" style={{ pointerEvents: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderTop: '1px solid var(--line-secondary)', paddingTop: '20px' }}>
         <div style={{ fontSize: '11px', color: '#73736e', letterSpacing: '0.15em' }}>
           SCROLL TO DISCOVER ↓
         </div>

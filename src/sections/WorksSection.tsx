@@ -99,7 +99,7 @@ export default function WorksSection() {
                     )}
 
                     {index === 1 && (
-                      /* Variation 2: Architecture Data Flow Diagram with Prominent Connections */
+                      /* Variation 2: Architecture Data Flow Diagram with Explicit Arrow Markers */
                       <>
                         <div style={{ fontSize: '10px', color: '#73736e', letterSpacing: '0.15em', display: 'flex', justifyContent: 'space-between' }}>
                           <span>// EDITORIAL DNA PIPELINE FLOW</span>
@@ -114,12 +114,20 @@ export default function WorksSection() {
                             fill="none"
                             xmlns="http://www.w3.org/2000/svg"
                           >
+                            <defs>
+                              <marker id="pipeline-arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+                                <path d="M0,0 L7,3.5 L0,7 Z" fill="rgba(245,245,242,.42)" />
+                              </marker>
+                              <marker id="pipeline-arrow-active" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+                                <path d="M0,0 L7,3.5 L0,7 Z" fill="rgba(215,255,0,.78)" />
+                              </marker>
+                            </defs>
                             {/* Top Stage 01 Arrow */}
-                            <path d="M 140 40 L 250 40" stroke="rgba(245, 245, 242, 0.35)" strokeWidth="1.5" strokeDasharray="4 4" />
+                            <path d="M 140 40 L 250 40" stroke="rgba(245, 245, 242, 0.34)" strokeWidth="1.25" strokeDasharray="5 7" markerEnd="url(#pipeline-arrow)" />
                             {/* Vertical Right Arrow */}
-                            <path d="M 320 70 L 320 170" stroke="rgba(245, 245, 242, 0.35)" strokeWidth="1.5" />
+                            <path d="M 320 70 L 320 170" stroke="rgba(245, 245, 242, 0.34)" strokeWidth="1.25" markerEnd="url(#pipeline-arrow)" />
                             {/* Bottom Active Output Arrow */}
-                            <path d="M 250 200 L 140 200" stroke="#d7ff00" strokeWidth="1.5" strokeDasharray="4 4" />
+                            <path d="M 250 200 L 140 200" stroke="rgba(215, 255, 0, 0.72)" strokeWidth="1.25" strokeDasharray="5 7" markerEnd="url(#pipeline-arrow-active)" />
                           </svg>
 
                           <div className={styles.pipelineNode}>

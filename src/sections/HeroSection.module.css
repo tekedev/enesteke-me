@@ -88,4 +88,13 @@
     padding-top: calc(var(--header-height) + 20px);
     min-height: calc(100vh - var(--header-height));
   }
+
+  [data-monogram-safe-area] {
+    position: fixed;
+    right: 0;
+    bottom: 74px;
+    width: 24vw;
+    height: 18vh;
+    pointer-events: none;
+  }
 }

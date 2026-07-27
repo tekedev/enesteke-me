@@ -126,26 +126,27 @@ export default function ETMonogramScene({
     switch (state) {
       case 'works':
       case 'manifesto':
-        // Clean offscreen fade for pure editorial black background
-        return { posX: 12.0, posY: 0, scale: 0.2, bgContrast: 0.04, wireframeOpacity: 0.0 };
+        return { posX: 12.0, posY: 0, scale: 0.1, bgContrast: 0.0, wireframeOpacity: 0.0 };
       case 'hero':
       default:
         return {
-          posX: isMobile ? 2.35 : 5.25,
-          posY: isMobile ? -3.85 : 0.08,
-          scale: isMobile ? 0.22 : 0.68,
-          bgContrast: isMobile ? 0.16 : 0.22,
-          wireframeOpacity: isMobile ? 0.006 : 0.025
+          posX: isMobile ? 2.55 : 5.25,
+          posY: isMobile ? -4.08 : 0.08,
+          scale: isMobile ? 0.17 : 0.68,
+          bgContrast: isMobile ? 0.14 : 0.22,
+          wireframeOpacity: isMobile ? 0.003 : 0.025
         };
     }
   };
 
   const targetTransformRef = useRef(getScrollTransform(scrollState));
+  const sceneVisibleRef = useRef(scrollState === 'hero');
   const onSceneReadyRef = useRef(onSceneReady);
   onSceneReadyRef.current = onSceneReady;
 
   useEffect(() => {
     targetTransformRef.current = getScrollTransform(scrollState);
+    sceneVisibleRef.current = scrollState === 'hero';
     if (renderSingleFrameRef.current) {
       renderSingleFrameRef.current();
     }
@@ -276,7 +277,7 @@ export default function ETMonogramScene({
       color: 0xd7ff00,
       wireframe: true,
       transparent: true,
-      opacity: isMobile ? 0.006 : 0.025,
+      opacity: isMobile ? 0.003 : 0.025,
     });
     const outlineMesh = new THREE.Mesh(geometry, outlineMaterial);
 
@@ -294,8 +295,16 @@ export default function ETMonogramScene({
     };
 
     let firstRenderSignaled = false;
+    let currentOpacity = 1;
+
     const renderPass = (time: number = 0) => {
       const target = targetTransformRef.current;
+      const targetOpacity = sceneVisibleRef.current ? 1 : 0;
+      currentOpacity += (targetOpacity - currentOpacity) * 0.08;
+      container.style.opacity = currentOpacity.toFixed(3);
+
+      if (currentOpacity < 0.01) return;
+
       logoGroup.position.set(target.posX, target.posY, 0);
       logoGroup.scale.set(target.scale, target.scale, target.scale);
       outlineMaterial.opacity = target.wireframeOpacity;
@@ -441,6 +450,7 @@ export default function ETMonogramScene({
         pointerEvents: 'none',
         overflow: 'hidden',
         backgroundColor: '#000000',
+        transition: 'opacity 0.5s ease',
       }}
     />
   );
