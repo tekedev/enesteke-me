@@ -99,30 +99,47 @@ export default function WorksSection() {
                     )}
 
                     {index === 1 && (
-                      /* Variation 2: Architecture Data Flow Diagram with Connecting SVG Lines */
+                      /* Variation 2: Architecture Data Flow Diagram with Prominent Connections */
                       <>
-                        <div style={{ fontSize: '10px', color: '#73736e', letterSpacing: '0.15em' }}>
-                          // EDITORIAL DNA PIPELINE FLOW
+                        <div style={{ fontSize: '10px', color: '#73736e', letterSpacing: '0.15em', display: 'flex', justifyContent: 'space-between' }}>
+                          <span>// EDITORIAL DNA PIPELINE FLOW</span>
+                          <span style={{ color: '#d7ff00' }}>4 PIPELINE STAGES</span>
                         </div>
                         <div className={styles.pipelineCanvas}>
+                          {/* SVG Flow Arrows Overlay */}
+                          <svg
+                            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 1 }}
+                            viewBox="0 0 400 240"
+                            preserveAspectRatio="none"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            {/* Top Stage 01 Arrow */}
+                            <path d="M 140 40 L 250 40" stroke="rgba(245, 245, 242, 0.35)" strokeWidth="1.5" strokeDasharray="4 4" />
+                            {/* Vertical Right Arrow */}
+                            <path d="M 320 70 L 320 170" stroke="rgba(245, 245, 242, 0.35)" strokeWidth="1.5" />
+                            {/* Bottom Active Output Arrow */}
+                            <path d="M 250 200 L 140 200" stroke="#d7ff00" strokeWidth="1.5" strokeDasharray="4 4" />
+                          </svg>
+
                           <div className={styles.pipelineNode}>
-                            <span style={{ color: '#73736e', fontSize: '10px', display: 'block' }}>INPUT</span>
+                            <span style={{ color: '#73736e', fontSize: '10px', display: 'block' }}>[INPUT]</span>
                             WEBSITE URL
                           </div>
                           <div className={styles.pipelineNode} style={{ justifySelf: 'end' }}>
-                            <span style={{ color: '#73736e', fontSize: '10px', display: 'block' }}>STAGE 01</span>
+                            <span style={{ color: '#73736e', fontSize: '10px', display: 'block' }}>[STAGE 01]</span>
                             CONTENT CRAWLER
                           </div>
                           <div className={styles.pipelineNode}>
-                            <span style={{ color: '#73736e', fontSize: '10px', display: 'block' }}>STAGE 02</span>
+                            <span style={{ color: '#73736e', fontSize: '10px', display: 'block' }}>[STAGE 02]</span>
                             VECTOR RAG
                           </div>
                           <div className={styles.pipelineNodeActive} style={{ justifySelf: 'end' }}>
-                            <span style={{ color: '#d7ff00', opacity: 0.8, fontSize: '10px', display: 'block' }}>OUTPUT</span>
+                            <span style={{ color: '#d7ff00', opacity: 0.8, fontSize: '10px', display: 'block' }}>[OUTPUT]</span>
                             EDITORIAL DNA
                           </div>
                         </div>
-                        <div style={{ fontSize: '10px', color: '#73736e', display: 'flex', justifyContent: 'space-between' }}>
+                        <div style={{ fontSize: '10px', color: '#73736e', display: 'flex', justifyContent: 'space-between', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '12px' }}>
                           <span>SAAS PLATFORM: HAREKI.COM</span>
                           <span style={{ color: '#d7ff00' }}>ACTIVE PIPELINE ✓</span>
                         </div>

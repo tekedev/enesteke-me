@@ -92,7 +92,7 @@ void main() {
   // Premium Studio Neutral Metallic Surface Tint
   vec3 baseColor = vec3(0.10, 0.105, 0.12);
   vec3 specularColor = vec3(0.92, 0.92, 0.98);
-  vec3 limeRim = vec3(0.84, 1.0, 0.0) * 0.06;
+  vec3 limeRim = vec3(0.84, 1.0, 0.0) * 0.05;
   
   vec3 finalColor = mix(baseColor, specularColor, fresnel * 0.75) + limeRim * fresnel;
   
@@ -125,17 +125,17 @@ export default function ETMonogramScene({
   const getScrollTransform = (state: string) => {
     switch (state) {
       case 'works':
-        return { posX: isMobile ? 0 : 5.3, posY: isMobile ? -3.0 : -1.2, scale: isMobile ? 0.35 : 0.40, bgContrast: 0.12, wireframeOpacity: 0.008 };
       case 'manifesto':
-        return { posX: isMobile ? 0 : 5.0, posY: isMobile ? -2.0 : -1.6, scale: isMobile ? 0.40 : 0.46, bgContrast: 0.08, wireframeOpacity: 0.006 };
+        // Clean offscreen fade for pure editorial black background
+        return { posX: 12.0, posY: 0, scale: 0.2, bgContrast: 0.04, wireframeOpacity: 0.0 };
       case 'hero':
       default:
         return {
-          posX: isMobile ? 2.05 : 4.7,
-          posY: isMobile ? -3.45 : 0.05,
-          scale: isMobile ? 0.28 : 0.76,
-          bgContrast: isMobile ? 0.18 : 0.22,
-          wireframeOpacity: isMobile ? 0.008 : 0.035
+          posX: isMobile ? 2.35 : 5.25,
+          posY: isMobile ? -3.85 : 0.08,
+          scale: isMobile ? 0.22 : 0.68,
+          bgContrast: isMobile ? 0.16 : 0.22,
+          wireframeOpacity: isMobile ? 0.006 : 0.025
         };
     }
   };
@@ -276,7 +276,7 @@ export default function ETMonogramScene({
       color: 0xd7ff00,
       wireframe: true,
       transparent: true,
-      opacity: isMobile ? 0.008 : 0.035,
+      opacity: isMobile ? 0.006 : 0.025,
     });
     const outlineMesh = new THREE.Mesh(geometry, outlineMaterial);
 
