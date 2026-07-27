@@ -7,7 +7,7 @@ export default function CapabilitiesSection() {
     <section id="capabilities" className={styles.section}>
       <div className={styles.container}>
         {/* Section Header */}
-        <div style={{ marginBottom: '80px', borderBottom: '1px solid var(--line-secondary)', paddingBottom: '24px' }}>
+        <div style={{ marginBottom: '60px', borderBottom: '1px solid var(--line-secondary)', paddingBottom: '24px' }}>
           <div style={{ fontSize: '11px', letterSpacing: '0.2em', color: '#73736e', marginBottom: '12px' }}>
             ENGINEERING CAPABILITIES & FOCUS
           </div>
@@ -28,10 +28,10 @@ export default function CapabilitiesSection() {
 
               {/* Title & Description */}
               <div>
-                <h3 style={{ fontFamily: "var(--font-family-sans)", fontSize: 'clamp(1.8rem, 3.5vw, 3.2rem)', fontWeight: 300, color: '#f5f5f2', margin: 0, marginBottom: '12px', lineHeight: 1.1 }}>
+                <h3 className={styles.capTitle}>
                   {cap.title}
                 </h3>
-                <p style={{ color: '#b3b3ad', fontSize: '14px', lineHeight: 1.7, margin: 0 }}>
+                <p className={styles.capDesc}>
                   {cap.description}
                 </p>
               </div>

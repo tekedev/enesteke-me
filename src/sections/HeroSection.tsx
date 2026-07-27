@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { profile } from '../data/portfolioData';
 import SystemControls from '../components/ui/SystemControls';
+import styles from './HeroSection.module.css';
 
 interface HeroSectionProps {
   roughness: number;
@@ -30,21 +31,7 @@ export default function HeroSection({
   }, [controlsOpen]);
 
   return (
-    <section
-      id="hero"
-      style={{
-        position: 'relative',
-        zIndex: 2,
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        padding: '140px var(--page-padding) 60px',
-        fontFamily: "var(--font-family-mono)",
-        color: '#f5f5f2',
-        pointerEvents: 'none',
-      }}
-    >
+    <section id="hero" className={styles.hero}>
       {/* Top Header Status Line */}
       <div style={{ pointerEvents: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -54,8 +41,8 @@ export default function HeroSection({
           </span>
         </div>
 
-        {/* Desktop Scene Controls Toggle Button */}
-        <div className="desktop-controls-toggle">
+        {/* Desktop Scene Controls Toggle Button (Hidden on Mobile) */}
+        <div className={styles.controlsTrigger}>
           <button
             onClick={() => setControlsOpen(!controlsOpen)}
             aria-expanded={controlsOpen}
@@ -94,60 +81,24 @@ export default function HeroSection({
       )}
 
       {/* Main Editorial Headline */}
-      <div style={{ maxWidth: '1000px', pointerEvents: 'auto', margin: '40px 0' }}>
-        <div style={{ fontSize: '11px', letterSpacing: '0.25em', color: '#73736e', marginBottom: '20px', textTransform: 'uppercase' }}>
+      <div style={{ maxWidth: '1000px', pointerEvents: 'auto', margin: '30px 0' }}>
+        <div style={{ fontSize: '11px', letterSpacing: '0.25em', color: '#73736e', marginBottom: '16px', textTransform: 'uppercase' }}>
           SYSTEMS ENGINEER & CREATIVE DEVELOPER
         </div>
-        <h1
-          style={{
-            fontFamily: "var(--font-family-sans)",
-            fontSize: 'clamp(3.0rem, 7vw, 7.8rem)',
-            fontWeight: 300,
-            lineHeight: 0.92,
-            letterSpacing: '-0.04em',
-            color: '#f5f5f2',
-            textTransform: 'uppercase',
-            marginBottom: '32px',
-          }}
-        >
+        <h1 className={styles.heroTitle}>
           ENGINEERING SYSTEMS <br />
           <span style={{ color: '#d7ff00', fontWeight: 400 }}>THAT THINK & SCALE.</span>
         </h1>
-        <p style={{ fontSize: '15px', color: '#b3b3ad', maxWidth: '580px', lineHeight: 1.65 }}>
+        <p className={styles.heroBio}>
           {profile.bio}
         </p>
 
-        {/* Refined Minimal Text Links (No Heavy Lime Solid Fill) */}
-        <div style={{ display: 'flex', gap: '28px', marginTop: '40px', alignItems: 'center', flexWrap: 'wrap' }}>
-          <Link
-            to="/work"
-            style={{
-              color: '#f5f5f2',
-              fontSize: '12px',
-              fontFamily: "var(--font-family-mono)",
-              letterSpacing: '0.12em',
-              textDecoration: 'none',
-              borderBottom: '1px solid #d7ff00',
-              paddingBottom: '4px',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-            }}
-          >
+        {/* Refined Minimal Text Links (44px touch targets) */}
+        <div className={styles.heroCtaGroup}>
+          <Link to="/work" className={styles.heroPrimaryCta}>
             EXPLORE ARCHIVE <span style={{ color: '#d7ff00' }}>→</span>
           </Link>
-          <Link
-            to="/contact"
-            style={{
-              color: '#b3b3ad',
-              fontSize: '12px',
-              fontFamily: "var(--font-family-mono)",
-              letterSpacing: '0.12em',
-              textDecoration: 'none',
-              borderBottom: '1px solid rgba(255,255,255,0.2)',
-              paddingBottom: '4px',
-            }}
-          >
+          <Link to="/contact" className={styles.heroSecondaryCta}>
             GET IN TOUCH
           </Link>
         </div>

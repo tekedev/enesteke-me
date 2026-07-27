@@ -10,7 +10,7 @@ export default function WorksSection() {
     <section id="works" className={styles.section}>
       <div className={styles.container}>
         {/* Section Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '80px', borderBottom: '1px solid var(--line-secondary)', paddingBottom: '24px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '60px', borderBottom: '1px solid var(--line-secondary)', paddingBottom: '24px' }}>
           <div>
             <div style={{ fontSize: '11px', letterSpacing: '0.2em', color: '#73736e', marginBottom: '12px' }}>
               SELECTED WORK / 04 FEATURED SCENES
@@ -36,7 +36,7 @@ export default function WorksSection() {
         </div>
 
         {/* 4 Distinct Visual Project Scenes */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '80px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '60px' }}>
           {featured.map((project, index) => {
             const isEven = index % 2 === 0;
 
@@ -55,19 +55,7 @@ export default function WorksSection() {
                 {/* Asymmetric Content Grid */}
                 <div className={isEven ? styles.gridNormal : styles.gridReverse}>
                   <div className={styles.copyArea} style={{ order: isEven ? 1 : 2 }}>
-                    <h3
-                      style={{
-                        fontFamily: "var(--font-family-sans)",
-                        fontSize: 'clamp(2.6rem, 5.5vw, 6.2rem)',
-                        fontWeight: 300,
-                        lineHeight: 0.92,
-                        letterSpacing: '-0.04em',
-                        color: '#f5f5f2',
-                        textTransform: 'uppercase',
-                        margin: 0,
-                        marginBottom: '20px',
-                      }}
-                    >
+                    <h3 className={styles.projectTitle}>
                       {project.title}
                     </h3>
                     <div style={{ fontSize: '13px', color: '#d7ff00', letterSpacing: '0.15em', marginBottom: '16px', textTransform: 'uppercase' }}>
@@ -78,7 +66,7 @@ export default function WorksSection() {
                     </p>
                     <div>
                       <Link to={`/work/${project.slug}`} className={styles.ctaButton}>
-                        VIEW CASE ↗
+                        VIEW CASE <span style={{ color: '#d7ff00' }}>↗</span>
                       </Link>
                     </div>
                   </div>

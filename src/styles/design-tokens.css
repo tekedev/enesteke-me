@@ -1,106 +1,39 @@
-/* ═══════════════════════════════════════════════════════
-   ENES TEKE — Design System & Custom Design Tokens
-   Experimental, Cinematic, Dark Studio Aesthetic
-   ═══════════════════════════════════════════════════════ */
-
 :root {
-  /* Color System */
-  --background: #000000;
-  --surface: #080808;
-  --surface-raised: #101010;
-
-  --text-primary: #f5f5f2;
-  --text-secondary: #b3b3ad;
-  --text-muted: #73736e;
-  --text-faint: #454541;
-
-  --line-primary: rgba(255, 255, 255, 0.16);
-  --line-secondary: rgba(255, 255, 255, 0.08);
-  --line-faint: rgba(255, 255, 255, 0.04);
-
-  --accent: #d7ff00; /* Acid Lime */
-  --accent-soft: rgba(215, 255, 0, 0.14);
-
-  /* Typography Scale */
-  --font-hero: clamp(3.5rem, 9vw, 11rem);
-  --font-display: clamp(2.8rem, 7vw, 8rem);
-  --font-section: clamp(2.2rem, 5vw, 5.5rem);
-  --font-project: clamp(1.8rem, 3.5vw, 4.2rem);
-  --font-body-large: clamp(1.1rem, 1.6vw, 1.7rem);
-  --font-body: clamp(0.92rem, 1vw, 1.05rem);
-  --font-meta: 0.68rem;
-  --font-micro: 0.58rem;
-
-  /* Spacing & Layout */
-  --page-padding: clamp(20px, 3vw, 50px);
-  --section-gap: clamp(100px, 14vw, 220px);
-  --grid-gap: clamp(12px, 1.2vw, 24px);
-
-  /* Font Families */
+  --header-height: 74px;
+  --page-padding: clamp(20px, 4.5vw, 60px);
+  --section-gap: clamp(80px, 12vh, 160px);
+  
   --font-family-mono: 'IBM Plex Mono', 'JetBrains Mono', monospace;
-  --font-family-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-family-serif: 'Instrument Serif', Georgia, serif;
+  --font-family-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  
+  --color-bg: #000000;
+  --color-surface: #080808;
+  --color-text-main: #f5f5f2;
+  --color-text-muted: #b3b3ad;
+  --color-text-dim: #73736e;
+  --color-accent: #d7ff00;
+  --line-secondary: rgba(255, 255, 255, 0.12);
 }
 
-/* Global Reset */
-*, *::before, *::after {
+@media (max-width: 900px) {
+  :root {
+    --header-height: 64px;
+  }
+}
+
+* {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-html, body {
-  background-color: var(--background);
-  color: var(--text-primary);
-  font-family: var(--font-family-sans);
-  font-size: 16px;
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
-  width: 100%;
-}
-
-/* Lenis Smooth Scroll Setup */
-html.lenis, html.lenis body {
-  height: auto;
-}
-
-.lenis.lenis-smooth {
-  scroll-behavior: auto !important;
-}
-
-.lenis.lenis-smooth [data-lenis-prevent] {
-  overscroll-behavior: contain;
-}
-
-.lenis.lenis-stopped {
-  overflow: hidden;
-}
-
-/* Grid & Utilities */
-.grid-container {
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  gap: var(--grid-gap);
-  padding-left: var(--page-padding);
-  padding-right: var(--page-padding);
-  width: 100%;
-}
-
-.accent-dot {
-  display: inline-block;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background-color: var(--accent);
-  box-shadow: 0 0 8px var(--accent-soft);
-}
-
-.meta-label {
+html {
+  background-color: var(--color-bg);
+  color: var(--color-text-main);
   font-family: var(--font-family-mono);
-  font-size: var(--font-meta);
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--text-muted);
+  overflow-x: hidden;
+}
+
+section[id] {
+  scroll-margin-top: calc(var(--header-height) + 24px);
 }

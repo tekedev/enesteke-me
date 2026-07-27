@@ -45,24 +45,25 @@ export default function ManifestoSection() {
         position: 'relative',
         zIndex: 2,
         backgroundColor: '#000000',
-        minHeight: isReducedMotion ? 'auto' : '130svh',
+        minHeight: isReducedMotion ? 'auto' : 'clamp(105svh, 115svh, 130svh)',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
-        padding: '120px var(--page-padding)',
+        padding: 'calc(var(--header-height) + 40px) var(--page-padding) 80px',
         fontFamily: "var(--font-family-mono)",
+        scrollMarginTop: 'calc(var(--header-height) + 24px)',
       }}
     >
       <div style={{ maxWidth: '1200px', margin: '0 auto', width: '100%' }}>
-        <div style={{ fontSize: '11px', letterSpacing: '0.25em', color: '#73736e', marginBottom: '40px', textTransform: 'uppercase' }}>
+        <div style={{ fontSize: '11px', letterSpacing: '0.25em', color: '#73736e', marginBottom: '32px', textTransform: 'uppercase' }}>
           ENGINEERING PRINCIPLES & MANIFESTO
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           <p
             style={{
               fontFamily: "var(--font-family-sans)",
-              fontSize: 'clamp(2.4rem, 5.5vw, 6.2rem)',
+              fontSize: 'clamp(2.2rem, 5vw, 6.2rem)',
               fontWeight: 300,
               lineHeight: 1.02,
               letterSpacing: '-0.03em',
@@ -79,7 +80,7 @@ export default function ManifestoSection() {
           <p
             style={{
               fontFamily: "var(--font-family-sans)",
-              fontSize: 'clamp(2.4rem, 5.5vw, 6.2rem)',
+              fontSize: 'clamp(2.2rem, 5vw, 6.2rem)',
               fontWeight: 300,
               lineHeight: 1.02,
               letterSpacing: '-0.03em',
@@ -95,7 +96,7 @@ export default function ManifestoSection() {
           <p
             style={{
               fontFamily: "var(--font-family-sans)",
-              fontSize: 'clamp(2.4rem, 5.5vw, 6.2rem)',
+              fontSize: 'clamp(2.2rem, 5vw, 6.2rem)',
               fontWeight: 300,
               lineHeight: 1.02,
               letterSpacing: '-0.03em',
