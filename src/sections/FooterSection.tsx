@@ -34,7 +34,7 @@ export default function FooterSection() {
             letterSpacing: '-0.04em',
             color: '#f5f5f2',
             textTransform: 'uppercase',
-            marginBottom: '32px',
+            marginBottom: '36px',
           }}
         >
           HAVE A SYSTEM <br />
@@ -45,19 +45,18 @@ export default function FooterSection() {
           style={{
             display: 'inline-flex',
             alignItems: 'center',
-            gap: '8px',
-            backgroundColor: '#d7ff00',
-            color: '#000000',
-            padding: '14px 32px',
-            fontSize: '12px',
-            fontFamily: "var(--font-family-mono)",
-            fontWeight: 600,
-            letterSpacing: '0.15em',
+            gap: '12px',
+            color: '#f5f5f2',
+            fontSize: 'clamp(1.8rem, 4vw, 3.2rem)',
+            fontFamily: "var(--font-family-sans)",
+            fontWeight: 300,
+            letterSpacing: '-0.02em',
             textDecoration: 'none',
-            borderRadius: '2px',
+            borderBottom: '1px solid #d7ff00',
+            paddingBottom: '8px',
           }}
         >
-          LET’S TALK ↗
+          LET’S TALK <span style={{ color: '#d7ff00' }}>↗</span>
         </Link>
       </div>
 

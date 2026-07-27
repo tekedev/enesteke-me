@@ -1,19 +1,11 @@
 import React from 'react';
 import { capabilities } from '../data/portfolioData';
+import styles from './CapabilitiesSection.module.css';
 
 export default function CapabilitiesSection() {
   return (
-    <section
-      id="capabilities"
-      style={{
-        position: 'relative',
-        zIndex: 2,
-        backgroundColor: '#000000',
-        padding: '120px var(--page-padding)',
-        fontFamily: "var(--font-family-mono)",
-      }}
-    >
-      <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+    <section id="capabilities" className={styles.section}>
+      <div className={styles.container}>
         {/* Section Header */}
         <div style={{ marginBottom: '80px', borderBottom: '1px solid var(--line-secondary)', paddingBottom: '24px' }}>
           <div style={{ fontSize: '11px', letterSpacing: '0.2em', color: '#73736e', marginBottom: '12px' }}>
@@ -25,20 +17,10 @@ export default function CapabilitiesSection() {
           </h2>
         </div>
 
-        {/* Clean Typographic Rows (No Box Chips) */}
+        {/* Responsive Typographic Rows */}
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           {capabilities.map((cap) => (
-            <div
-              key={cap.number}
-              style={{
-                display: 'grid',
-                gridTemplateColumns: '80px 2.5fr 3.5fr',
-                gap: '40px',
-                alignItems: 'flex-start',
-                padding: '60px 0',
-                borderTop: '1px solid var(--line-secondary)',
-              }}
-            >
+            <div key={cap.number} className={styles.capRow}>
               {/* Number */}
               <div style={{ fontSize: '16px', color: '#d7ff00', fontWeight: 600 }}>
                 [{cap.number}]
@@ -54,12 +36,12 @@ export default function CapabilitiesSection() {
                 </p>
               </div>
 
-              {/* Typographic Inline Focus (Slash Separated Text Line) */}
+              {/* Typographic Inline Focus */}
               <div>
                 <div style={{ fontSize: '10px', color: '#73736e', letterSpacing: '0.2em', marginBottom: '12px' }}>
                   CORE STACK & FRAMEWORKS
                 </div>
-                <div style={{ fontSize: '13px', color: '#f5f5f2', letterSpacing: '0.08em', lineHeight: 1.8, textTransform: 'uppercase' }}>
+                <div className={styles.techText}>
                   {cap.technologies.join(' / ')}
                 </div>
               </div>

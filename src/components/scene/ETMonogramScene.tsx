@@ -144,6 +144,18 @@ interface ETMonogramSceneProps {
   onContextLost?: () => void;
 }
 
+const getScrollTransform = (state: string) => {
+  switch (state) {
+    case 'works':
+      return { posX: 3.2, posY: 0.5, scale: 0.65, bgContrast: 0.65, wireframeOpacity: 0.22 };
+    case 'manifesto':
+      return { posX: 0.0, posY: 0.0, scale: 0.45, bgContrast: 0.35, wireframeOpacity: 0.08 };
+    case 'hero':
+    default:
+      return { posX: 0.0, posY: 0.0, scale: 1.0, bgContrast: 1.0, wireframeOpacity: 0.10 };
+  }
+};
+
 export default function ETMonogramScene({
   roughness = 0.10,
   noiseScale = 9.00,
@@ -151,24 +163,28 @@ export default function ETMonogramScene({
   onContextLost,
 }: ETMonogramSceneProps) {
   const mountRef = useRef<HTMLDivElement>(null);
-  const logoGroupRef = useRef<THREE.Group | null>(null);
   const logoMaterialRef = useRef<THREE.ShaderMaterial | null>(null);
   const bgMaterialRef = useRef<THREE.ShaderMaterial | null>(null);
   const renderSingleFrameRef = useRef<(() => void) | null>(null);
+  const onContextLostRef = useRef(onContextLost);
 
-  // Target positions based on scrollState
-  const getScrollTransform = (state: string) => {
-    switch (state) {
-      case 'works':
-        return { posX: 3.2, posY: 0.5, scale: 0.65, bgContrast: 0.65, wireframeOpacity: 0.22 };
-      case 'manifesto':
-        return { posX: 0.0, posY: 0.0, scale: 0.45, bgContrast: 0.35, wireframeOpacity: 0.08 };
-      case 'hero':
-      default:
-        return { posX: 0.0, posY: 0.0, scale: 1.0, bgContrast: 1.0, wireframeOpacity: 0.10 };
+  const scrollStateRef = useRef(scrollState);
+  const targetTransformRef = useRef(getScrollTransform(scrollState));
+
+  useEffect(() => {
+    onContextLostRef.current = onContextLost;
+  }, [onContextLost]);
+
+  // Update target transforms when scrollState prop changes WITHOUT re-mounting WebGL scene
+  useEffect(() => {
+    scrollStateRef.current = scrollState;
+    targetTransformRef.current = getScrollTransform(scrollState);
+    if (renderSingleFrameRef.current) {
+      renderSingleFrameRef.current();
     }
-  };
+  }, [scrollState]);
 
+  // Dynamic Uniform Updates
   useEffect(() => {
     if (logoMaterialRef.current) {
       logoMaterialRef.current.uniforms.uRoughness.value = roughness;
@@ -181,6 +197,7 @@ export default function ETMonogramScene({
     }
   }, [roughness, noiseScale]);
 
+  // Component Mount Effect (runs ONLY ONCE)
   useEffect(() => {
     const container = mountRef.current;
     if (!container) return;
@@ -195,7 +212,7 @@ export default function ETMonogramScene({
     try {
       renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
     } catch {
-      if (onContextLost) onContextLost();
+      if (onContextLostRef.current) onContextLostRef.current();
       return;
     }
 
@@ -206,7 +223,7 @@ export default function ETMonogramScene({
     const canvasEl = renderer.domElement;
     const handleContextLost = (e: Event) => {
       e.preventDefault();
-      if (onContextLost) onContextLost();
+      if (onContextLostRef.current) onContextLostRef.current();
     };
     const handleContextRestored = () => {
       if (renderer) {
@@ -291,7 +308,6 @@ export default function ETMonogramScene({
     logoGroup.add(mesh);
     logoGroup.add(outlineMesh);
     scene.add(logoGroup);
-    logoGroupRef.current = logoGroup;
 
     let targetMouse = new THREE.Vector2(0, 0);
     let currRot = { x: 0, y: 0 };
@@ -302,7 +318,13 @@ export default function ETMonogramScene({
     };
 
     const renderPass = (time: number = 0) => {
+      const target = targetTransformRef.current;
+      logoGroup.position.set(target.posX, target.posY, 0);
+      logoGroup.scale.set(target.scale, target.scale, target.scale);
+      outlineMaterial.opacity = target.wireframeOpacity;
+      bgMaterial.uniforms.uBgContrast.value = target.bgContrast;
       bgMaterial.uniforms.uTime.value = time;
+
       if (renderer) {
         renderer.setRenderTarget(renderTarget);
         renderer.render(bgScene, bgCamera);
@@ -329,8 +351,7 @@ export default function ETMonogramScene({
         animId = requestAnimationFrame(animate);
         const time = clock.getElapsedTime();
 
-        // Smooth Interpolation towards target scroll state
-        const target = getScrollTransform(scrollState);
+        const target = targetTransformRef.current;
         logoGroup.position.x += (target.posX - logoGroup.position.x) * 0.05;
         logoGroup.position.y += (target.posY - logoGroup.position.y) * 0.05;
 
@@ -369,16 +390,9 @@ export default function ETMonogramScene({
       };
       document.addEventListener('visibilitychange', handleVisibilityChange);
     } else {
-      // Reduced Motion static frame
-      const target = getScrollTransform(scrollState);
-      logoGroup.position.set(target.posX, target.posY, 0);
-      logoGroup.scale.set(target.scale, target.scale, target.scale);
-      outlineMaterial.opacity = target.wireframeOpacity;
-      bgMaterial.uniforms.uBgContrast.value = target.bgContrast;
       renderPass(0);
     }
 
-    // Throttled Resize Handler
     let resizeTimeout: number;
     const handleResize = () => {
       window.clearTimeout(resizeTimeout);
@@ -421,7 +435,7 @@ export default function ETMonogramScene({
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [onContextLost, scrollState]);
+  }, []); // Mounted EXACTLY ONCE!
 
   return (
     <div

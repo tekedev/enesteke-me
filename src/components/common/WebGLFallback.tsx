@@ -9,43 +9,32 @@ export default function WebGLFallback({ onRetry }: WebGLFallbackProps) {
     <div
       style={{
         position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100vw',
-        height: '100vh',
-        backgroundColor: '#000000',
-        zIndex: 1,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
+        bottom: '24px',
+        right: '24px',
+        zIndex: 30,
+        pointerEvents: 'auto',
+        backgroundColor: 'rgba(8, 8, 8, 0.92)',
+        backdropFilter: 'blur(10px)',
+        border: '1px solid rgba(255, 255, 255, 0.15)',
+        padding: '12px 18px',
+        borderRadius: '2px',
         fontFamily: "var(--font-family-mono)",
-        color: '#73736e',
-        textAlign: 'center',
-        padding: '20px',
+        color: '#f5f5f2',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '14px',
+        boxShadow: '0 10px 30px rgba(0,0,0,0.8)',
       }}
     >
-      <svg
-        width="120"
-        height="120"
-        viewBox="0 0 100 100"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        style={{ opacity: 0.25, marginBottom: '24px' }}
-      >
-        <path
-          d="M 20,20 L 80,20 L 80,35 L 35,35 L 35,50 L 70,50 L 70,65 L 35,65 L 35,80 L 80,80 L 80,95 L 20,95 Z"
-          stroke="#d7ff00"
-          strokeWidth="1.5"
-          fill="none"
-        />
-      </svg>
-      <div style={{ fontSize: '11px', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '8px', color: '#f5f5f2' }}>
-        STATIC 2D FALLBACK MODE
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <span style={{ fontSize: '10px', color: '#73736e', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
+          3D SCENE UNAVAILABLE
+        </span>
+        <span style={{ fontSize: '11px', color: '#b3b3ad' }}>
+          Static 2D Mode Active
+        </span>
       </div>
-      <div style={{ fontSize: '12px', maxWidth: '380px', lineHeight: 1.5, color: '#73736e', marginBottom: '20px' }}>
-        WebGL hardware acceleration is inactive or context was reset by browser.
-      </div>
+
       {onRetry && (
         <button
           onClick={onRetry}
@@ -54,15 +43,15 @@ export default function WebGLFallback({ onRetry }: WebGLFallbackProps) {
             border: '1px solid #d7ff00',
             color: '#d7ff00',
             fontFamily: 'var(--font-family-mono)',
-            fontSize: '11px',
+            fontSize: '10px',
             letterSpacing: '0.15em',
-            padding: '8px 20px',
+            padding: '6px 14px',
             cursor: 'pointer',
             borderRadius: '2px',
             transition: 'all 0.2s ease',
           }}
         >
-          RETRY 3D SCENE ↺
+          RETRY ↺
         </button>
       )}
     </div>

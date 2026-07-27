@@ -1,22 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { projects } from '../data/portfolioData';
+import styles from './WorksSection.module.css';
 
 export default function WorksSection() {
   const featured = projects.slice(0, 4);
 
   return (
-    <section
-      id="works"
-      style={{
-        position: 'relative',
-        zIndex: 2,
-        backgroundColor: '#000000',
-        padding: '120px var(--page-padding)',
-        fontFamily: "var(--font-family-mono)",
-      }}
-    >
-      <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+    <section id="works" className={styles.section}>
+      <div className={styles.container}>
         {/* Section Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '80px', borderBottom: '1px solid var(--line-secondary)', paddingBottom: '24px' }}>
           <div>
@@ -43,24 +35,13 @@ export default function WorksSection() {
           </Link>
         </div>
 
-        {/* 4 Varied Editorial Project Scenes */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '100px' }}>
+        {/* 4 Distinct Visual Project Scenes */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '80px' }}>
           {featured.map((project, index) => {
             const isEven = index % 2 === 0;
 
             return (
-              <div
-                key={project.id}
-                style={{
-                  minHeight: 'clamp(320px, 55vw, 760px)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                  padding: '60px 0',
-                  borderTop: '1px solid var(--line-secondary)',
-                  position: 'relative',
-                }}
-              >
+              <div key={project.id} className={styles.projectScene}>
                 {/* Top Metadata */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
                   <span style={{ fontSize: '12px', color: '#73736e', letterSpacing: '0.2em' }}>
@@ -71,20 +52,13 @@ export default function WorksSection() {
                   </span>
                 </div>
 
-                {/* Asymmetric Content Layout */}
-                <div
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: isEven ? '1.2fr 1fr' : '1fr 1.2fr',
-                    gap: '60px',
-                    alignItems: 'center',
-                  }}
-                >
-                  <div style={{ order: isEven ? 1 : 2 }}>
+                {/* Asymmetric Content Grid */}
+                <div className={isEven ? styles.gridNormal : styles.gridReverse}>
+                  <div className={styles.copyArea} style={{ order: isEven ? 1 : 2 }}>
                     <h3
                       style={{
                         fontFamily: "var(--font-family-sans)",
-                        fontSize: 'clamp(2.6rem, 5.5vw, 6.5rem)',
+                        fontSize: 'clamp(2.6rem, 5.5vw, 6.2rem)',
                         fontWeight: 300,
                         lineHeight: 0.92,
                         letterSpacing: '-0.04em',
@@ -102,54 +76,93 @@ export default function WorksSection() {
                     <p style={{ color: '#b3b3ad', fontSize: '14px', lineHeight: 1.75, maxWidth: '520px', marginBottom: '32px' }}>
                       {project.description}
                     </p>
-                    <Link
-                      to={`/work/${project.slug}`}
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                        backgroundColor: '#d7ff00',
-                        color: '#000000',
-                        padding: '12px 24px',
-                        fontSize: '11px',
-                        fontFamily: "var(--font-family-mono)",
-                        fontWeight: 600,
-                        letterSpacing: '0.15em',
-                        textDecoration: 'none',
-                        borderRadius: '2px',
-                      }}
-                    >
-                      VIEW CASE ↗
-                    </Link>
+                    <div>
+                      <Link to={`/work/${project.slug}`} className={styles.ctaButton}>
+                        VIEW CASE ↗
+                      </Link>
+                    </div>
                   </div>
 
-                  {/* Editorial System Diagram / Preview Box */}
-                  <div
-                    style={{
-                      order: isEven ? 2 : 1,
-                      backgroundColor: 'rgba(255, 255, 255, 0.02)',
-                      border: '1px solid rgba(255, 255, 255, 0.08)',
-                      padding: '40px',
-                      minHeight: '280px',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      justifyContent: 'space-between',
-                      borderRadius: '2px',
-                    }}
-                  >
-                    <div style={{ fontSize: '10px', color: '#73736e', letterSpacing: '0.2em' }}>
-                      // SYSTEM ARCHITECTURE BREAKDOWN
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', margin: '24px 0' }}>
-                      {(project.architectureDetails || []).slice(0, 3).map((detail, idx) => (
-                        <div key={idx} style={{ fontSize: '12px', color: '#f5f5f2', lineHeight: 1.5, borderLeft: '2px solid #d7ff00', paddingLeft: '12px' }}>
-                          {detail}
+                  {/* 4 Distinct Visual Visualizations */}
+                  <div className={styles.visualBox} style={{ order: isEven ? 2 : 1 }}>
+                    {index === 0 && (
+                      /* Variation 1: Terminal / Command Output View */
+                      <>
+                        <div style={{ fontSize: '10px', color: '#d7ff00', letterSpacing: '0.15em' }}>
+                          ➜ [NEXUS_CORE_v2.5] EXECUTION LOG
                         </div>
-                      ))}
-                    </div>
-                    <div style={{ fontSize: '10px', color: '#73736e', textAlign: 'right' }}>
-                      ROLE: {project.role.toUpperCase()}
-                    </div>
+                        <div style={{ fontSize: '11px', color: '#b3b3ad', fontFamily: 'var(--font-family-mono)', lineHeight: 1.6, margin: '16px 0' }}>
+                          <div>[00:01] Initializing 260+ account publishing cluster...</div>
+                          <div>[00:02] Gemini 2.5 Pro multi-modal script generated</div>
+                          <div>[00:04] FFmpeg rendering 1080x1920 video at 60fps [OK]</div>
+                          <div style={{ color: '#d7ff00' }}>[00:06] Playwright distribution active ✓</div>
+                        </div>
+                        <div style={{ fontSize: '10px', color: '#73736e', textAlign: 'right' }}>
+                          STATUS: LIVE PRODUCTION ENGINE
+                        </div>
+                      </>
+                    )}
+
+                    {index === 1 && (
+                      /* Variation 2: Architecture Data Flow Diagram */
+                      <>
+                        <div style={{ fontSize: '10px', color: '#73736e', letterSpacing: '0.15em' }}>
+                          // EDITORIAL DNA PIPELINE FLOW
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '20px 0', fontSize: '11px', color: '#f5f5f2' }}>
+                          <span style={{ border: '1px solid rgba(255,255,255,0.2)', padding: '6px 12px' }}>WEBSITE URL</span>
+                          <span style={{ color: '#d7ff00' }}>➔ VECTOR RAG ➔</span>
+                          <span style={{ border: '1px solid #d7ff00', padding: '6px 12px', color: '#d7ff00' }}>EDITORIAL DNA</span>
+                        </div>
+                        <div style={{ fontSize: '10px', color: '#73736e' }}>
+                          SAAS PLATFORM: HAREKI.COM
+                        </div>
+                      </>
+                    )}
+
+                    {index === 2 && (
+                      /* Variation 3: Metric & Spec Sheet View */
+                      <>
+                        <div style={{ fontSize: '10px', color: '#73736e', letterSpacing: '0.15em' }}>
+                          // SOCIAL MEDIA STUDIO METRICS
+                        </div>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', margin: '16px 0' }}>
+                          <div>
+                            <div style={{ fontSize: '24px', color: '#f5f5f2', fontWeight: 300 }}>100%</div>
+                            <div style={{ fontSize: '10px', color: '#73736e' }}>AUTOMATED RENDERING</div>
+                          </div>
+                          <div>
+                            <div style={{ fontSize: '24px', color: '#d7ff00', fontWeight: 300 }}>AI MULTI-MODEL</div>
+                            <div style={{ fontSize: '10px', color: '#73736e' }}>TEXT + VISION PIPELINE</div>
+                          </div>
+                        </div>
+                        <div style={{ fontSize: '10px', color: '#73736e' }}>
+                          PLATFORM: TEKE.APP
+                        </div>
+                      </>
+                    )}
+
+                    {index === 3 && (
+                      /* Variation 4: High-Speed Order Flow Stream */
+                      <>
+                        <div style={{ fontSize: '10px', color: '#d7ff00', letterSpacing: '0.15em' }}>
+                          // BIST WHALE ORDER FLOW MONITOR
+                        </div>
+                        <div style={{ fontSize: '11px', color: '#b3b3ad', lineHeight: 1.6, margin: '16px 0' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '4px' }}>
+                            <span>THYAO.IS</span>
+                            <span style={{ color: '#d7ff00' }}>+₺4.2M WHALE BUY</span>
+                          </div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '4px' }}>
+                            <span>ASELS.IS</span>
+                            <span style={{ color: '#d7ff00' }}>+₺2.8M ACCUMULATION</span>
+                          </div>
+                        </div>
+                        <div style={{ fontSize: '10px', color: '#73736e' }}>
+                          ENGINE: WEBSOCKET + TELEGRAM BOT
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>

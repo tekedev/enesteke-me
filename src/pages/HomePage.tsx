@@ -24,24 +24,39 @@ export default function HomePage({
   onSceneStateChange,
 }: HomePageProps) {
   useEffect(() => {
-    const handleScroll = () => {
-      const scrollY = window.scrollY;
-      const windowHeight = window.innerHeight;
+    if (!onSceneStateChange) return;
 
-      if (!onSceneStateChange) return;
+    const sections = [
+      { id: 'hero', state: 'hero' as const },
+      { id: 'works', state: 'works' as const },
+      { id: 'manifesto', state: 'manifesto' as const },
+    ];
 
-      if (scrollY < windowHeight * 0.8) {
-        onSceneStateChange('hero');
-      } else if (scrollY >= windowHeight * 0.8 && scrollY < windowHeight * 2.8) {
-        onSceneStateChange('works');
-      } else {
-        onSceneStateChange('manifesto');
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visibleEntries = entries.filter((e) => e.isIntersecting);
+        if (visibleEntries.length > 0) {
+          // Select entry closest to viewport center
+          const highestRatio = visibleEntries.reduce((prev, curr) =>
+            curr.intersectionRatio > prev.intersectionRatio ? curr : prev
+          );
+          const targetState = sections.find((s) => s.id === highestRatio.target.id)?.state;
+          if (targetState) {
+            onSceneStateChange(targetState);
+          }
+        }
+      },
+      {
+        threshold: [0.1, 0.4, 0.7],
       }
-    };
+    );
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener('scroll', handleScroll);
+    sections.forEach(({ id }) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+
+    return () => observer.disconnect();
   }, [onSceneStateChange]);
 
   return (

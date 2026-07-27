@@ -3,17 +3,29 @@ import React, { useEffect, useRef, useState } from 'react';
 export default function ManifestoSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [isReducedMotion, setIsReducedMotion] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      if (!sectionRef.current) return;
-      const rect = sectionRef.current.getBoundingClientRect();
-      const windowHeight = window.innerHeight;
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    setIsReducedMotion(prefersReducedMotion);
+    if (prefersReducedMotion) return;
 
-      const totalScroll = rect.height - windowHeight;
-      const currentScroll = -rect.top;
-      const progress = Math.max(0, Math.min(1, currentScroll / totalScroll));
-      setScrollProgress(progress);
+    let ticking = false;
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          if (sectionRef.current) {
+            const rect = sectionRef.current.getBoundingClientRect();
+            const windowHeight = window.innerHeight;
+            const totalScroll = rect.height - windowHeight;
+            const currentScroll = -rect.top;
+            const progress = Math.max(0, Math.min(1, currentScroll / totalScroll));
+            setScrollProgress(progress);
+          }
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -21,9 +33,9 @@ export default function ManifestoSection() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const line1Opacity = Math.min(1, scrollProgress * 2.5);
-  const line2Opacity = Math.max(0.2, Math.min(1, (scrollProgress - 0.25) * 2.5));
-  const line3Opacity = Math.max(0.2, Math.min(1, (scrollProgress - 0.5) * 2.5));
+  const line1Opacity = isReducedMotion ? 1 : Math.min(1, scrollProgress * 2.5);
+  const line2Opacity = isReducedMotion ? 1 : Math.max(0.2, Math.min(1, (scrollProgress - 0.25) * 2.5));
+  const line3Opacity = isReducedMotion ? 1 : Math.max(0.2, Math.min(1, (scrollProgress - 0.5) * 2.5));
 
   return (
     <section
@@ -33,7 +45,7 @@ export default function ManifestoSection() {
         position: 'relative',
         zIndex: 2,
         backgroundColor: '#000000',
-        minHeight: '130svh',
+        minHeight: isReducedMotion ? 'auto' : '130svh',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
@@ -57,7 +69,7 @@ export default function ManifestoSection() {
               color: `rgba(245, 245, 242, ${0.2 + line1Opacity * 0.8})`,
               margin: 0,
               textTransform: 'uppercase',
-              transition: 'color 0.3s ease',
+              transition: isReducedMotion ? 'none' : 'color 0.3s ease',
             }}
           >
             GOOD SYSTEMS DO MORE <br />
@@ -74,7 +86,7 @@ export default function ManifestoSection() {
               color: `rgba(245, 245, 242, ${0.2 + line2Opacity * 0.8})`,
               margin: 0,
               textTransform: 'uppercase',
-              transition: 'color 0.3s ease',
+              transition: isReducedMotion ? 'none' : 'color 0.3s ease',
             }}
           >
             THEY OBSERVE, REASON,
@@ -87,10 +99,10 @@ export default function ManifestoSection() {
               fontWeight: 300,
               lineHeight: 1.02,
               letterSpacing: '-0.03em',
-              color: line3Opacity > 0.6 ? '#d7ff00' : 'rgba(245, 245, 242, 0.3)',
+              color: isReducedMotion || line3Opacity > 0.6 ? '#d7ff00' : 'rgba(245, 245, 242, 0.3)',
               margin: 0,
               textTransform: 'uppercase',
-              transition: 'color 0.3s ease',
+              transition: isReducedMotion ? 'none' : 'color 0.3s ease',
             }}
           >
             ACT AND IMPROVE.

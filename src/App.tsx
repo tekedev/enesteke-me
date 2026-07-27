@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Suspense, lazy } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import Lenis from 'lenis';
 
 import Navbar from './components/layout/Navbar';
@@ -22,8 +22,19 @@ export default function App() {
   const [webglFailed, setWebglFailed] = useState<boolean>(false);
   const [scrollState, setScrollState] = useState<'hero' | 'works' | 'manifesto'>('hero');
 
-  // Smooth Scrolling with Lenis
+  const location = useLocation();
+
+  // Route Change Scroll Reset
   useEffect(() => {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({ top: 0, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+  }, [location.pathname]);
+
+  // Smooth Scroll with Lenis & Clean RAF Cleanup
+  useEffect(() => {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) return;
+
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -32,13 +43,15 @@ export default function App() {
       smoothWheel: true,
     });
 
+    let rafId = 0;
     function raf(time: number) {
       lenis.raf(time);
-      requestAnimationFrame(raf);
+      rafId = requestAnimationFrame(raf);
     }
-    requestAnimationFrame(raf);
+    rafId = requestAnimationFrame(raf);
 
     return () => {
+      cancelAnimationFrame(rafId);
       lenis.destroy();
     };
   }, []);

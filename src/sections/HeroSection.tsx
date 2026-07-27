@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { profile } from '../data/portfolioData';
 import SystemControls from '../components/ui/SystemControls';
@@ -18,6 +18,17 @@ export default function HeroSection({
 }: HeroSectionProps) {
   const [controlsOpen, setControlsOpen] = useState(false);
 
+  // Close controls dropdown on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && controlsOpen) {
+        setControlsOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [controlsOpen]);
+
   return (
     <section
       id="hero"
@@ -34,7 +45,7 @@ export default function HeroSection({
         pointerEvents: 'none',
       }}
     >
-      {/* Top Header Line */}
+      {/* Top Header Status Line */}
       <div style={{ pointerEvents: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <span style={{ display: 'inline-block', width: '6px', height: '6px', backgroundColor: '#d7ff00', borderRadius: '50%' }} />
@@ -43,29 +54,36 @@ export default function HeroSection({
           </span>
         </div>
 
-        {/* Collapsed Scene Controls Trigger */}
-        <button
-          onClick={() => setControlsOpen(!controlsOpen)}
-          style={{
-            background: controlsOpen ? '#d7ff00' : 'rgba(0,0,0,0.6)',
-            color: controlsOpen ? '#000000' : '#b3b3ad',
-            border: '1px solid rgba(255,255,255,0.15)',
-            padding: '6px 14px',
-            fontSize: '10px',
-            fontFamily: "var(--font-family-mono)",
-            letterSpacing: '0.15em',
-            cursor: 'pointer',
-            borderRadius: '2px',
-            transition: 'all 0.2s ease',
-          }}
-        >
-          SCENE / CONTROLS [{controlsOpen ? 'OPEN' : 'CLOSE'}]
-        </button>
+        {/* Desktop Scene Controls Toggle Button */}
+        <div className="desktop-controls-toggle">
+          <button
+            onClick={() => setControlsOpen(!controlsOpen)}
+            aria-expanded={controlsOpen}
+            aria-controls="scene-controls-panel"
+            style={{
+              background: controlsOpen ? 'rgba(215, 255, 0, 0.15)' : 'rgba(0,0,0,0.6)',
+              color: controlsOpen ? '#d7ff00' : '#b3b3ad',
+              border: controlsOpen ? '1px solid #d7ff00' : '1px solid rgba(255,255,255,0.15)',
+              padding: '8px 16px',
+              fontSize: '11px',
+              fontFamily: "var(--font-family-mono)",
+              letterSpacing: '0.12em',
+              cursor: 'pointer',
+              borderRadius: '2px',
+              transition: 'all 0.2s ease',
+            }}
+          >
+            {controlsOpen ? 'CLOSE SCENE CONTROLS ✕' : 'OPEN SCENE CONTROLS ⚙'}
+          </button>
+        </div>
       </div>
 
-      {/* Controls Overlay Dropdown */}
+      {/* Controls Overlay Panel */}
       {controlsOpen && (
-        <div style={{ position: 'absolute', top: '180px', right: 'var(--page-padding)', zIndex: 10, pointerEvents: 'auto' }}>
+        <div
+          id="scene-controls-panel"
+          style={{ position: 'absolute', top: '190px', right: 'var(--page-padding)', zIndex: 10, pointerEvents: 'auto' }}
+        >
           <SystemControls
             roughness={roughness}
             setRoughness={setRoughness}
@@ -75,7 +93,7 @@ export default function HeroSection({
         </div>
       )}
 
-      {/* Center Main Headline */}
+      {/* Main Editorial Headline */}
       <div style={{ maxWidth: '1000px', pointerEvents: 'auto', margin: '40px 0' }}>
         <div style={{ fontSize: '11px', letterSpacing: '0.25em', color: '#73736e', marginBottom: '20px', textTransform: 'uppercase' }}>
           SYSTEMS ENGINEER & CREATIVE DEVELOPER
@@ -99,33 +117,35 @@ export default function HeroSection({
           {profile.bio}
         </p>
 
-        <div style={{ display: 'flex', gap: '20px', marginTop: '36px', alignItems: 'center' }}>
+        {/* Refined Minimal Text Links (No Heavy Lime Solid Fill) */}
+        <div style={{ display: 'flex', gap: '28px', marginTop: '40px', alignItems: 'center', flexWrap: 'wrap' }}>
           <Link
             to="/work"
-            style={{
-              backgroundColor: '#d7ff00',
-              color: '#000000',
-              padding: '12px 28px',
-              fontSize: '12px',
-              fontFamily: "var(--font-family-mono)",
-              fontWeight: 600,
-              letterSpacing: '0.12em',
-              textDecoration: 'none',
-              borderRadius: '2px',
-            }}
-          >
-            EXPLORE ARCHIVE →
-          </Link>
-          <Link
-            to="/contact"
             style={{
               color: '#f5f5f2',
               fontSize: '12px',
               fontFamily: "var(--font-family-mono)",
               letterSpacing: '0.12em',
               textDecoration: 'none',
-              borderBottom: '1px solid rgba(255,255,255,0.3)',
-              paddingBottom: '2px',
+              borderBottom: '1px solid #d7ff00',
+              paddingBottom: '4px',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+            }}
+          >
+            EXPLORE ARCHIVE <span style={{ color: '#d7ff00' }}>→</span>
+          </Link>
+          <Link
+            to="/contact"
+            style={{
+              color: '#b3b3ad',
+              fontSize: '12px',
+              fontFamily: "var(--font-family-mono)",
+              letterSpacing: '0.12em',
+              textDecoration: 'none',
+              borderBottom: '1px solid rgba(255,255,255,0.2)',
+              paddingBottom: '4px',
             }}
           >
             GET IN TOUCH
@@ -133,7 +153,7 @@ export default function HeroSection({
         </div>
       </div>
 
-      {/* Bottom Footer Line */}
+      {/* Bottom Footer Status Line */}
       <div style={{ pointerEvents: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderTop: '1px solid var(--line-secondary)', paddingTop: '20px' }}>
         <div style={{ fontSize: '11px', color: '#73736e', letterSpacing: '0.15em' }}>
           SCROLL TO DISCOVER ↓
