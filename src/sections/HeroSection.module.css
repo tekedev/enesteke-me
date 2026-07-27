@@ -1,6 +1,6 @@
 .hero {
   position: relative;
-  z-index: 2;
+  z-index: 3;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -9,7 +9,7 @@
   font-family: var(--font-family-mono);
   color: #f5f5f2;
   pointer-events: none;
-  background-color: #000000;
+  background-color: transparent;
 }
 
 .controlsTrigger {
@@ -29,7 +29,7 @@
 
 .heroBio {
   font-size: clamp(0.98rem, 4.3vw, 1.1rem);
-  color: rgba(245, 245, 242, 0.85);
+  color: rgba(245, 245, 242, 0.88);
   max-width: 32ch;
   line-height: 1.55;
 }

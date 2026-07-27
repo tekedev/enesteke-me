@@ -54,7 +54,7 @@ void main() {
   
   vec2 mouseOffset = uMouse * 0.05;
   float n = snoise((st + mouseOffset) * uNoiseScale + uTime * 0.05);
-  float val = (n + 1.0) * 0.5 * uBgContrast * 0.15;
+  float val = (n + 1.0) * 0.5 * uBgContrast * 0.18;
   
   gl_FragColor = vec4(vec3(val), 1.0);
 }
@@ -87,16 +87,16 @@ void main() {
   vec3 viewDir = normalize(vViewPosition);
   
   // Fresnel Specular Edge Highlight
-  float fresnel = pow(1.0 - max(0.0, dot(normal, viewDir)), 3.0);
+  float fresnel = pow(1.0 - max(0.0, dot(normal, viewDir)), 2.5);
   
-  // Base Metallic Surface Tint (Deep Charcoal Gray with White Specular)
-  vec3 baseColor = vec3(0.18, 0.18, 0.20);
-  vec3 specularColor = vec3(0.90, 0.90, 0.95);
-  vec3 limeRim = vec3(0.84, 1.0, 0.0) * 0.25;
+  // High Contrast Metallic Surface Tint (Base Deep Gray with White Specular)
+  vec3 baseColor = vec3(0.24, 0.24, 0.28);
+  vec3 specularColor = vec3(0.95, 0.95, 1.0);
+  vec3 limeRim = vec3(0.84, 1.0, 0.0) * 0.35;
   
-  vec3 finalColor = mix(baseColor, specularColor, fresnel * 0.75) + limeRim * fresnel;
+  vec3 finalColor = mix(baseColor, specularColor, fresnel * 0.85) + limeRim * fresnel;
   
-  gl_FragColor = vec4(finalColor, 0.88);
+  gl_FragColor = vec4(finalColor, 0.92);
 }
 `;
 
@@ -125,17 +125,17 @@ export default function ETMonogramScene({
   const getScrollTransform = (state: string) => {
     switch (state) {
       case 'works':
-        return { posX: isMobile ? 0 : -6.0, posY: isMobile ? -3.0 : 0.5, scale: isMobile ? 0.45 : 0.65, bgContrast: 0.12, wireframeOpacity: 0.04 };
+        return { posX: isMobile ? 0 : -6.0, posY: isMobile ? -3.0 : 0.5, scale: isMobile ? 0.5 : 0.65, bgContrast: 0.12, wireframeOpacity: 0.05 };
       case 'manifesto':
-        return { posX: isMobile ? 0 : 0, posY: isMobile ? -2.0 : -0.5, scale: isMobile ? 0.55 : 0.85, bgContrast: 0.08, wireframeOpacity: 0.03 };
+        return { posX: isMobile ? 0 : 0, posY: isMobile ? -2.0 : -0.5, scale: isMobile ? 0.55 : 0.85, bgContrast: 0.08, wireframeOpacity: 0.04 };
       case 'hero':
       default:
         return {
-          posX: isMobile ? 1.6 : 4.8,
-          posY: isMobile ? -2.2 : 0.2,
-          scale: isMobile ? 0.65 : 0.95,
-          bgContrast: 0.25,
-          wireframeOpacity: isMobile ? 0.04 : 0.08
+          posX: isMobile ? 1.4 : 4.2,
+          posY: isMobile ? -1.8 : 0.1,
+          scale: isMobile ? 0.75 : 1.1,
+          bgContrast: 0.28,
+          wireframeOpacity: isMobile ? 0.08 : 0.12
         };
     }
   };
@@ -224,7 +224,7 @@ export default function ETMonogramScene({
         uTime: { value: 0 },
         uNoiseScale: { value: noiseScale },
         uScreenAspectRatio: { value: width / height },
-        uBgContrast: { value: 0.25 },
+        uBgContrast: { value: 0.28 },
       },
       depthWrite: false,
     });
@@ -274,7 +274,7 @@ export default function ETMonogramScene({
       color: 0xd7ff00,
       wireframe: true,
       transparent: true,
-      opacity: isMobile ? 0.04 : 0.08,
+      opacity: isMobile ? 0.08 : 0.12,
     });
     const outlineMesh = new THREE.Mesh(geometry, outlineMaterial);
 
