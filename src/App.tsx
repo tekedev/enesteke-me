@@ -6,6 +6,7 @@ import Navbar from './components/layout/Navbar';
 import LoadingScreen from './components/layout/LoadingScreen';
 import ErrorBoundary from './components/common/ErrorBoundary';
 import WebGLFallback from './components/common/WebGLFallback';
+import StaticMonogramFallback from './components/common/StaticMonogramFallback';
 
 const ETMonogramScene = lazy(() => import('./components/scene/ETMonogramScene'));
 const HomePage = lazy(() => import('./pages/HomePage'));
@@ -20,20 +21,24 @@ export default function App() {
   const [noiseScale, setNoiseScale] = useState<number>(9.00);
   const [loading, setLoading] = useState<boolean>(true);
   const [webglFailed, setWebglFailed] = useState<boolean>(false);
+  const [sceneReady, setSceneReady] = useState<boolean>(false);
   const [scrollState, setScrollState] = useState<'hero' | 'works' | 'manifesto'>('hero');
 
   const location = useLocation();
 
+  // Check if test parameter ?e2e=1 is present
+  const isE2E = new URLSearchParams(location.search).get('e2e') === '1';
+
   // Route Change Scroll Reset
   useEffect(() => {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    window.scrollTo({ top: 0, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
-  }, [location.pathname]);
+    window.scrollTo({ top: 0, behavior: (prefersReducedMotion || isE2E) ? 'auto' : 'smooth' });
+  }, [location.pathname, isE2E]);
 
   // Smooth Scroll with Lenis & Clean RAF Cleanup
   useEffect(() => {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReducedMotion) return;
+    if (prefersReducedMotion || isE2E) return;
 
     const lenis = new Lenis({
       duration: 1.2,
@@ -54,13 +59,16 @@ export default function App() {
       cancelAnimationFrame(rafId);
       lenis.destroy();
     };
-  }, []);
+  }, [isE2E]);
 
   return (
     <ErrorBoundary>
       {loading && <LoadingScreen onLoaded={() => setLoading(false)} />}
 
       <Navbar />
+
+      {/* Static Fallback Monogram visible while scene is loading */}
+      <StaticMonogramFallback visible={!sceneReady || webglFailed} />
 
       {/* WebGL Scene or Static 2D Fallback with Retry */}
       {webglFailed ? (
@@ -72,6 +80,7 @@ export default function App() {
             noiseScale={noiseScale}
             scrollState={scrollState}
             onContextLost={() => setWebglFailed(true)}
+            onSceneReady={() => setSceneReady(true)}
           />
         </Suspense>
       )}

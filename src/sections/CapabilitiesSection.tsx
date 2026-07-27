@@ -25,16 +25,21 @@ export default function CapabilitiesSection() {
               data-capability-index={idx === 0 ? '01' : cap.number}
               className={styles.capRow}
             >
-              {/* Number */}
-              <div style={{ fontSize: '16px', color: '#d7ff00', fontWeight: 600 }}>
-                [{cap.number}]
-              </div>
-
-              {/* Title & Description */}
-              <div>
+              {/* Number & Title Group Header */}
+              <div
+                data-capability-header={idx === 0 ? '01' : cap.number}
+                className={styles.capabilityHeader}
+              >
+                <div style={{ fontSize: '16px', color: '#d7ff00', fontWeight: 600, marginBottom: '8px' }}>
+                  [{cap.number}]
+                </div>
                 <h3 className={styles.capTitle}>
                   {cap.title}
                 </h3>
+              </div>
+
+              {/* Description */}
+              <div>
                 <p className={styles.capDesc}>
                   {cap.description}
                 </p>

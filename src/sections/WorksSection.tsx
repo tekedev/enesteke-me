@@ -5,6 +5,7 @@ import styles from './WorksSection.module.css';
 
 export default function WorksSection() {
   const featured = projects.slice(0, 4);
+  const isMobile = typeof window !== 'undefined' && window.innerWidth <= 600;
 
   return (
     <section id="works" className={styles.section}>
@@ -46,25 +47,28 @@ export default function WorksSection() {
                 data-project-slug={project.slug}
                 className={styles.projectScene}
               >
-                {/* Top Metadata */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-                  <span style={{ fontSize: '12px', color: '#73736e', letterSpacing: '0.2em' }}>
-                    [{project.number} / {project.year}]
-                  </span>
-                  <span style={{ fontSize: '11px', color: '#d7ff00', letterSpacing: '0.15em' }}>
-                    [{project.category}]
-                  </span>
+                {/* Top Metadata & Title Header */}
+                <div data-project-header={project.slug} className={styles.projectHeader}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                    <span style={{ fontSize: '12px', color: '#73736e', letterSpacing: '0.2em' }}>
+                      [{project.number} / {project.year}]
+                    </span>
+                    <span style={{ fontSize: '11px', color: '#d7ff00', letterSpacing: '0.15em' }}>
+                      [{project.category}]
+                    </span>
+                  </div>
+
+                  <h3 className={styles.projectTitle}>
+                    {project.title}
+                  </h3>
+                  <div style={{ fontSize: '13px', color: '#d7ff00', letterSpacing: '0.15em', marginBottom: '16px', textTransform: 'uppercase' }}>
+                    {project.subtitle}
+                  </div>
                 </div>
 
                 {/* Asymmetric Content Grid */}
                 <div className={isEven ? styles.gridNormal : styles.gridReverse}>
                   <div className={styles.copyArea} style={{ order: isEven ? 1 : 2 }}>
-                    <h3 className={styles.projectTitle}>
-                      {project.title}
-                    </h3>
-                    <div style={{ fontSize: '13px', color: '#d7ff00', letterSpacing: '0.15em', marginBottom: '16px', textTransform: 'uppercase' }}>
-                      {project.subtitle}
-                    </div>
                     <p style={{ color: '#b3b3ad', fontSize: '14px', lineHeight: 1.75, maxWidth: '520px', marginBottom: '32px' }}>
                       {project.description}
                     </p>
@@ -102,9 +106,13 @@ export default function WorksSection() {
                           // EDITORIAL DNA PIPELINE FLOW
                         </div>
                         <div className={styles.pipelineFlow}>
-                          <span className={styles.pipelineStep}>WEBSITE URL</span>
-                          <span style={{ color: '#d7ff00' }}>➔ VECTOR RAG ➔</span>
-                          <span className={styles.pipelineActive}>EDITORIAL DNA</span>
+                          <span className={styles.pipelineNode}>WEBSITE URL</span>
+                          <span style={{ color: '#d7ff00' }}>{isMobile ? '↓' : '➔'}</span>
+                          <span className={styles.pipelineNode}>CONTENT CRAWLER</span>
+                          <span style={{ color: '#d7ff00' }}>{isMobile ? '↓' : '➔'}</span>
+                          <span className={styles.pipelineNode}>VECTOR RAG</span>
+                          <span style={{ color: '#d7ff00' }}>{isMobile ? '↓' : '➔'}</span>
+                          <span className={styles.pipelineNodeActive}>EDITORIAL DNA</span>
                         </div>
                         <div style={{ fontSize: '10px', color: '#73736e' }}>
                           SAAS PLATFORM: HAREKI.COM
