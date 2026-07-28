@@ -18,6 +18,7 @@ export default function WorkVisual({ slug, compact }: WorkVisualProps) {
     case 'teke-app':
       return <TekeAppVisual compact={compact} />;
     case 'bist-whale-tracker':
+    case 'bist-tracker':
     case 'bist-engine':
       return <BistVisual compact={compact} />;
     default:
