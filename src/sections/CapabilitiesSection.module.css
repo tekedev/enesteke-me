@@ -2,8 +2,9 @@
   position: relative;
   z-index: 2;
   background-color: #000000;
-  padding: calc(var(--header-height) + 40px) var(--page-padding) 120px;
+  padding: 120px var(--page-padding);
   font-family: var(--font-family-mono);
+  border-top: 1px solid var(--line-secondary);
 }
 
 .container {
@@ -11,54 +12,24 @@
   margin: 0 auto;
 }
 
-.capRow {
+.capabilityRow {
   display: grid;
-  grid-template-columns: 80px 2.5fr 3.5fr;
-  gap: 40px;
-  align-items: flex-start;
-  padding: 60px 0;
+  grid-template-columns: 72px minmax(240px, 1.2fr) 1fr;
+  gap: 32px;
+  align-items: baseline;
+  padding: 36px 0;
   border-top: 1px solid var(--line-secondary);
   scroll-margin-top: calc(var(--header-height) + 24px);
 }
 
-.capTitle {
-  font-family: var(--font-family-sans);
-  font-size: clamp(2.2rem, 5vw, 3.6rem);
-  font-weight: 300;
-  color: #f5f5f2;
-  margin: 0 0 12px;
-  line-height: 1.1;
-}
-
-.capDesc {
-  color: #b3b3ad;
-  font-size: clamp(0.95rem, 3.5vw, 1.15rem);
-  line-height: 1.6;
-  margin: 0;
-}
-
-.techText {
-  font-size: 0.85rem;
-  color: #f5f5f2;
-  letter-spacing: 0.08em;
-  line-height: 1.8;
-  text-transform: uppercase;
-  overflow-wrap: anywhere;
-  word-break: break-word;
-}
-
 @media (max-width: 900px) {
   .section {
-    padding-top: calc(var(--header-height) + 20px);
+    padding: 80px var(--page-padding);
   }
 
-  .capRow {
+  .capabilityRow {
     grid-template-columns: 1fr;
-    gap: 16px;
-    padding: 36px 0;
-  }
-
-  .capTitle {
-    font-size: clamp(2.2rem, 9vw, 3.6rem);
+    gap: 12px;
+    padding: 24px 0;
   }
 }

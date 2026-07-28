@@ -13,30 +13,26 @@
 }
 
 .heroContent {
-  max-width: min(55vw, 920px);
+  max-width: min(52vw, 860px);
   pointer-events: auto;
   margin: 30px 0;
 }
 
-.controlsTrigger {
-  display: inline-block;
-}
-
 .heroTitle {
   font-family: var(--font-family-sans);
-  font-size: clamp(3rem, 14vw, 7.8rem);
+  font-size: clamp(3.8rem, 8.5vw, 8.8rem);
   font-weight: 300;
-  line-height: 0.88;
-  letter-spacing: -0.045em;
+  line-height: 0.86;
+  letter-spacing: -0.055em;
   color: #f5f5f2;
   text-transform: uppercase;
   margin-bottom: 24px;
 }
 
 .heroBio {
-  font-size: clamp(0.98rem, 4.3vw, 1.1rem);
+  font-size: clamp(0.98rem, 4.3vw, 1.15rem);
   color: rgba(245, 245, 242, 0.88);
-  max-width: 32ch;
+  max-width: 34ch;
   line-height: 1.55;
 }
 
@@ -76,13 +72,24 @@
   align-items: center;
 }
 
+@media (min-width: 901px) and (max-height: 950px) {
+  .heroTitle {
+    font-size: clamp(3.6rem, 7.2vw, 7.6rem);
+  }
+
+  .hero {
+    padding-top: calc(var(--header-height) + 30px);
+  }
+}
+
 @media (max-width: 900px) {
   .heroContent {
     max-width: 100%;
   }
 
-  .controlsTrigger {
-    display: none !important;
+  .heroTitle {
+    font-size: clamp(2.8rem, 11vw, 4.8rem);
+    line-height: 0.90;
   }
 
   .hero {

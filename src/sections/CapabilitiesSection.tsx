@@ -6,17 +6,17 @@ export default function CapabilitiesSection() {
     {
       number: '01',
       title: 'AGENTIC AI SYSTEMS',
-      description: 'Autonomous multi-agent pipelines, LLM orchestration, and vector RAG architectures.',
+      description: 'Autonomous software that observes, reasons and acts.',
     },
     {
       number: '02',
-      title: 'FULL-STACK DIGITAL PRODUCTS',
-      description: 'Scalable web applications, high-throughput APIs, and real-time streaming backends.',
+      title: 'DIGITAL PRODUCTS',
+      description: 'Scalable products from interface to infrastructure.',
     },
     {
       number: '03',
-      title: 'INTELLIGENT VISUAL EXPERIENCES',
-      description: 'Creative technology, interactive 3D WebGL, and high-performance user interfaces.',
+      title: 'INTERACTIVE EXPERIENCES',
+      description: 'Real-time visual systems shaped by motion and interaction.',
     },
   ];
 
@@ -34,20 +34,12 @@ export default function CapabilitiesSection() {
         </div>
 
         {/* 3 Clean Minimal Capabilities Rows */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
           {capabilities.map((cap) => (
             <div
               key={cap.number}
               data-capability-header={cap.number}
-              style={{
-                borderTop: '1px solid var(--line-secondary)',
-                paddingTop: '32px',
-                display: 'grid',
-                gridTemplateColumns: '80px 1fr 1.2fr',
-                gap: '24px',
-                alignItems: 'baseline',
-                scrollMarginTop: 'calc(var(--header-height) + 24px)',
-              }}
+              className={styles.capabilityRow}
             >
               <span style={{ fontSize: '12px', color: '#73736e', letterSpacing: '0.15em' }}>
                 [{cap.number}]

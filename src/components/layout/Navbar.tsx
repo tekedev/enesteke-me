@@ -1,71 +1,57 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import MobileMenu from './MobileMenu';
 import styles from './Navbar.module.css';
 
 export default function Navbar() {
-  const [time, setTime] = useState<string>('');
-  const [mobileOpen, setMobileOpen] = useState<boolean>(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const location = useLocation();
 
-  useEffect(() => {
-    const updateTime = () => {
-      const now = new Date();
-      const timeStr = now.toLocaleTimeString('en-GB', { timeZone: 'Europe/Istanbul', hour12: false });
-      setTime(`${timeStr} IST`);
-    };
-    updateTime();
-    const interval = setInterval(updateTime, 1000);
-    return () => clearInterval(interval);
-  }, []);
+  const isCurrent = (path: string) => location.pathname === path;
 
   return (
     <>
       <header className={styles.header}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <Link
-            to="/"
-            style={{
-              color: '#f5f5f2',
-              textDecoration: 'none',
-              fontSize: '18px',
-              fontWeight: 700,
-              letterSpacing: '0.18em',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-            }}
-          >
-            <span style={{ color: '#d7ff00' }}>ET</span>
-            <span style={{ fontSize: '12px', fontWeight: 400, color: '#73736e' }}>/ ENES TEKE</span>
-          </Link>
-        </div>
-
-        <nav className={styles.desktopNav}>
-          <Link to="/work">01 / WORK</Link>
-          <Link to="/about">02 / ABOUT</Link>
-          <a href="/#capabilities">03 / SYSTEMS</a>
-          <Link to="/contact">04 / CONTACT</Link>
-        </nav>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-          <span className={styles.desktopClock}>{time}</span>
-          <Link to="/contact" className={styles.desktopContactBtn}>
-            <span style={{ width: '5px', height: '5px', borderRadius: '50%', backgroundColor: '#d7ff00' }} />
-            CONTACT / HIRE
+        <div className={styles.container}>
+          {/* Left Brand */}
+          <Link to="/" className={styles.brand}>
+            ET <span style={{ color: '#73736e', margin: '0 4px' }}>/</span> ENES TEKE
           </Link>
 
+          {/* Desktop Navigation Links */}
+          <nav className={styles.navLinks} aria-label="Main Navigation">
+            <Link to="/work" className={isCurrent('/work') ? styles.activeLink : styles.link}>
+              WORK
+            </Link>
+            <Link to="/about" className={isCurrent('/about') ? styles.activeLink : styles.link}>
+              ABOUT
+            </Link>
+            <Link to="/contact" className={isCurrent('/contact') ? styles.activeLink : styles.link}>
+              CONTACT
+            </Link>
+          </nav>
+
+          {/* Desktop Start a Project CTA Button */}
+          <div className={styles.ctaWrapper}>
+            <Link to="/contact" className={styles.ctaButton}>
+              START A PROJECT <span style={{ color: '#d7ff00' }}>↗</span>
+            </Link>
+          </div>
+
+          {/* Mobile Menu Toggle Button */}
           <button
-            onClick={() => setMobileOpen(!mobileOpen)}
-            aria-expanded={mobileOpen}
-            aria-label="Toggle Mobile Menu"
-            className={styles.mobileMenuTrigger}
+            className={styles.mobileMenuToggle}
+            onClick={() => setMobileMenuOpen(true)}
+            aria-label="Open navigation menu"
+            aria-expanded={mobileMenuOpen}
           >
-            {mobileOpen ? 'CLOSE ✕' : 'MENU ☰'}
+            MENU ☰
           </button>
         </div>
       </header>
 
-      <MobileMenu open={mobileOpen} onClose={() => setMobileOpen(false)} />
+      {/* Accessible Full-screen Mobile Menu */}
+      <MobileMenu open={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
     </>
   );
 }
