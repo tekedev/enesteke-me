@@ -13,6 +13,11 @@ const shortDescriptions: Record<string, string> = {
   'bist-whale-tracker': 'High-frequency stock data collector and real-time whale movement monitor.',
 };
 
+function smoothstep(edge0: number, edge1: number, value: number) {
+  const t = Math.max(0, Math.min(1, (value - edge0) / (edge1 - edge0)));
+  return t * t * (3 - 2 * t);
+}
+
 export interface WorksSectionProps {
   progress?: number;
   active?: boolean;
@@ -67,8 +72,9 @@ export default function WorksSection({
   const etCenterX = etScreenRect?.centerX || Math.round(etX + etWidth / 2);
   const etCenterY = etScreenRect?.centerY || Math.round(etY + etHeight / 2);
 
+  const ACTIVE_PANEL_GAP_PX = 48;
   const panelWidth = Math.min(viewportWidth * 0.37, 660);
-  const requiredRadiusX = etWidth / 2 + 36 + panelWidth / 2;
+  const requiredRadiusX = etWidth / 2 + ACTIVE_PANEL_GAP_PX + panelWidth / 2;
   const radiusX = Math.min(Math.max(requiredRadiusX, viewportWidth * 0.30), viewportWidth * 0.42);
   const radiusY = Math.min(viewportHeight * 0.16, 135);
 
@@ -85,13 +91,13 @@ export default function WorksSection({
       const currentEtCenterY = etScreenRect?.centerY || Math.round(vHeight * 0.460);
 
       const pWidth = Math.min(vWidth * 0.37, 660);
-      const dLeft = currentEtRight + 36;
+      const dLeft = currentEtRight + 48;
       const mLeft = vWidth - pWidth - 40;
       const aLeft = Math.min(dLeft, mLeft);
       const aCenterX = aLeft + pWidth / 2;
       const aTranslateX = aCenterX - vWidth / 2;
 
-      const reqRadiusX = currentEtW / 2 + 36 + pWidth / 2;
+      const reqRadiusX = currentEtW / 2 + 48 + pWidth / 2;
       const rX = Math.min(Math.max(reqRadiusX, vWidth * 0.30), vWidth * 0.42);
       const rY = Math.min(vHeight * 0.16, 135);
 
@@ -132,10 +138,15 @@ export default function WorksSection({
   const activeProject = featured[activeIndex] || featured[0];
   const orbitAngle = progress * (featured.length - 1) * 1.05;
 
-  const entryOpacity = Math.min(1, Math.max(0, (worksEntryProgress - 0.04) * 3.5));
-  const exitOpacity = 1 - Math.min(1, Math.max(0, worksExitProgress * 1.5));
-  const stageOpacity = isMobile ? 1 : entryOpacity * exitOpacity;
-  const experienceVisible = !isMobile && stageOpacity > 0.01;
+  // Two-Phase Exit Opacity Math
+  const entryBackdropOpacity = smoothstep(0.00, 0.18, worksEntryProgress);
+  const entryOverlayOpacity = smoothstep(0.10, 0.38, worksEntryProgress);
+
+  const overlayExitOpacity = 1 - smoothstep(0.00, 0.52, worksExitProgress);
+  const backdropExitOpacity = 1 - smoothstep(0.52, 1.00, worksExitProgress);
+
+  const overlayOpacity = isMobile ? 1 : entryOverlayOpacity * overlayExitOpacity;
+  const backdropOpacity = isMobile ? 1 : entryBackdropOpacity * backdropExitOpacity;
 
   const markerX = etCenterX + Math.cos(orbitAngle) * radiusX;
   const markerY = etCenterY + Math.sin(orbitAngle) * radiusY;
@@ -145,8 +156,9 @@ export default function WorksSection({
     <div
       className={styles.worksBackdrop}
       data-works-backdrop="true"
-      data-visible={experienceVisible ? 'true' : 'false'}
-      style={{ opacity: stageOpacity }}
+      data-visible={backdropOpacity > 0.01 ? 'true' : 'false'}
+      data-backdrop-opacity={backdropOpacity.toFixed(3)}
+      style={{ opacity: backdropOpacity }}
     />
   );
 
@@ -155,13 +167,14 @@ export default function WorksSection({
     <div
       className={styles.worksExperienceOverlay}
       data-works-overlay="true"
-      data-visible={experienceVisible ? 'true' : 'false'}
+      data-visible={overlayOpacity > 0.01 ? 'true' : 'false'}
+      data-overlay-opacity={overlayOpacity.toFixed(3)}
       data-works-ready={worksReady ? 'true' : 'false'}
       data-works-active={active ? 'true' : 'false'}
       data-active-project-slug={activeProject.slug}
       data-layout-stable={layoutStable ? 'true' : 'false'}
       data-orbit-angle={orbitAngle.toFixed(2)}
-      style={{ opacity: stageOpacity }}
+      style={{ opacity: overlayOpacity }}
     >
       {/* Compact Desktop Header */}
       <div className={styles.headerRow}>

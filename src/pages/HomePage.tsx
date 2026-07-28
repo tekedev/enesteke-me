@@ -19,6 +19,7 @@ interface HomePageProps {
     sceneState: SceneState;
     heroExitProgress: number;
     worksEntryProgress: number;
+    worksExitProgress: number;
     worksProgress: number;
   }) => void;
   introProgress?: number;
@@ -43,9 +44,9 @@ export default function HomePage({
       onSceneStateChange(sceneState);
     }
     if (onExperienceUpdate) {
-      onExperienceUpdate({ sceneState, heroExitProgress, worksEntryProgress, worksProgress });
+      onExperienceUpdate({ sceneState, heroExitProgress, worksEntryProgress, worksExitProgress, worksProgress });
     }
-  }, [sceneState, heroExitProgress, worksEntryProgress, worksProgress, onSceneStateChange, onExperienceUpdate]);
+  }, [sceneState, heroExitProgress, worksEntryProgress, worksExitProgress, worksProgress, onSceneStateChange, onExperienceUpdate]);
 
   return (
     <div

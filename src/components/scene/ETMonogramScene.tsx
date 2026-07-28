@@ -125,12 +125,18 @@ void main() {
 }
 `;
 
+function smoothstep(edge0: number, edge1: number, value: number) {
+  const t = Math.max(0, Math.min(1, (value - edge0) / (edge1 - edge0)));
+  return t * t * (3 - 2 * t);
+}
+
 export interface ETMonogramSceneProps {
   roughness?: number;
   noiseScale?: number;
   scrollState?: 'hero' | 'works' | 'manifesto';
   heroExitProgress?: number;
   worksEntryProgress?: number;
+  worksExitProgress?: number;
   worksProgress?: number;
   introProgress?: number;
   onContextLost?: () => void;
@@ -143,6 +149,7 @@ export default function ETMonogramScene({
   scrollState = 'hero',
   heroExitProgress = 0,
   worksEntryProgress = 0,
+  worksExitProgress = 0,
   worksProgress = 0,
   introProgress = 1,
   onContextLost,
@@ -158,12 +165,14 @@ export default function ETMonogramScene({
 
   const introProgressRef = useRef(introProgress);
   const worksEntryProgressRef = useRef(worksEntryProgress);
+  const worksExitProgressRef = useRef(worksExitProgress);
   const worksProgressRef = useRef(worksProgress);
   const heroExitProgressRef = useRef(heroExitProgress);
 
   useEffect(() => {
     introProgressRef.current = introProgress;
     worksEntryProgressRef.current = worksEntryProgress;
+    worksExitProgressRef.current = worksExitProgress;
     worksProgressRef.current = worksProgress;
     heroExitProgressRef.current = heroExitProgress;
     if (bgMaterialRef.current) {
@@ -175,7 +184,7 @@ export default function ETMonogramScene({
     if (renderSingleFrameRef.current) {
       renderSingleFrameRef.current();
     }
-  }, [introProgress, worksEntryProgress, worksProgress, heroExitProgress]);
+  }, [introProgress, worksEntryProgress, worksExitProgress, worksProgress, heroExitProgress]);
 
   const sceneVisibleRef = useRef(scrollState !== 'manifesto');
   const onSceneReadyRef = useRef(onSceneReady);
@@ -349,7 +358,6 @@ export default function ETMonogramScene({
     };
 
     let firstRenderSignaled = false;
-    let currentOpacity = 1;
     let frameId = 0;
 
     const renderPass = (time: number = 0) => {
@@ -378,11 +386,13 @@ export default function ETMonogramScene({
       const currentBgContrast = THREE.MathUtils.lerp(heroTransform.bgContrast, worksTransformTarget.bgContrast, entry);
       const currentWireframeOpacity = THREE.MathUtils.lerp(heroTransform.wireframeOpacity, worksTransformTarget.wireframeOpacity, entry);
 
-      const targetOpacity = sceneVisibleRef.current ? 1 : 0;
-      currentOpacity += (targetOpacity - currentOpacity) * 0.08;
-      container.style.opacity = currentOpacity.toFixed(3);
+      // Direct, Pure Scroll-Linked ET Exit Opacity without history-dependent easing lag
+      const etExitOpacity = 1 - smoothstep(0.00, 0.48, worksExitProgressRef.current);
+      const sceneOpacity = scrollState === 'hero' ? 1 : scrollState === 'works' ? etExitOpacity : 0;
 
-      if (currentOpacity < 0.01) return;
+      container.style.opacity = sceneOpacity.toFixed(3);
+
+      if (sceneOpacity < 0.01) return;
 
       const p = introProgressRef.current;
       const currentHeroScale = THREE.MathUtils.lerp(0.25, targetScale, p);
@@ -434,7 +444,7 @@ export default function ETMonogramScene({
         containerRef.current.setAttribute('data-et-screen-y', String(screenY));
         containerRef.current.setAttribute('data-et-screen-width', String(screenW));
         containerRef.current.setAttribute('data-et-screen-height', String(screenH));
-        containerRef.current.setAttribute('data-et-opacity', currentOpacity.toFixed(2));
+        containerRef.current.setAttribute('data-et-opacity', sceneOpacity.toFixed(3));
         containerRef.current.setAttribute('data-et-frame-id', String(frameId));
       }
 

@@ -24,6 +24,7 @@ export default function App() {
   const [scrollState, setScrollState] = useState<SceneState>('hero');
   const [heroExitProgress, setHeroExitProgress] = useState<number>(0);
   const [worksEntryProgress, setWorksEntryProgress] = useState<number>(0);
+  const [worksExitProgress, setWorksExitProgress] = useState<number>(0);
   const [worksProgress, setWorksProgress] = useState<number>(0);
   const [introProgress, setIntroProgress] = useState<number>(0);
 
@@ -73,11 +74,13 @@ export default function App() {
     sceneState: SceneState;
     heroExitProgress: number;
     worksEntryProgress: number;
+    worksExitProgress: number;
     worksProgress: number;
   }) => {
     setScrollState(update.sceneState);
     setHeroExitProgress(update.heroExitProgress);
     setWorksEntryProgress(update.worksEntryProgress);
+    setWorksExitProgress(update.worksExitProgress);
     setWorksProgress(update.worksProgress);
   };
 
@@ -99,6 +102,7 @@ export default function App() {
             scrollState={scrollState}
             heroExitProgress={heroExitProgress}
             worksEntryProgress={worksEntryProgress}
+            worksExitProgress={worksExitProgress}
             worksProgress={worksProgress}
             introProgress={introProgress}
             onContextLost={() => setWebglFailed(true)}
