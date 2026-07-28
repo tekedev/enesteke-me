@@ -3,7 +3,6 @@ import { Routes, Route, useLocation } from 'react-router-dom';
 import Lenis from 'lenis';
 
 import Navbar from './components/layout/Navbar';
-import LoadingScreen from './components/layout/LoadingScreen';
 import ErrorBoundary from './components/common/ErrorBoundary';
 import WebGLFallback from './components/common/WebGLFallback';
 import StaticMonogramFallback from './components/common/StaticMonogramFallback';
@@ -19,7 +18,6 @@ const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 export default function App() {
   const [roughness, setRoughness] = useState<number>(0.10);
   const [noiseScale, setNoiseScale] = useState<number>(9.00);
-  const [loading, setLoading] = useState<boolean>(true);
   const [webglFailed, setWebglFailed] = useState<boolean>(false);
   const [sceneReady, setSceneReady] = useState<boolean>(false);
   const [scrollState, setScrollState] = useState<'hero' | 'works' | 'manifesto'>('hero');
@@ -29,6 +27,15 @@ export default function App() {
 
   // Check if test parameter ?e2e=1 is present
   const isE2E = new URLSearchParams(location.search).get('e2e') === '1';
+
+  // Manage data-intro-active attribute on document body
+  useEffect(() => {
+    if (introProgress < 0.95) {
+      document.body.setAttribute('data-intro-active', 'true');
+    } else {
+      document.body.setAttribute('data-intro-active', 'false');
+    }
+  }, [introProgress]);
 
   // Route Change Scroll Reset
   useEffect(() => {
@@ -64,8 +71,6 @@ export default function App() {
 
   return (
     <ErrorBoundary>
-      {loading && <LoadingScreen onLoaded={() => setLoading(false)} />}
-
       <Navbar />
 
       {/* Static Fallback Monogram visible while scene is loading */}
@@ -87,7 +92,7 @@ export default function App() {
         </Suspense>
       )}
 
-      {/* Main Page Routes */}
+      {/* Main Page Routes with pure black fallback */}
       <Suspense fallback={<div style={{ minHeight: '100vh', backgroundColor: '#000000' }} />}>
         <Routes>
           <Route

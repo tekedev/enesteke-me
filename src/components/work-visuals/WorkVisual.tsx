@@ -6,19 +6,20 @@ import BistVisual from './BistVisual';
 
 interface WorkVisualProps {
   slug: string;
+  compact?: boolean;
 }
 
-export default function WorkVisual({ slug }: WorkVisualProps) {
+export default function WorkVisual({ slug, compact }: WorkVisualProps) {
   switch (slug) {
     case 'nexus-ai':
-      return <NexusVisual />;
+      return <NexusVisual compact={compact} />;
     case 'hareki-dna':
-      return <HarekiVisual />;
+      return <HarekiVisual compact={compact} />;
     case 'teke-app':
-      return <TekeAppVisual />;
+      return <TekeAppVisual compact={compact} />;
     case 'bist-engine':
-      return <BistVisual />;
+      return <BistVisual compact={compact} />;
     default:
-      return <NexusVisual />;
+      return <NexusVisual compact={compact} />;
   }
 }

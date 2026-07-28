@@ -14,8 +14,11 @@ const shortDescriptions: Record<string, string> = {
 export default function WorksSection() {
   const featured = projects.slice(0, 4);
   const sectionRef = useRef<HTMLElement>(null);
-  const [scrollProgress, setScrollProgress] = useState(0);
+  const [activeIndex, setActiveIndex] = useState(0);
   const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth <= 900 : false);
+
+  const visualRefs = useRef<Array<HTMLDivElement | null>>([]);
+  const activeIndexRef = useRef(0);
   const rafRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -29,7 +32,7 @@ export default function WorksSection() {
   useEffect(() => {
     if (isMobile) return;
 
-    const update = () => {
+    const applyProgress = () => {
       rafRef.current = null;
       const el = sectionRef.current;
       if (!el) return;
@@ -38,28 +41,61 @@ export default function WorksSection() {
       const scrollableHeight = el.offsetHeight - window.innerHeight;
       if (scrollableHeight <= 0) return;
 
-      const rawProgress = -rect.top / scrollableHeight;
-      const clamped = Math.max(0, Math.min(1, rawProgress));
-      setScrollProgress(clamped);
+      const rawProgress = Math.max(0, Math.min(1, -rect.top / scrollableHeight));
+      const rawIndex = rawProgress * (featured.length - 1);
+
+      visualRefs.current.forEach((element, index) => {
+        if (!element) return;
+        const distance = index - rawIndex;
+        const absDist = Math.abs(distance);
+
+        let translateX = 0;
+        let translateZ = 0;
+        let rotateY = 0;
+        let scale = 1;
+
+        if (distance < 0) {
+          translateX = distance * 55;
+          translateZ = Math.max(-400, distance * 220);
+          rotateY = Math.min(25, -distance * 20);
+          scale = Math.max(0.65, 1 - absDist * 0.25);
+        } else if (distance > 0) {
+          translateX = distance * 55;
+          translateZ = Math.max(-400, -distance * 220);
+          rotateY = Math.max(-25, -distance * 20);
+          scale = Math.max(0.65, 1 - absDist * 0.25);
+        }
+
+        const nextActive = Math.round(rawIndex);
+        const opacity = index === nextActive ? 1 : Math.max(0, 0.18 - Math.max(0, absDist - 1) * 0.08);
+
+        element.style.transform = `translate3d(${translateX}vw, 0px, ${translateZ}px) rotateY(${rotateY}deg) scale(${scale})`;
+        element.style.opacity = String(opacity);
+        element.style.zIndex = String(Math.round(10 - absDist * 2));
+      });
+
+      const nextActive = Math.round(rawIndex);
+      if (nextActive !== activeIndexRef.current) {
+        activeIndexRef.current = nextActive;
+        setActiveIndex(nextActive);
+      }
     };
 
     const handleScroll = () => {
       if (rafRef.current !== null) return;
-      rafRef.current = requestAnimationFrame(update);
+      rafRef.current = requestAnimationFrame(applyProgress);
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
-    update();
+    applyProgress();
     return () => {
       window.removeEventListener('scroll', handleScroll);
       if (rafRef.current !== null) {
         cancelAnimationFrame(rafRef.current);
       }
     };
-  }, [isMobile]);
+  }, [isMobile, featured.length]);
 
-  const rawIndex = scrollProgress * (featured.length - 1);
-  const activeIndex = Math.round(rawIndex);
   const activeProject = featured[activeIndex] || featured[0];
 
   // Mobile Render Architecture
@@ -80,6 +116,7 @@ export default function WorksSection() {
             key={project.id}
             data-mobile-project={project.slug}
             className={styles.mobileProjectCard}
+            style={{ scrollMarginTop: 'calc(var(--header-height) + 12px)' }}
           >
             <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
               <span style={{ fontSize: '11px', color: '#73736e', letterSpacing: '0.15em' }}>
@@ -91,7 +128,7 @@ export default function WorksSection() {
             </div>
 
             <div className={styles.mobileVisualWrapper}>
-              <WorkVisual slug={project.slug} />
+              <WorkVisual slug={project.slug} compact />
             </div>
 
             <h3 style={{ fontFamily: 'var(--font-family-sans)', fontSize: '28px', fontWeight: 300, color: '#f5f5f2', textTransform: 'uppercase', margin: '4px 0' }}>
@@ -145,44 +182,18 @@ export default function WorksSection() {
         <div className={styles.showcaseStage}>
           {/* Visual Planes Layer */}
           <div className={styles.visualPlanesContainer}>
-            {featured.map((project, index) => {
-              const distance = index - rawIndex;
-              const absDist = Math.abs(distance);
-
-              let translateX = 0;
-              let translateZ = 0;
-              let rotateY = 0;
-              let scale = 1;
-
-              if (distance < 0) {
-                translateX = distance * 55;
-                translateZ = Math.max(-400, distance * 220);
-                rotateY = Math.min(25, -distance * 20);
-                scale = Math.max(0.65, 1 - absDist * 0.25);
-              } else if (distance > 0) {
-                translateX = distance * 55;
-                translateZ = Math.max(-400, -distance * 220);
-                rotateY = Math.max(-25, -distance * 20);
-                scale = Math.max(0.65, 1 - absDist * 0.25);
-              }
-
-              const opacity = Math.max(0, 0.18 - Math.max(0, absDist - 1) * 0.08);
-
-              return (
-                <div
-                  key={project.id}
-                  data-project-slug={project.slug}
-                  className={styles.projectVisualPlane}
-                  style={{
-                    transform: `translate3d(${translateX}vw, 0px, ${translateZ}px) rotateY(${rotateY}deg) scale(${scale})`,
-                    opacity: index === activeIndex ? 1 : opacity,
-                    zIndex: Math.round(10 - absDist * 2),
-                  }}
-                >
-                  <WorkVisual slug={project.slug} />
-                </div>
-              );
-            })}
+            {featured.map((project, index) => (
+              <div
+                key={project.id}
+                ref={(el) => { visualRefs.current[index] = el; }}
+                data-project-slug={project.slug}
+                data-project-index={index}
+                data-project-active={index === activeIndex ? 'true' : 'false'}
+                className={styles.projectVisualPlane}
+              >
+                <WorkVisual slug={project.slug} />
+              </div>
+            ))}
           </div>
 
           {/* Single Active Metadata Overlay (Zero Ghosting, Anchored Bottom-Left) */}

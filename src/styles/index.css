@@ -56,6 +56,13 @@ html, body {
   -webkit-font-smoothing: antialiased;
 }
 
+body[data-intro-active="true"] header,
+body[data-intro-active="true"] [data-hero-content="true"] {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
 ::selection {
   background: var(--accent-primary);
   color: #ffffff;

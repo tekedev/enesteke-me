@@ -1,0 +1,199 @@
+.visualCanvas {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 32px;
+  font-family: var(--font-family-mono);
+}
+
+.visualCanvasCompact {
+  padding: 20px;
+}
+
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 2;
+}
+
+.footerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 14px;
+  font-size: 10px;
+  color: #73736e;
+  z-index: 2;
+}
+
+/* NEXUS Art Direction */
+.nexusCanvas {
+  background: radial-gradient(circle at center, #1e1914 0%, #060504 100%);
+}
+
+.nexusMediaStage {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin: 20px 0;
+  position: relative;
+  z-index: 2;
+}
+
+.nexusMediaStageCompact {
+  grid-template-columns: 1fr;
+  margin: 12px 0;
+}
+
+.nexusFrame {
+  height: 240px;
+  background: linear-gradient(135deg, rgba(238, 153, 61, 0.2), rgba(16, 19, 27, 0.85));
+  border: 1px solid rgba(238, 153, 61, 0.4);
+  border-radius: 2px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.nexusFrameActive {
+  height: 270px;
+  background: linear-gradient(135deg, rgba(42, 210, 220, 0.25), rgba(37, 22, 42, 0.95));
+  border: 1px solid #2ad2dc;
+  border-radius: 2px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transform: translateY(-12px);
+  box-shadow: 0 10px 30px rgba(42, 210, 220, 0.25);
+}
+
+.nexusFrameCompact {
+  height: 220px;
+  transform: none !important;
+}
+
+/* HAREKI Editorial Art Direction */
+.harekiCanvas {
+  background: linear-gradient(135deg, #f0eee6 0%, #dcd8cc 100%);
+  color: #0a0a0a;
+}
+
+.harekiStage {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 24px;
+  margin: 24px 0;
+  align-items: center;
+}
+
+.harekiStageCompact {
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin: 12px 0;
+}
+
+.harekiPage {
+  height: 250px;
+  background: #ffffff;
+  border: 1px solid rgba(10, 10, 10, 0.2);
+  padding: 24px;
+  border-radius: 2px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.harekiPageCompact {
+  height: 200px;
+  padding: 16px;
+}
+
+/* TEKE.APP 3D Spatial Formats Art Direction */
+.tekeCanvas {
+  background: radial-gradient(circle at center, #1b1624 0%, #060408 100%);
+}
+
+.tekeStage {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+  z-index: 2;
+}
+
+.tekeStageCompact {
+  flex-direction: column;
+  gap: 12px;
+  margin: 12px 0;
+}
+
+.tekeVerticalPlane {
+  width: 150px;
+  height: 260px;
+  background: linear-gradient(180deg, rgba(42, 90, 240, 0.4), rgba(255, 119, 170, 0.25));
+  border: 1px solid #ff77aa;
+  border-radius: 2px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 12px 30px rgba(255, 119, 170, 0.2);
+}
+
+.tekeSquarePlane {
+  width: 210px;
+  height: 210px;
+  background: linear-gradient(135deg, rgba(255, 119, 170, 0.35), rgba(255, 170, 88, 0.25));
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.tekeWidePlane {
+  width: 230px;
+  height: 150px;
+  background: linear-gradient(135deg, rgba(42, 90, 240, 0.3), rgba(10, 10, 12, 0.85));
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 2px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* BIST Order Flow Art Direction */
+.bistCanvas {
+  background: radial-gradient(circle at center, #0f221e 0%, #030806 100%);
+}
+
+.bistStage {
+  height: 260px;
+  background: rgba(0, 0, 0, 0.75);
+  border: 1px solid rgba(0, 229, 163, 0.35);
+  border-radius: 2px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin: 20px 0;
+  z-index: 2;
+}
+
+.bistStageCompact {
+  height: 200px;
+  padding: 16px;
+  margin: 12px 0;
+}

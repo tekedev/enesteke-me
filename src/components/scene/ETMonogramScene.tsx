@@ -49,24 +49,27 @@ varying vec3 vViewPosition;
 varying vec3 vNormal;
 
 void main() {
-  // World-space angular and depth coordinate calculation
+  // World-space angular and depth coordinate calculation for spatial room
   float angularCoordinate = atan(vWorldPosition.z, vWorldPosition.y);
   float angularGrid = abs(sin(angularCoordinate * 12.0));
   float depthGrid = abs(sin(vWorldPosition.x * 1.2));
 
-  float angularLine = smoothstep(0.965, 1.0, angularGrid);
-  float depthLine = smoothstep(0.970, 1.0, depthGrid);
-  float distanceFade = smoothstep(13.0, 2.0, length(vViewPosition));
+  float angularLine = smoothstep(0.955, 1.0, angularGrid);
+  float depthLine = smoothstep(0.960, 1.0, depthGrid);
+  float distanceFade = smoothstep(14.0, 1.8, length(vViewPosition));
+
+  vec3 angularColor = vec3(0.22, 0.24, 0.28) * angularLine;
+  vec3 depthColor = vec3(0.14, 0.16, 0.18) * depthLine;
 
   float gridFactor = max(angularLine, depthLine) * distanceFade * uBgContrast * uIntroProgress;
 
-  vec2 pointerCenter = vec2(0.5 + uPointer.x * 0.16, 0.5 - uPointer.y * 0.12);
-  float pointerLight = smoothstep(0.72, 0.0, distance(vUv, pointerCenter));
+  vec2 pointerCenter = vec2(0.5 + uPointer.x * 0.18, 0.5 - uPointer.y * 0.14);
+  float pointerLight = smoothstep(0.78, 0.0, distance(vUv, pointerCenter));
 
-  vec3 baseRoom = vec3(0.015, 0.017, 0.021);
-  vec3 gridColor = vec3(gridFactor * 0.85);
-  vec3 neutralLight = vec3(0.20, 0.22, 0.27) * pointerLight * 0.22;
-  vec3 limeRim = vec3(0.84, 1.0, 0.0) * 0.04 * pointerLight * uIntroProgress;
+  vec3 baseRoom = vec3(0.012, 0.014, 0.018);
+  vec3 gridColor = (angularColor + depthColor) * gridFactor * 1.4;
+  vec3 neutralLight = vec3(0.26, 0.28, 0.35) * pointerLight * 0.35;
+  vec3 limeRim = vec3(0.84, 1.0, 0.0) * 0.06 * pointerLight * uIntroProgress;
 
   vec3 finalRoom = baseRoom + gridColor + neutralLight * distanceFade + limeRim;
   gl_FragColor = vec4(finalRoom, 1.0);
@@ -158,7 +161,7 @@ export default function ETMonogramScene({
           posX: isMobile ? 1.8 : 3.8,
           posY: isMobile ? -3.2 : 0.1,
           scale: isMobile ? 0.35 : 0.95,
-          bgContrast: isMobile ? 0.16 : 0.28,
+          bgContrast: isMobile ? 0.16 : 0.34,
           wireframeOpacity: isMobile ? 0.005 : 0.035
         };
     }
@@ -248,7 +251,7 @@ export default function ETMonogramScene({
         uPointer: { value: new THREE.Vector2(0, 0) },
         uTime: { value: 0 },
         uNoiseScale: { value: noiseScale },
-        uBgContrast: { value: 0.28 },
+        uBgContrast: { value: 0.34 },
         uDisplacement: { value: isMobile ? 0.025 : 0.085 },
         uIntroProgress: { value: introProgressRef.current },
       },
@@ -260,19 +263,19 @@ export default function ETMonogramScene({
     // Create Distinct 3D E and T Shapes with Distinct Spatial Depth Limits
     const logoGroup = new THREE.Group();
 
-    // E Letter Shape
+    // Extended E Letter Shape
     const eShape = new THREE.Shape();
     eShape.moveTo(-3.2, 4.0);
-    eShape.lineTo(-0.4, 4.0);
-    eShape.lineTo(-0.4, 2.6);
+    eShape.lineTo(0.2, 4.0); // Extended top arm
+    eShape.lineTo(0.2, 2.6);
     eShape.lineTo(-1.8, 2.6);
     eShape.lineTo(-1.8, 0.7);
-    eShape.lineTo(-0.6, 0.7);
-    eShape.lineTo(-0.6, -0.7);
+    eShape.lineTo(0.1, 0.7); // Extended middle arm
+    eShape.lineTo(0.1, -0.7);
     eShape.lineTo(-1.8, -0.7);
     eShape.lineTo(-1.8, -2.6);
-    eShape.lineTo(-0.4, -2.6);
-    eShape.lineTo(-0.4, -4.0);
+    eShape.lineTo(0.2, -2.6); // Extended bottom arm
+    eShape.lineTo(0.2, -4.0);
     eShape.lineTo(-3.2, -4.0);
     eShape.closePath();
 
@@ -280,16 +283,16 @@ export default function ETMonogramScene({
     const eGeometry = new THREE.ExtrudeGeometry(eShape, eExtrudeSettings);
     eGeometry.center();
 
-    // T Letter Shape
+    // Narrowed T Letter Shape
     const tShape = new THREE.Shape();
-    tShape.moveTo(-0.2, 4.0);
-    tShape.lineTo(3.8, 4.0);
-    tShape.lineTo(3.8, 2.6);
-    tShape.lineTo(2.4, 2.6);
-    tShape.lineTo(2.4, -4.0);
-    tShape.lineTo(1.0, -4.0);
-    tShape.lineTo(1.0, 2.6);
-    tShape.lineTo(-0.2, 2.6);
+    tShape.moveTo(0.2, 4.0);
+    tShape.lineTo(3.4, 4.0);
+    tShape.lineTo(3.4, 2.6);
+    tShape.lineTo(2.2, 2.6);
+    tShape.lineTo(2.2, -4.0);
+    tShape.lineTo(1.4, -4.0); // 30% Narrower stem
+    tShape.lineTo(1.4, 2.6);
+    tShape.lineTo(0.2, 2.6);
     tShape.closePath();
 
     const tExtrudeSettings = { steps: 4, depth: 1.5, bevelEnabled: true, bevelThickness: 0.35, bevelSize: 0.25, bevelSegments: 10 };
@@ -317,15 +320,15 @@ export default function ETMonogramScene({
 
     const eMesh = new THREE.Mesh(eGeometry, logoMaterial);
     const eOutline = new THREE.Mesh(eGeometry, outlineMaterial);
-    eMesh.position.set(-0.52, 0, 0.12);
+    eMesh.position.set(-0.72, 0, 0.18);
     eOutline.position.copy(eMesh.position);
 
     const tMesh = new THREE.Mesh(tGeometry, logoMaterial);
     const tOutline = new THREE.Mesh(tGeometry, outlineMaterial);
-    tMesh.position.set(0.56, 0.08, -0.14);
-    tMesh.scale.x = 0.76;
+    tMesh.position.set(0.68, 0.10, -0.22);
+    tMesh.scale.x = 0.62;
     tOutline.position.copy(tMesh.position);
-    tOutline.scale.x = 0.76;
+    tOutline.scale.x = 0.62;
 
     logoGroup.add(eMesh);
     logoGroup.add(eOutline);
@@ -392,12 +395,13 @@ export default function ETMonogramScene({
 
         currentMouse.lerp(targetMouse, 0.055);
 
-        // Enhanced Camera Yaw & Pitch Interaction
+        // Enhanced Camera Yaw & Pitch Pointer Parallax
         if (!isMobile) {
-          camera.position.x = currentMouse.x * 0.48;
-          camera.position.y = currentMouse.y * 0.30;
-          camera.lookAt(currentMouse.x * 0.22, currentMouse.y * 0.12, -0.8);
-          roomMesh.rotation.y = currentMouse.x * 0.09;
+          camera.position.x = currentMouse.x * 0.62;
+          camera.position.y = currentMouse.y * 0.38;
+          camera.lookAt(currentMouse.x * 0.30, currentMouse.y * 0.18, -0.9);
+          roomMesh.rotation.y = currentMouse.x * 0.13;
+          roomMesh.rotation.z = currentMouse.y * -0.055;
         }
 
         const target = targetTransformRef.current;
@@ -407,8 +411,8 @@ export default function ETMonogramScene({
         roomMaterial.uniforms.uPointer.value.copy(currentMouse);
 
         if (!isMobile) {
-          const targetRotX = currentMouse.y * -0.22;
-          const targetRotY = currentMouse.x * 0.34;
+          const targetRotX = currentMouse.y * -0.28;
+          const targetRotY = currentMouse.x * 0.42;
           const q = new THREE.Quaternion();
           q.setFromEuler(new THREE.Euler(targetRotX + Math.sin(time * 0.3) * 0.02, targetRotY + Math.cos(time * 0.25) * 0.02, 0));
           logoGroup.quaternion.slerp(q, 0.08);
