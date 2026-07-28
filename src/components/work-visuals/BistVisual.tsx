@@ -8,11 +8,11 @@ interface BistVisualProps {
 export default function BistVisual({ compact }: BistVisualProps) {
   return (
     <div
-      data-work-visual="bist-engine"
+      data-work-visual="bist-whale-tracker"
       className={`${styles.visualCanvas} ${styles.bistCanvas} ${compact ? styles.visualCanvasCompact : ''}`}
     >
       <div className={styles.headerRow}>
-        <span style={{ fontSize: '11px', color: '#00e5a3', letterSpacing: '0.22em' }}>BIST // ORDER FLOW RIBBONS</span>
+        <span style={{ fontSize: '11px', color: '#00e5a3', letterSpacing: '0.22em' }}>WHALETRACE // ORDER FLOW RIBBONS</span>
         <span style={{ fontSize: '10px', color: 'rgba(245,245,242,0.6)', letterSpacing: '0.15em' }}>WEBSOCKET FEED</span>
       </div>
 
