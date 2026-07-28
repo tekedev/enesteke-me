@@ -28,6 +28,12 @@ dist-ssr
 *.doc
 *.docx
 *.zip
+screenshots/
+screenshots_zip_temp/
+interaction-evidence*/
+test-results/
+playwright-report/
+*.webm
 *.rar
 *.7z
 *.tar.gz

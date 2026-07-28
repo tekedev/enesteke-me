@@ -7,13 +7,15 @@ export default function WorksSection() {
   const featured = projects.slice(0, 4);
   const sectionRef = useRef<HTMLElement>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const rafRef = useRef<number | null>(null);
 
   const isMobile = typeof window !== 'undefined' && window.innerWidth <= 900;
 
   useEffect(() => {
     if (isMobile) return;
 
-    const handleScroll = () => {
+    const update = () => {
+      rafRef.current = null;
       const el = sectionRef.current;
       if (!el) return;
 
@@ -26,13 +28,31 @@ export default function WorksSection() {
       setScrollProgress(clamped);
     };
 
+    const handleScroll = () => {
+      if (rafRef.current !== null) return;
+      rafRef.current = requestAnimationFrame(update);
+    };
+
     window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener('scroll', handleScroll);
+    update();
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (rafRef.current !== null) {
+        cancelAnimationFrame(rafRef.current);
+      }
+    };
   }, [isMobile]);
 
   const rawIndex = scrollProgress * (featured.length - 1);
   const activeIndex = Math.round(rawIndex);
+
+  // Short 1-sentence descriptions (max 100 chars)
+  const shortDescriptions: Record<string, string> = {
+    'nexus-ai': 'Autonomous multi-channel video production and content orchestration engine.',
+    'hareki-dna': 'Turns brand websites into personalized editorial content systems.',
+    'teke-app': 'Motion typography and automated multi-format video creation platform.',
+    'bist-engine': 'High-frequency stock data collector and real-time whale movement monitor.',
+  };
 
   return (
     <section id="works" ref={sectionRef} className={styles.worksSection}>
@@ -49,7 +69,6 @@ export default function WorksSection() {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
-            {/* Scroll Step Indicator */}
             <div style={{ fontSize: '12px', color: '#d7ff00', letterSpacing: '0.2em' }}>
               [0{activeIndex + 1} / 04]
             </div>
@@ -84,14 +103,12 @@ export default function WorksSection() {
 
             if (!isMobile) {
               if (distance < 0) {
-                // Previous Projects (drifted left & back)
                 translateX = distance * 55;
                 translateZ = Math.max(-400, distance * 220);
                 rotateY = Math.min(25, -distance * 20);
                 scale = Math.max(0.65, 1 - absDist * 0.25);
                 opacity = Math.max(0, 1 - absDist * 0.7);
               } else if (distance > 0) {
-                // Next Projects (drifted right & back)
                 translateX = distance * 55;
                 translateZ = Math.max(-400, -distance * 220);
                 rotateY = Math.max(-25, -distance * 20);
@@ -118,7 +135,7 @@ export default function WorksSection() {
               >
                 {/* Left Metadata & Title Header */}
                 <div data-project-header={project.slug} className={styles.projectCopy}>
-                  <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '12px' }}>
+                  <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '8px' }}>
                     <span style={{ fontSize: '12px', color: '#73736e', letterSpacing: '0.2em' }}>
                       [{project.number}]
                     </span>
@@ -131,12 +148,8 @@ export default function WorksSection() {
                     {project.title}
                   </h3>
 
-                  <div style={{ fontSize: '12px', color: '#d7ff00', letterSpacing: '0.15em', marginBottom: '16px', textTransform: 'uppercase' }}>
-                    {project.subtitle}
-                  </div>
-
-                  <p style={{ color: '#b3b3ad', fontSize: '13px', lineHeight: 1.6, marginBottom: '28px', maxWidth: '320px' }}>
-                    {project.description}
+                  <p style={{ color: '#b3b3ad', fontSize: '13px', lineHeight: 1.5, marginBottom: '24px', maxWidth: '280px' }}>
+                    {shortDescriptions[project.slug] || project.description}
                   </p>
 
                   <Link to={`/work/${project.slug}`} className={styles.ctaButton}>
@@ -144,129 +157,123 @@ export default function WorksSection() {
                   </Link>
                 </div>
 
-                {/* Right Visual Panel Showcase */}
+                {/* Right Visual Panel (Occupies 80% Panel Area with Rich Graphics) */}
                 <div className={styles.visualPanel}>
                   {index === 0 && (
-                    /* NEXUS: Layered video frame strips & automated multi-model pipeline planes */
-                    <>
-                      <div style={{ fontSize: '10px', color: '#d7ff00', letterSpacing: '0.15em' }}>
-                        ➜ [NEXUS_CORE_v2.5] MULTI-MODEL PIPELINE
+                    /* NEXUS: Layered video frame strips & thumbnail surfaces */
+                    <div style={{ width: '100%', height: '100%', position: 'relative', background: 'radial-gradient(circle at center, #141418 0%, #050507 100%)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '24px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ fontSize: '11px', color: '#d7ff00', letterSpacing: '0.2em' }}>NEXUS // MEDIA PIPELINE</span>
+                        <span style={{ fontSize: '10px', color: '#73736e' }}>4K @ 60FPS</span>
                       </div>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '16px', margin: '20px 0', height: '100%', alignItems: 'center' }}>
-                        <div style={{ border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(0,0,0,0.6)', padding: '16px', borderRadius: '2px' }}>
-                          <div style={{ fontSize: '11px', color: '#f5f5f2', marginBottom: '8px' }}>GEMINI 2.5 PRO SCRIPT GENERATION</div>
-                          <div style={{ fontSize: '10px', color: '#73736e', fontFamily: 'var(--font-family-mono)' }}>[00:02] Multi-modal prompt expansion active</div>
-                          <div style={{ fontSize: '10px', color: '#d7ff00', marginTop: '8px' }}>FFmpeg 1080x1920 @ 60fps [OK]</div>
+                      
+                      {/* Layered Video Frames Graphic */}
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', margin: '20px 0', position: 'relative' }}>
+                        <div style={{ height: '220px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '2px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '12px' }}>
+                          <span style={{ fontSize: '10px', color: '#73736e' }}>FRAME 01</span>
+                          <span style={{ fontSize: '12px', color: '#f5f5f2' }}>RAW SCRIPT</span>
                         </div>
-                        <div style={{ border: '1px solid rgba(215,255,0,0.3)', background: 'rgba(215,255,0,0.04)', padding: '16px', borderRadius: '2px' }}>
-                          <div style={{ fontSize: '28px', fontWeight: 300, color: '#f5f5f2' }}>260+</div>
-                          <div style={{ fontSize: '10px', color: '#d7ff00' }}>ACCOUNTS DISTRIBUTED</div>
+                        <div style={{ height: '240px', background: 'rgba(215,255,0,0.05)', border: '1px solid #d7ff00', borderRadius: '2px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '12px', transform: 'translateY(-10px)' }}>
+                          <span style={{ fontSize: '10px', color: '#d7ff00' }}>FRAME 02</span>
+                          <span style={{ fontSize: '12px', color: '#f5f5f2' }}>AI SYNTHESIS</span>
+                        </div>
+                        <div style={{ height: '220px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '2px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '12px' }}>
+                          <span style={{ fontSize: '10px', color: '#73736e' }}>FRAME 03</span>
+                          <span style={{ fontSize: '12px', color: '#f5f5f2' }}>RENDERED OUTPUT</span>
                         </div>
                       </div>
-                      <div style={{ fontSize: '10px', color: '#73736e', textAlign: 'right' }}>
-                        STATUS: LIVE PRODUCTION ENGINE
+
+                      <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '12px' }}>
+                        <span style={{ fontSize: '10px', color: '#73736e' }}>AUTOMATED DISTRIBUTION ENGINE</span>
+                        <span style={{ fontSize: '10px', color: '#d7ff00' }}>RENDER ACTIVE ✓</span>
                       </div>
-                    </>
+                    </div>
                   )}
 
                   {index === 1 && (
-                    /* HAREKI: Editorial Content Surfaces & Web DNA Flow Planes */
-                    <>
-                      <div style={{ fontSize: '10px', color: '#73736e', letterSpacing: '0.15em', display: 'flex', justifyContent: 'space-between' }}>
-                        <span>// EDITORIAL DNA PIPELINE FLOW</span>
-                        <span style={{ color: '#d7ff00' }}>4 PIPELINE STAGES</span>
+                    /* HAREKI: Editorial Page Mockup Surfaces & Content Blocks */
+                    <div style={{ width: '100%', height: '100%', position: 'relative', background: 'radial-gradient(circle at center, #121612 0%, #050705 100%)', padding: '24px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ fontSize: '11px', color: '#d7ff00', letterSpacing: '0.2em' }}>HAREKI // EDITORIAL SURFACES</span>
+                        <span style={{ fontSize: '10px', color: '#73736e' }}>VECTOR RAG</span>
                       </div>
-                      <div className={styles.pipelineCanvas}>
-                        {/* SVG Flow Arrows Overlay */}
-                        <svg
-                          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 1 }}
-                          viewBox="0 0 400 200"
-                          preserveAspectRatio="none"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <defs>
-                            <marker id="pipeline-arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
-                              <path d="M0,0 L7,3.5 L0,7 Z" fill="rgba(245,245,242,.42)" />
-                            </marker>
-                            <marker id="pipeline-arrow-active" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
-                              <path d="M0,0 L7,3.5 L0,7 Z" fill="rgba(215,255,0,.78)" />
-                            </marker>
-                          </defs>
-                          {/* Path 1: WEBSITE URL -> CONTENT CRAWLER */}
-                          <path d="M 140 40 L 235 40" stroke="rgba(245, 245, 242, 0.34)" strokeWidth="1.25" strokeDasharray="5 7" markerEnd="url(#pipeline-arrow)" />
-                          {/* Path 2: CONTENT CRAWLER -> VECTOR RAG */}
-                          <path d="M 310 60 V 110 H 145 V 160" stroke="rgba(245, 245, 242, 0.34)" strokeWidth="1.25" markerEnd="url(#pipeline-arrow)" />
-                          {/* Path 3: VECTOR RAG -> EDITORIAL DNA */}
-                          <path d="M 145 165 L 235 165" stroke="rgba(215, 255, 0, 0.72)" strokeWidth="1.25" strokeDasharray="5 7" markerEnd="url(#pipeline-arrow-active)" />
-                        </svg>
 
-                        <div data-pipeline-step="1" className={styles.pipelineNode}>
-                          <span style={{ color: '#73736e', fontSize: '10px', display: 'block' }}>[INPUT]</span>
-                          WEBSITE URL
+                      {/* Editorial Canvas Graphic */}
+                      <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '20px', margin: '20px 0', alignItems: 'center' }}>
+                        <div style={{ height: '220px', border: '1px solid rgba(245,245,242,0.2)', background: 'rgba(0,0,0,0.7)', padding: '20px', borderRadius: '2px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                          <div style={{ fontSize: '20px', fontFamily: 'var(--font-family-sans)', fontWeight: 300, color: '#f5f5f2', lineHeight: 1.1 }}>BRAND SYSTEM ARCHITECTURE</div>
+                          <div style={{ fontSize: '10px', color: '#73736e' }}>EXTRACTED EDITORIAL DNA</div>
                         </div>
-                        <div data-pipeline-step="2" className={styles.pipelineNode} style={{ justifySelf: 'end' }}>
-                          <span style={{ color: '#73736e', fontSize: '10px', display: 'block' }}>[STAGE 01]</span>
-                          CONTENT CRAWLER
-                        </div>
-                        <div data-pipeline-step="3" className={styles.pipelineNode}>
-                          <span style={{ color: '#73736e', fontSize: '10px', display: 'block' }}>[STAGE 02]</span>
-                          VECTOR RAG
-                        </div>
-                        <div data-pipeline-step="4" className={styles.pipelineNodeActive} style={{ justifySelf: 'end' }}>
-                          <span style={{ color: '#d7ff00', opacity: 0.8, fontSize: '10px', display: 'block' }}>[OUTPUT]</span>
-                          EDITORIAL DNA
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                          <div style={{ height: '100px', border: '1px solid #d7ff00', background: 'rgba(215,255,0,0.06)', padding: '16px', borderRadius: '2px' }}>
+                            <div style={{ fontSize: '11px', color: '#d7ff00' }}>CONTENT MATRIX</div>
+                          </div>
+                          <div style={{ height: '100px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.5)', padding: '16px', borderRadius: '2px' }}>
+                            <div style={{ fontSize: '11px', color: '#b3b3ad' }}>DYNAMIC PUBLISHING</div>
+                          </div>
                         </div>
                       </div>
-                      <div style={{ fontSize: '10px', color: '#73736e', display: 'flex', justifyContent: 'space-between', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '12px' }}>
-                        <span>SAAS PLATFORM: HAREKI.COM</span>
-                        <span style={{ color: '#d7ff00' }}>ACTIVE PIPELINE ✓</span>
+
+                      <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '12px' }}>
+                        <span style={{ fontSize: '10px', color: '#73736e' }}>HAREKI.COM</span>
+                        <span style={{ fontSize: '10px', color: '#d7ff00' }}>SYSTEM ONLINE ✓</span>
                       </div>
-                    </>
+                    </div>
                   )}
 
                   {index === 2 && (
-                    /* TEKE.APP: Motion Typography & Spatial Social Media Panels */
-                    <>
-                      <div style={{ fontSize: '10px', color: '#73736e', letterSpacing: '0.15em' }}>
-                        // SOCIAL MEDIA STUDIO METRICS
+                    /* TEKE.APP: Spatial Media Planes */
+                    <div style={{ width: '100%', height: '100%', position: 'relative', background: 'radial-gradient(circle at center, #181512 0%, #070605 100%)', padding: '24px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ fontSize: '11px', color: '#d7ff00', letterSpacing: '0.2em' }}>TEKE.APP // MOTION STUDIO</span>
+                        <span style={{ fontSize: '10px', color: '#73736e' }}>MULTI-FORMAT</span>
                       </div>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', margin: '20px 0' }}>
-                        <div style={{ border: '1px solid rgba(255,255,255,0.12)', padding: '20px', borderRadius: '2px' }}>
-                          <div style={{ fontSize: '32px', color: '#f5f5f2', fontWeight: 300 }}>100%</div>
-                          <div style={{ fontSize: '10px', color: '#73736e', marginTop: '4px' }}>AUTOMATED RENDERING</div>
+
+                      <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', alignItems: 'center', margin: '20px 0' }}>
+                        <div style={{ width: '130px', height: '220px', border: '1px solid #d7ff00', background: 'rgba(215,255,0,0.05)', borderRadius: '2px', padding: '12px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
+                          <span style={{ fontSize: '10px', color: '#d7ff00' }}>9:16 VERTICAL</span>
                         </div>
-                        <div style={{ border: '1px solid rgba(215,255,0,0.3)', padding: '20px', borderRadius: '2px', background: 'rgba(215,255,0,0.03)' }}>
-                          <div style={{ fontSize: '32px', color: '#d7ff00', fontWeight: 300 }}>AI VISION</div>
-                          <div style={{ fontSize: '10px', color: '#73736e', marginTop: '4px' }}>MULTI-MODEL PIPELINE</div>
+                        <div style={{ width: '180px', height: '180px', border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(0,0,0,0.6)', borderRadius: '2px', padding: '12px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
+                          <span style={{ fontSize: '10px', color: '#f5f5f2' }}>1:1 SQUARE</span>
+                        </div>
+                        <div style={{ width: '200px', height: '130px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.4)', borderRadius: '2px', padding: '12px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
+                          <span style={{ fontSize: '10px', color: '#73736e' }}>16:9 WIDE</span>
                         </div>
                       </div>
-                      <div style={{ fontSize: '10px', color: '#73736e' }}>
-                        PLATFORM: TEKE.APP
+
+                      <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '12px' }}>
+                        <span style={{ fontSize: '10px', color: '#73736e' }}>TEKE.APP</span>
+                        <span style={{ fontSize: '10px', color: '#d7ff00' }}>CREATIVE STUDIO ✓</span>
                       </div>
-                    </>
+                    </div>
                   )}
 
                   {index === 3 && (
-                    /* BIST: Streaming Order Flow Ribbons & High-Speed Data Stream */
-                    <>
-                      <div style={{ fontSize: '10px', color: '#d7ff00', letterSpacing: '0.15em' }}>
-                        // BIST WHALE ORDER FLOW MONITOR
+                    /* BIST: Order Flow Ribbons & Data Surface */
+                    <div style={{ width: '100%', height: '100%', position: 'relative', background: 'radial-gradient(circle at center, #101816 0%, #040807 100%)', padding: '24px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ fontSize: '11px', color: '#d7ff00', letterSpacing: '0.2em' }}>BIST // ORDER FLOW RIBBONS</span>
+                        <span style={{ fontSize: '10px', color: '#73736e' }}>WEBSOCKET REALTIME</span>
                       </div>
-                      <div style={{ fontSize: '11px', color: '#b3b3ad', lineHeight: 1.8, margin: '20px 0' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '8px' }}>
-                          <span>THYAO.IS</span>
-                          <span style={{ color: '#d7ff00' }}>+₺4.2M WHALE BUY</span>
+
+                      <div style={{ height: '220px', border: '1px solid rgba(215,255,0,0.3)', background: 'rgba(0,0,0,0.7)', borderRadius: '2px', padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', margin: '20px 0' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span style={{ fontSize: '18px', color: '#f5f5f2', fontWeight: 300 }}>HIGH-SPEED DATA STREAM</span>
+                          <span style={{ fontSize: '12px', color: '#d7ff00' }}>TELEGRAM BOT ACTIVE</span>
                         </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '8px' }}>
-                          <span>ASELS.IS</span>
-                          <span style={{ color: '#d7ff00' }}>+₺2.8M ACCUMULATION</span>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
+                          <div style={{ height: '40px', background: 'rgba(215,255,0,0.15)', borderTop: '2px solid #d7ff00' }} />
+                          <div style={{ height: '60px', background: 'rgba(215,255,0,0.25)', borderTop: '2px solid #d7ff00' }} />
+                          <div style={{ height: '35px', background: 'rgba(215,255,0,0.1)', borderTop: '2px solid #d7ff00' }} />
+                          <div style={{ height: '75px', background: 'rgba(215,255,0,0.35)', borderTop: '2px solid #d7ff00' }} />
                         </div>
                       </div>
-                      <div style={{ fontSize: '10px', color: '#73736e' }}>
-                        ENGINE: WEBSOCKET + TELEGRAM BOT
+
+                      <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '12px' }}>
+                        <span style={{ fontSize: '10px', color: '#73736e' }}>FINTECH DATA ENGINE</span>
+                        <span style={{ fontSize: '10px', color: '#d7ff00' }}>MONITOR ACTIVE ✓</span>
                       </div>
-                    </>
+                    </div>
                   )}
                 </div>
               </article>

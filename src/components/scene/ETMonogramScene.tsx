@@ -2,15 +2,31 @@ import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 
 const roomVertexShader = `
+uniform float uTime;
+uniform vec2 uPointer;
+uniform float uDisplacement;
+
 varying vec2 vUv;
 varying vec3 vNormal;
 varying vec3 vPosition;
 
+float waveNoise(vec3 p) {
+  float a = sin(p.x * 0.72 + uTime * 0.22);
+  float b = sin(p.y * 0.48 - uTime * 0.17);
+  float c = sin((p.x + p.y) * 0.31 + uPointer.x * 1.4);
+  return (a + b + c) / 3.0;
+}
+
 void main() {
   vUv = uv;
+  vec3 transformed = position;
+  float pointerFalloff = smoothstep(1.2, 0.0, distance(uv, vec2(0.5 + uPointer.x * 0.12, 0.5 - uPointer.y * 0.12)));
+  float displacement = waveNoise(position * 0.36) * uDisplacement + pointerFalloff * uPointer.x * 0.18;
+  transformed += normal * displacement;
+
+  vPosition = transformed;
   vNormal = normalize(normalMatrix * normal);
-  vPosition = position;
-  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(transformed, 1.0);
 }
 `;
 
@@ -56,26 +72,26 @@ float snoise(vec2 v){
 
 void main() {
   vec2 st = vUv;
-  vec2 pointerOffset = uPointer * 0.15;
-  vec2 warpedUv = st + pointerOffset;
+  vec2 pointerCenter = vec2(0.5 + uPointer.x * 0.16, 0.5 - uPointer.y * 0.12);
+  float pointerLight = smoothstep(0.72, 0.0, distance(vUv, pointerCenter));
+  float depthFade = smoothstep(-8.0, 6.0, vPosition.z);
   
-  // Curved Room Spatial Grid Chords
-  vec2 grid = abs(fract(warpedUv * uNoiseScale - uTime * 0.03) - 0.5);
+  // Curved Spatial Grid Chords
+  vec2 grid = abs(fract(st * uNoiseScale - uTime * 0.03) - 0.5);
   float line = smoothstep(0.0, 0.04, min(grid.x, grid.y));
-  float gridFactor = (1.0 - line) * 0.12 * uBgContrast;
+  float gridFactor = (1.0 - line) * 0.14 * uBgContrast;
   
   // Volumetric Spatial Noise
-  float n = snoise(warpedUv * uNoiseScale * 0.6 + uTime * 0.04);
-  float noiseVal = (n + 1.0) * 0.5 * uBgContrast * 0.20;
+  float n = snoise(st * uNoiseScale * 0.6 + uTime * 0.04);
+  float noiseVal = (n + 1.0) * 0.5 * uBgContrast * 0.22;
   
-  // Subtle Ambient Specular Vignette
-  float vignette = smoothstep(1.2, 0.2, length(st - 0.5));
-  vec3 color = vec3((noiseVal + gridFactor) * vignette);
+  vec3 baseRoom = vec3(0.015, 0.017, 0.021);
+  vec3 gridColor = vec3(noiseVal + gridFactor);
+  vec3 neutralLight = vec3(0.20, 0.22, 0.27) * pointerLight * 0.22;
+  vec3 limeRim = vec3(0.84, 1.0, 0.0) * 0.04 * pointerLight;
   
-  // Subtle Lime Rim Accent Light
-  vec3 limeRim = vec3(0.84, 1.0, 0.0) * 0.04 * (1.0 - vignette);
-  
-  gl_FragColor = vec4(color + limeRim, 1.0);
+  vec3 finalRoom = baseRoom + gridColor + neutralLight * depthFade + limeRim;
+  gl_FragColor = vec4(finalRoom, 1.0);
 }
 `;
 
@@ -107,14 +123,14 @@ void main() {
   // Fresnel Edge Specular
   float fresnel = pow(1.0 - max(0.0, dot(normal, viewDir)), 2.8);
   
-  // Studio Neutral Metallic Surface
-  vec3 baseColor = vec3(0.11, 0.115, 0.13);
-  vec3 specularColor = vec3(0.95, 0.95, 1.0);
-  vec3 limeRim = vec3(0.84, 1.0, 0.0) * 0.08;
+  // Studio Neutral Dark Specular Surface
+  vec3 baseColor = vec3(0.14, 0.145, 0.16);
+  vec3 specularColor = vec3(0.98, 0.98, 1.0);
+  vec3 limeRim = vec3(0.84, 1.0, 0.0) * 0.10;
   
-  vec3 finalColor = mix(baseColor, specularColor, fresnel * 0.78) + limeRim * fresnel;
+  vec3 finalColor = mix(baseColor, specularColor, fresnel * 0.82) + limeRim * fresnel;
   
-  gl_FragColor = vec4(finalColor, 0.96);
+  gl_FragColor = vec4(finalColor, 0.98);
 }
 `;
 
@@ -151,7 +167,7 @@ export default function ETMonogramScene({
           posX: isMobile ? 1.8 : 3.8,
           posY: isMobile ? -3.2 : 0.1,
           scale: isMobile ? 0.35 : 0.95,
-          bgContrast: isMobile ? 0.16 : 0.26,
+          bgContrast: isMobile ? 0.16 : 0.28,
           wireframeOpacity: isMobile ? 0.005 : 0.035
         };
     }
@@ -228,7 +244,7 @@ export default function ETMonogramScene({
     camera.position.z = 18;
     const scene = new THREE.Scene();
 
-    // Inverted Cylinder Spatial Room Mesh
+    // Inverted Cylinder Spatial Room Mesh with Vertex Displacement
     const roomGeometry = new THREE.CylinderGeometry(10, 10, 18, 48, 24, true);
     roomGeometry.rotateZ(Math.PI / 2);
 
@@ -241,36 +257,52 @@ export default function ETMonogramScene({
         uPointer: { value: new THREE.Vector2(0, 0) },
         uTime: { value: 0 },
         uNoiseScale: { value: noiseScale },
-        uBgContrast: { value: 0.26 },
+        uBgContrast: { value: 0.28 },
+        uDisplacement: { value: isMobile ? 0.025 : 0.085 },
       },
     });
     bgMaterialRef.current = roomMaterial;
     const roomMesh = new THREE.Mesh(roomGeometry, roomMaterial);
     scene.add(roomMesh);
 
-    // Create Unified 3D ET Monogram Shape (E + T interlocking)
-    const shape = new THREE.Shape();
-    shape.moveTo(-3.2, 4.0);
-    shape.lineTo(3.8, 4.0);
-    shape.lineTo(3.8, 2.6);
-    shape.lineTo(2.2, 2.6);
-    shape.lineTo(2.2, -4.0);
-    shape.lineTo(0.8, -4.0);
-    shape.lineTo(0.8, -2.6);
-    shape.lineTo(-1.6, -2.6);
-    shape.lineTo(-1.6, -0.7);
-    shape.lineTo(0.6, -0.7);
-    shape.lineTo(0.6, 0.7);
-    shape.lineTo(-1.6, 0.7);
-    shape.lineTo(-1.6, 2.6);
-    shape.lineTo(-3.2, 2.6);
-    shape.closePath();
+    // Create Distinct 3D ET Monogram Geometry (E and T with distinct spatial depth layers)
+    const logoGroup = new THREE.Group();
 
-    const extrudeSettings = {
-      steps: 4, depth: 1.4, bevelEnabled: true, bevelThickness: 0.35, bevelSize: 0.25, bevelSegments: 12
-    };
-    const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-    geometry.center();
+    // E Letter Shape
+    const eShape = new THREE.Shape();
+    eShape.moveTo(-3.2, 4.0);
+    eShape.lineTo(-0.4, 4.0);
+    eShape.lineTo(-0.4, 2.6);
+    eShape.lineTo(-1.8, 2.6);
+    eShape.lineTo(-1.8, 0.7);
+    eShape.lineTo(-0.6, 0.7);
+    eShape.lineTo(-0.6, -0.7);
+    eShape.lineTo(-1.8, -0.7);
+    eShape.lineTo(-1.8, -2.6);
+    eShape.lineTo(-0.4, -2.6);
+    eShape.lineTo(-0.4, -4.0);
+    eShape.lineTo(-3.2, -4.0);
+    eShape.closePath();
+
+    const eExtrudeSettings = { steps: 4, depth: 1.2, bevelEnabled: true, bevelThickness: 0.3, bevelSize: 0.2, bevelSegments: 10 };
+    const eGeometry = new THREE.ExtrudeGeometry(eShape, eExtrudeSettings);
+    eGeometry.center();
+
+    // T Letter Shape (Offset slightly forward for clear 'ET' spatial separation)
+    const tShape = new THREE.Shape();
+    tShape.moveTo(-0.2, 4.0);
+    tShape.lineTo(3.8, 4.0);
+    tShape.lineTo(3.8, 2.6);
+    tShape.lineTo(2.4, 2.6);
+    tShape.lineTo(2.4, -4.0);
+    tShape.lineTo(1.0, -4.0);
+    tShape.lineTo(1.0, 2.6);
+    tShape.lineTo(-0.2, 2.6);
+    tShape.closePath();
+
+    const tExtrudeSettings = { steps: 4, depth: 1.5, bevelEnabled: true, bevelThickness: 0.35, bevelSize: 0.25, bevelSegments: 10 };
+    const tGeometry = new THREE.ExtrudeGeometry(tShape, tExtrudeSettings);
+    tGeometry.center();
 
     const logoMaterial = new THREE.ShaderMaterial({
       vertexShader: logoVertexShader,
@@ -283,18 +315,27 @@ export default function ETMonogramScene({
     });
     logoMaterialRef.current = logoMaterial;
 
-    const mesh = new THREE.Mesh(geometry, logoMaterial);
     const outlineMaterial = new THREE.MeshBasicMaterial({
       color: 0xd7ff00,
       wireframe: true,
       transparent: true,
       opacity: isMobile ? 0.005 : 0.035,
     });
-    const outlineMesh = new THREE.Mesh(geometry, outlineMaterial);
 
-    const logoGroup = new THREE.Group();
-    logoGroup.add(mesh);
-    logoGroup.add(outlineMesh);
+    const eMesh = new THREE.Mesh(eGeometry, logoMaterial);
+    const eOutline = new THREE.Mesh(eGeometry, outlineMaterial);
+    eMesh.position.z = 0;
+    eOutline.position.z = 0;
+
+    const tMesh = new THREE.Mesh(tGeometry, logoMaterial);
+    const tOutline = new THREE.Mesh(tGeometry, outlineMaterial);
+    tMesh.position.z = 0.24; // Slight forward z-offset for T separation
+    tOutline.position.z = 0.24;
+
+    logoGroup.add(eMesh);
+    logoGroup.add(eOutline);
+    logoGroup.add(tMesh);
+    logoGroup.add(tOutline);
     scene.add(logoGroup);
 
     let targetMouse = new THREE.Vector2(0, 0);
@@ -433,7 +474,8 @@ export default function ETMonogramScene({
       }
       roomGeometry.dispose();
       roomMaterial.dispose();
-      geometry.dispose();
+      eGeometry.dispose();
+      tGeometry.dispose();
       logoMaterial.dispose();
       outlineMaterial.dispose();
       if (renderer && container.contains(renderer.domElement)) {
