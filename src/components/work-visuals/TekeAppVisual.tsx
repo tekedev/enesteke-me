@@ -1,5 +1,6 @@
 import React from 'react';
 import type { Project } from '../../types/portfolio';
+import { PROJECT_MEDIA } from '../../data/projectMedia';
 import styles from './WorkVisuals.module.css';
 
 interface TekeAppVisualProps {
@@ -8,7 +9,8 @@ interface TekeAppVisualProps {
 }
 
 export default function TekeAppVisual({ project, compact }: TekeAppVisualProps) {
-  const imgSrc = project?.image || '/projects/tekeapp.jpg';
+  const media = project ? PROJECT_MEDIA[project.id] : PROJECT_MEDIA.tekeapp;
+  const imgSrc = compact && media?.mobileSrc ? media.mobileSrc : media?.desktopSrc || '/projects/tekeapp.jpg';
 
   return (
     <div
@@ -27,35 +29,45 @@ export default function TekeAppVisual({ project, compact }: TekeAppVisualProps) 
       <div className={`${styles.tekeStage} ${compact ? styles.tekeStageCompact : ''}`}>
         {/* 9:16 Vertical Reel Plane */}
         <div className={styles.tekePlaneVertical}>
-          <img src={imgSrc} alt="" className={styles.projectMedia} />
+          <img
+            src={imgSrc}
+            alt=""
+            data-project-media-id={project?.id || 'tekeapp'}
+            data-project-media-slug={project?.slug || 'teke-app'}
+            data-project-media-type={media?.mediaType || 'procedural-art'}
+            className={styles.projectMedia}
+          />
         </div>
 
         {!compact && (
           <div className={styles.tekePlaneSquare}>
-            <div style={{ fontSize: '14px', color: '#f5f5f2', fontWeight: 300 }}>
-              KINETIC TYPOGRAPHY
-            </div>
-            <div style={{ height: '70px', borderRadius: '2px', overflow: 'hidden' }}>
-              <img src={imgSrc} alt="" className={styles.projectMedia} />
+            <div style={{ height: '100%', borderRadius: '2px', overflow: 'hidden' }}>
+              <img
+                src={imgSrc}
+                alt=""
+                data-project-media-id={project?.id || 'tekeapp'}
+                data-project-media-slug={project?.slug || 'teke-app'}
+                data-project-media-type={media?.mediaType || 'procedural-art'}
+                className={styles.projectMedia}
+              />
             </div>
           </div>
         )}
 
         {!compact && (
           <div className={styles.tekePlaneLandscape}>
-            <div style={{ fontSize: '12px', color: '#f5f5f2', textTransform: 'uppercase' }}>
-              CINEMATIC MOTION
-            </div>
-            <div style={{ height: '60px', borderRadius: '2px', overflow: 'hidden' }}>
-              <img src={imgSrc} alt="" className={styles.projectMedia} />
+            <div style={{ height: '100%', borderRadius: '2px', overflow: 'hidden' }}>
+              <img
+                src={imgSrc}
+                alt=""
+                data-project-media-id={project?.id || 'tekeapp'}
+                data-project-media-slug={project?.slug || 'teke-app'}
+                data-project-media-type={media?.mediaType || 'procedural-art'}
+                className={styles.projectMedia}
+              />
             </div>
           </div>
         )}
-      </div>
-
-      <div className={styles.footerRow}>
-        <span style={{ color: 'rgba(245,245,242,0.5)' }}>MULTI-FORMAT MOTION PIPELINE</span>
-        <span style={{ color: '#ff77aa' }}>ACTIVE ✓</span>
       </div>
     </div>
   );

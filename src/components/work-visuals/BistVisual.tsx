@@ -1,5 +1,6 @@
 import React from 'react';
 import type { Project } from '../../types/portfolio';
+import { PROJECT_MEDIA } from '../../data/projectMedia';
 import styles from './WorkVisuals.module.css';
 
 interface BistVisualProps {
@@ -8,6 +9,9 @@ interface BistVisualProps {
 }
 
 export default function BistVisual({ project, compact }: BistVisualProps) {
+  const media = project ? PROJECT_MEDIA[project.id] : PROJECT_MEDIA.whaletrace;
+  const imgSrc = compact && media?.mobileSrc ? media.mobileSrc : media?.desktopSrc || '/projects/whaletrace.jpg';
+
   return (
     <div
       data-work-visual="bist-whale-tracker"
@@ -75,13 +79,15 @@ export default function BistVisual({ project, compact }: BistVisualProps) {
 
         {/* Real Project Asset Overlay */}
         <div style={{ position: 'absolute', width: '50%', height: '55%', right: '5%', bottom: '10%', opacity: 0.25, borderRadius: '4px', overflow: 'hidden', border: '1px solid rgba(0,229,163,0.3)' }}>
-          <img src={project?.image || '/projects/whaletrace.jpg'} alt="" className={styles.projectMedia} />
+          <img
+            src={imgSrc}
+            alt=""
+            data-project-media-id={project?.id || 'whaletrace'}
+            data-project-media-slug={project?.slug || 'bist-whale-tracker'}
+            data-project-media-type={media?.mediaType || 'real-capture'}
+            className={styles.projectMedia}
+          />
         </div>
-      </div>
-
-      <div className={styles.footerRow}>
-        <span style={{ color: 'rgba(245,245,242,0.5)' }}>REAL-TIME LIQUIDITY WAVE</span>
-        <span style={{ color: '#00e5a3' }}>ORDER FLOW ACTIVE ✓</span>
       </div>
     </div>
   );

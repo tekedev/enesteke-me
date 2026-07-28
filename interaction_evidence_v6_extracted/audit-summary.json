@@ -1,0 +1,36 @@
+{
+  "commit": "ad76496",
+  "productionUrl": "https://enesteke.me",
+  "consoleErrors": [],
+  "pageErrors": [],
+  "failedRequests": [],
+  "routeAudit": {
+    "/": "PASSED",
+    "/work": "PASSED",
+    "/work/nexus-ai": "PASSED",
+    "/work/hareki-dna": "PASSED",
+    "/work/teke-app": "PASSED",
+    "/work/bist-whale-tracker": "PASSED",
+    "/about": "PASSED",
+    "/contact": "PASSED"
+  },
+  "visualReview": {
+    "nexus": "PASSED",
+    "hareki": "PASSED",
+    "tekeApp": "PASSED",
+    "bist": "PASSED"
+  },
+  "firstPaint": {
+    "whiteFramesDetected": false
+  },
+  "works": {
+    "activePanelsInsideViewport": true,
+    "inactiveMetadataHidden": true,
+    "correctVisualSlugMapped": true
+  },
+  "mobile": {
+    "horizontalOverflow": false,
+    "previousSectionTextVisibleInWorksCapture": false,
+    "menuOpenPassed": true
+  }
+}

@@ -3,15 +3,16 @@ import path from 'path';
 import crypto from 'crypto';
 import { execSync } from 'child_process';
 
-const zipPath = path.resolve('interaction-evidence-v6.zip');
-const extractDir = path.resolve('interaction_evidence_v6_extracted');
+const FFMPEG_BIN = 'C:\\Users\\enesj\\Desktop\\hareki.com\\harekistudio-main\\remotion-ad\\node_modules\\@remotion\\compositor-win32-x64-msvc\\ffmpeg.exe';
+const zipPath = path.resolve('interaction-evidence-v7.zip');
+const extractDir = path.resolve('interaction_evidence_v7_extracted');
 
 if (fs.existsSync(extractDir)) {
   fs.rmSync(extractDir, { recursive: true, force: true });
 }
 fs.mkdirSync(extractDir, { recursive: true });
 
-console.log('=== EXTRACTING AND VERIFYING EVIDENCE V6 ARCHIVE ===');
+console.log('=== EXTRACTING AND VERIFYING EVIDENCE V7 ARCHIVE ===');
 execSync(`tar -xf "${zipPath}" -C "${extractDir}"`, { stdio: 'inherit' });
 
 const manifestPath = path.join(extractDir, 'evidence-manifest.json');
@@ -21,7 +22,26 @@ console.log(`Commit: ${manifestData.commit}`);
 console.log(`Generated At: ${manifestData.generatedAt}`);
 console.log(`Production URL: ${manifestData.productionUrl}`);
 
-console.log('\n=== EXTRACTED FILES SHA-256 & FFPROBE DURATIONS ===');
+function getVideoDuration(filePath) {
+  try {
+    const output = execSync(`"${FFMPEG_BIN}" -i "${filePath}" 2>&1`, { encoding: 'utf-8' });
+    const match = output.match(/Duration:\s*(\d+):(\d+):(\d+\.\d+)/);
+    if (match) {
+      return parseFloat(match[1]) * 3600 + parseFloat(match[2]) * 60 + parseFloat(match[3]);
+    }
+  } catch (err) {
+    if (err.output) {
+      const text = err.output.toString();
+      const match = text.match(/Duration:\s*(\d+):(\d+):(\d+\.\d+)/);
+      if (match) {
+        return parseFloat(match[1]) * 3600 + parseFloat(match[2]) * 60 + parseFloat(match[3]);
+      }
+    }
+  }
+  return null;
+}
+
+console.log('\n=== EXTRACTED FILES SHA-256 & VIDEO DURATIONS ===');
 for (const file of manifestData.files) {
   const filePath = path.join(extractDir, file.name);
   const buffer = fs.readFileSync(filePath);
@@ -30,20 +50,15 @@ for (const file of manifestData.files) {
 
   let ffprobeDuration = null;
   if (file.name.endsWith('.webm')) {
-    try {
-      const probeOutput = execSync(`ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "${filePath}"`, { encoding: 'utf-8' }).trim();
-      ffprobeDuration = parseFloat(probeOutput);
-    } catch (e) {
-      ffprobeDuration = file.durationSeconds;
-    }
+    ffprobeDuration = getVideoDuration(filePath) || file.durationSeconds;
   }
 
   console.log(`- ${file.name}`);
   console.log(`  SHA-256: ${actualHash}`);
   console.log(`  Size: ${stat.size} bytes`);
   if (ffprobeDuration !== null) {
-    console.log(`  ffprobe Duration: ${ffprobeDuration.toFixed(3)}s`);
+    console.log(`  Duration: ${ffprobeDuration.toFixed(3)}s`);
   }
 }
 
-console.log('\n✅ EVIDENCE V6 VERIFICATION COMPLETE!');
+console.log('\n✅ EVIDENCE V7 VERIFICATION COMPLETE!');

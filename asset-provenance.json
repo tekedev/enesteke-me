@@ -1,0 +1,30 @@
+{
+  "nexus": {
+    "file": "public/projects/nexus.jpg",
+    "type": "real-capture",
+    "source": "local product capture",
+    "projectId": "nexus",
+    "projectSlug": "nexus-ai"
+  },
+  "hareki": {
+    "file": "public/projects/hareki.jpg",
+    "type": "real-capture",
+    "source": "local product capture",
+    "projectId": "hareki",
+    "projectSlug": "hareki-dna"
+  },
+  "tekeapp": {
+    "file": "public/projects/tekeapp.jpg",
+    "type": "procedural-art",
+    "source": "custom social media motion studio art",
+    "projectId": "tekeapp",
+    "projectSlug": "teke-app"
+  },
+  "whaletrace": {
+    "file": "public/projects/whaletrace.jpg",
+    "type": "real-capture",
+    "source": "local product capture",
+    "projectId": "whaletrace",
+    "projectSlug": "bist-whale-tracker"
+  }
+}

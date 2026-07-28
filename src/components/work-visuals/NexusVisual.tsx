@@ -1,5 +1,6 @@
 import React from 'react';
 import type { Project } from '../../types/portfolio';
+import { PROJECT_MEDIA } from '../../data/projectMedia';
 import styles from './WorkVisuals.module.css';
 
 interface NexusVisualProps {
@@ -8,7 +9,8 @@ interface NexusVisualProps {
 }
 
 export default function NexusVisual({ project, compact }: NexusVisualProps) {
-  const imgSrc = project?.image || '/projects/nexus.jpg';
+  const media = project ? PROJECT_MEDIA[project.id] : PROJECT_MEDIA.nexus;
+  const imgSrc = compact && media?.mobileSrc ? media.mobileSrc : media?.desktopSrc || '/projects/nexus.jpg';
 
   return (
     <div
@@ -29,16 +31,18 @@ export default function NexusVisual({ project, compact }: NexusVisualProps) {
         {!compact && <div className={styles.nexusBackgroundPlaneB} />}
 
         <div className={styles.nexusPrimarySurface}>
-          <img src={imgSrc} alt="" className={styles.projectMedia} />
+          <img
+            src={imgSrc}
+            alt=""
+            data-project-media-id={project?.id || 'nexus'}
+            data-project-media-slug={project?.slug || 'nexus-ai'}
+            data-project-media-type={media?.mediaType || 'real-capture'}
+            className={styles.projectMedia}
+          />
           <div className={styles.nexusPlayhead}>
             <div className={styles.nexusPlayheadBar} />
           </div>
         </div>
-      </div>
-
-      <div className={styles.footerRow}>
-        <span style={{ color: 'rgba(245,245,242,0.5)' }}>AUTOMATED MEDIA ORCHESTRATION</span>
-        <span style={{ color: '#d7ff00' }}>ONLINE ✓</span>
       </div>
     </div>
   );
