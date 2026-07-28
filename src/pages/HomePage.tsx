@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import ETIntroSequence from '../components/intro/ETIntroSequence';
 import HeroSection from '../sections/HeroSection';
 import IntroSection from '../sections/IntroSection';
 import WorksSection from '../sections/WorksSection';
@@ -61,9 +62,10 @@ export default function HomePage({
 
   return (
     <>
+      <ETIntroSequence />
       <SEO
-        title="Enes Teke — Creative Developer & AI Systems Engineer"
-        description="Personal portfolio of Enes Teke. Specialized in AI systems engineering, computer vision, production web applications, and high-performance WebGL digital experiences."
+        title="Enes Teke — Full-Stack Developer & AI Systems Engineer"
+        description="Engineering systems that think, act and scale. Portfolio of Enes Teke spanning Agentic AI systems, FinTech intelligence, and digital experiences."
         url="https://enesteke.me"
       />
       <HeroSection

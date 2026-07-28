@@ -31,6 +31,9 @@ export default function MobileMenu({ open, onClose }: MobileMenuProps) {
 
   if (!open) return null;
 
+  const github = profile.socials.find((s) => s.name === 'GitHub')?.url || 'https://github.com/tekedev';
+  const linkedin = profile.socials.find((s) => s.name === 'LinkedIn')?.url || 'https://linkedin.com/in/enesteke';
+
   return (
     <div
       role="dialog"
@@ -57,12 +60,13 @@ export default function MobileMenu({ open, onClose }: MobileMenuProps) {
         <Link
           to="/"
           onClick={onClose}
-          style={{ textDecoration: 'none', color: '#f5f5f2', fontSize: '18px', fontWeight: 700, letterSpacing: '0.15em' }}
+          style={{ textDecoration: 'none', color: '#f5f5f2', fontSize: '16px', fontWeight: 500, letterSpacing: '0.18em' }}
         >
-          <span style={{ color: '#d7ff00' }}>ET</span> / ENES TEKE
+          ET <span style={{ color: '#73736e' }}>/</span> ENES TEKE
         </Link>
         <button
           onClick={onClose}
+          aria-label="Close navigation menu"
           style={{
             background: 'none',
             border: '1px solid #d7ff00',
@@ -80,8 +84,8 @@ export default function MobileMenu({ open, onClose }: MobileMenuProps) {
         </button>
       </div>
 
-      {/* Menu Navigation Links */}
-      <nav style={{ display: 'flex', flexDirection: 'column', gap: '28px', margin: '40px 0' }}>
+      {/* Clean Mobile Navigation Links */}
+      <nav style={{ display: 'flex', flexDirection: 'column', gap: '32px', margin: '40px 0' }}>
         <Link
           to="/work"
           onClick={onClose}
@@ -116,23 +120,6 @@ export default function MobileMenu({ open, onClose }: MobileMenuProps) {
         >
           <span style={{ fontSize: '14px', color: '#d7ff00', fontFamily: 'var(--font-family-mono)' }}>02</span> ABOUT
         </Link>
-        <a
-          href="/#capabilities"
-          onClick={onClose}
-          style={{
-            fontFamily: "var(--font-family-sans)",
-            fontSize: '36px',
-            fontWeight: 300,
-            color: '#f5f5f2',
-            textDecoration: 'none',
-            letterSpacing: '-0.02em',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '16px',
-          }}
-        >
-          <span style={{ fontSize: '14px', color: '#d7ff00', fontFamily: 'var(--font-family-mono)' }}>03</span> SYSTEMS
-        </a>
         <Link
           to="/contact"
           onClick={onClose}
@@ -148,21 +135,22 @@ export default function MobileMenu({ open, onClose }: MobileMenuProps) {
             gap: '16px',
           }}
         >
-          <span style={{ fontSize: '14px', color: '#d7ff00', fontFamily: 'var(--font-family-mono)' }}>04</span> CONTACT
+          <span style={{ fontSize: '14px', color: '#d7ff00', fontFamily: 'var(--font-family-mono)' }}>03</span> CONTACT
         </Link>
       </nav>
 
-      {/* Menu Footer Contact Info */}
+      {/* Clean Menu Footer */}
       <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '24px', fontSize: '12px', color: '#73736e' }}>
         <div style={{ marginBottom: '12px' }}>
-          DIRECT: <a href={`mailto:${profile.email}`} style={{ color: '#d7ff00', textDecoration: 'none' }}>{profile.email}</a>
+          <a href={`mailto:${profile.email}`} style={{ color: '#d7ff00', textDecoration: 'none', letterSpacing: '0.1em' }}>{profile.email}</a>
         </div>
-        <div style={{ display: 'flex', gap: '16px' }}>
-          {profile.socials.map((s) => (
-            <a key={s.name} href={s.url} target="_blank" rel="noopener noreferrer" style={{ color: '#b3b3ad', textDecoration: 'none' }}>
-              {s.name} ↗
-            </a>
-          ))}
+        <div style={{ display: 'flex', gap: '24px' }}>
+          <a href={github} target="_blank" rel="noopener noreferrer" style={{ color: '#b3b3ad', textDecoration: 'none' }}>
+            GITHUB ↗
+          </a>
+          <a href={linkedin} target="_blank" rel="noopener noreferrer" style={{ color: '#b3b3ad', textDecoration: 'none' }}>
+            LINKEDIN ↗
+          </a>
         </div>
       </div>
     </div>

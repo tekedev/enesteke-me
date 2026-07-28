@@ -13,17 +13,17 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: calc(var(--header-height) + 24px) var(--page-padding) 40px;
+  padding: calc(var(--header-height) + 16px) var(--page-padding) 32px;
   background-color: #000000;
 }
 
 .headerRow {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: center;
   border-bottom: 1px solid var(--line-secondary);
-  padding-bottom: 20px;
-  z-index: 5;
+  padding-bottom: 14px;
+  z-index: 25;
 }
 
 .showcaseStage {
@@ -34,49 +34,54 @@
   justify-content: center;
   perspective: 1600px;
   transform-style: preserve-3d;
-  margin: 20px 0;
+  margin: 16px 0;
 }
 
-.projectCard {
+.visualPlanesContainer {
   position: absolute;
-  width: min(92vw, 1380px);
-  height: min(68vh, 650px);
-  display: grid;
-  grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
-  gap: clamp(32px, 4vw, 72px);
+  inset: 0;
+  display: flex;
   align-items: center;
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  justify-content: center;
+  transform-style: preserve-3d;
+}
+
+.projectVisualPlane {
+  position: absolute;
+  width: min(72vw, 1180px);
+  height: min(64vh, 650px);
+  background: #08080a;
+  border: 1px solid rgba(245, 245, 242, 0.14);
+  border-radius: 2px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.85);
   will-change: transform, opacity;
 }
 
-.projectCopy {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+.activeMetaOverlay {
+  position: absolute;
+  left: clamp(28px, 4vw, 72px);
+  bottom: clamp(28px, 5vh, 64px);
+  z-index: 30;
+  max-width: 340px;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.70) 75%, transparent);
+  padding: 24px 28px;
+  border-left: 2px solid #d7ff00;
+  border-radius: 2px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .projectTitle {
   font-family: var(--font-family-sans);
-  font-size: clamp(2.6rem, 5vw, 5.8rem);
+  font-size: clamp(2.2rem, 4.5vw, 4.8rem);
   font-weight: 300;
-  line-height: 0.92;
+  line-height: 0.94;
   letter-spacing: -0.04em;
   color: #f5f5f2;
   text-transform: uppercase;
-  margin: 12px 0;
-}
-
-.visualPanel {
-  background: #08080a;
-  border: 1px solid rgba(245, 245, 242, 0.14);
-  border-radius: 2px;
-  height: 100%;
-  padding: 0;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.85);
+  margin: 8px 0 12px;
 }
 
 .ctaButton {
@@ -104,7 +109,7 @@
     position: relative;
     height: auto;
     overflow: visible;
-    padding-top: calc(var(--header-height) + 20px);
+    padding-top: calc(var(--header-height) + 16px);
   }
 
   .showcaseStage {
@@ -112,21 +117,34 @@
     display: flex;
     flex-direction: column;
     gap: 60px;
-    margin: 30px 0;
+    margin: 20px 0;
   }
 
-  .projectCard {
+  .visualPlanesContainer {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 60px;
+  }
+
+  .projectVisualPlane {
     position: relative;
     width: 100%;
-    height: auto;
-    grid-template-columns: 1fr;
-    gap: 20px;
+    aspect-ratio: 4 / 3;
+    height: min(52svh, 440px);
     opacity: 1 !important;
     transform: none !important;
   }
 
-  .visualPanel {
-    aspect-ratio: 4 / 3;
-    height: min(55svh, 480px);
+  .activeMetaOverlay {
+    position: relative;
+    left: auto;
+    bottom: auto;
+    max-width: 100%;
+    background: transparent;
+    padding: 0;
+    border-left: none;
+    backdrop-filter: none;
+    margin-top: 16px;
   }
 }
