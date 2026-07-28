@@ -1,5 +1,7 @@
 .worksSection {
   position: relative;
+  isolation: isolate;
+  z-index: 2;
   min-height: 420svh;
   background-color: #000000;
   font-family: var(--font-family-mono);
@@ -37,6 +39,16 @@
   margin: 16px 0;
 }
 
+.orbitGuide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.85;
+}
+
 .visualPlanesContainer {
   position: absolute;
   inset: 0;
@@ -44,12 +56,13 @@
   align-items: center;
   justify-content: center;
   transform-style: preserve-3d;
+  z-index: 4;
 }
 
 .projectVisualPlane {
   position: absolute;
-  width: min(72vw, 1180px);
-  height: min(64vh, 650px);
+  width: min(46vw, 820px);
+  height: min(58vh, 590px);
   background: #08080a;
   border: 1px solid rgba(245, 245, 242, 0.14);
   border-radius: 2px;
@@ -98,30 +111,33 @@
   text-decoration: none;
   min-height: 44px;
   transition: all 0.2s ease;
-  width: fit-content;
 }
 
-/* Mobile Works List Styling */
+.ctaButton:hover {
+  color: #d7ff00;
+}
+
+/* Mobile Architecture */
 .mobileWorksContainer {
-  padding: calc(var(--header-height) + 24px) 20px 60px;
   display: flex;
   flex-direction: column;
-  gap: 64px;
-  background-color: #000000;
+  gap: 48px;
+  padding: calc(var(--header-height) + 24px) var(--page-padding) 48px;
+  background: #000000;
 }
 
 .mobileProjectCard {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  scroll-margin-top: 84px;
+  gap: 12px;
+  background: #08080a;
+  border: 1px solid rgba(245, 245, 242, 0.12);
+  border-radius: 4px;
+  padding: 20px;
 }
 
 .mobileVisualWrapper {
   width: 100%;
-  height: min(52svh, 440px);
-  border: 1px solid rgba(245, 245, 242, 0.15);
   border-radius: 2px;
   overflow: hidden;
-  background: #08080a;
 }

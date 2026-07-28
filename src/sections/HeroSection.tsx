@@ -8,6 +8,7 @@ interface HeroSectionProps {
   setRoughness: (val: number) => void;
   noiseScale: number;
   setNoiseScale: (val: number) => void;
+  heroExitProgress?: number;
 }
 
 export default function HeroSection({
@@ -15,9 +16,14 @@ export default function HeroSection({
   setRoughness,
   noiseScale,
   setNoiseScale,
+  heroExitProgress = 0,
 }: HeroSectionProps) {
   const isE2E = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('e2e') === '1';
   const debugScene = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('debugScene') === '1';
+
+  const opacity = Math.max(0, 1 - heroExitProgress * 1.6);
+  const translateY = -heroExitProgress * 48;
+  const pointerEvents = heroExitProgress > 0.65 ? 'none' : 'auto';
 
   return (
     <section id="hero" className={styles.hero}>
@@ -39,8 +45,16 @@ export default function HeroSection({
         </div>
       )}
 
-      {/* Main Editorial Headline */}
-      <div className={styles.heroContent}>
+      {/* Main Editorial Headline with controlled exit transition */}
+      <div
+        className={styles.heroContent}
+        style={{
+          opacity,
+          transform: `translate3d(0px, ${translateY}px, 0px)`,
+          pointerEvents,
+          transition: 'opacity 0.15s ease-out, transform 0.15s ease-out',
+        }}
+      >
         <div style={{ fontSize: '11px', letterSpacing: '0.25em', color: '#73736e', marginBottom: '16px', textTransform: 'uppercase' }}>
           SYSTEMS ENGINEER / CREATIVE DEVELOPER
         </div>
@@ -53,7 +67,7 @@ export default function HeroSection({
           Designing intelligent digital products through code, systems and motion.
         </p>
 
-        {/* Refined Minimal Text Links (44px touch targets) */}
+        {/* Refined Minimal Text Links */}
         <div data-hero-actions="true" className={styles.heroCtaGroup}>
           <Link to="/work" className={styles.heroPrimaryCta}>
             VIEW WORK <span style={{ color: '#d7ff00' }}>↗</span>

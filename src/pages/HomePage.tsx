@@ -7,13 +7,14 @@ import ManifestoSection from '../sections/ManifestoSection';
 import ContactSection from '../sections/ContactSection';
 import FooterSection from '../sections/FooterSection';
 import SEO from '../components/common/SEO';
+import { useHomeExperienceController, type SceneState } from '../hooks/useHomeExperienceController';
 
 interface HomePageProps {
   roughness: number;
   setRoughness: (val: number) => void;
   noiseScale: number;
   setNoiseScale: (val: number) => void;
-  onSceneStateChange?: (state: 'hero' | 'works' | 'manifesto') => void;
+  onSceneStateChange?: (state: SceneState) => void;
   introProgress?: number;
   setIntroProgress?: (progress: number) => void;
 }
@@ -27,41 +28,23 @@ export default function HomePage({
   introProgress: _introProgress,
   setIntroProgress,
 }: HomePageProps) {
+  const { sceneState, heroExitProgress, worksEntryProgress, worksProgress, worksActive, scrollDirection } =
+    useHomeExperienceController();
+
   useEffect(() => {
-    if (!onSceneStateChange) return;
-
-    const sections = [
-      { id: 'hero', state: 'hero' as const },
-      { id: 'works', state: 'works' as const },
-      { id: 'manifesto', state: 'manifesto' as const },
-    ];
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visibleEntries = entries.filter((e) => e.isIntersecting);
-        if (visibleEntries.length > 0) {
-          const highestRatio = visibleEntries.reduce((prev, curr) =>
-            curr.intersectionRatio > prev.intersectionRatio ? curr : prev
-          );
-          const targetState = sections.find((s) => s.id === highestRatio.target.id)?.state;
-          if (targetState) {
-            onSceneStateChange(targetState);
-          }
-        }
-      },
-      { threshold: [0.1, 0.4, 0.7] }
-    );
-
-    sections.forEach(({ id }) => {
-      const el = document.getElementById(id);
-      if (el) observer.observe(el);
-    });
-
-    return () => observer.disconnect();
-  }, [onSceneStateChange]);
+    if (onSceneStateChange) {
+      onSceneStateChange(sceneState);
+    }
+  }, [sceneState, onSceneStateChange]);
 
   return (
-    <>
+    <div
+      data-scene-state={sceneState}
+      data-hero-exit-progress={heroExitProgress.toFixed(2)}
+      data-works-entry-progress={worksEntryProgress.toFixed(2)}
+      data-works-progress={worksProgress.toFixed(2)}
+      data-scroll-direction={scrollDirection}
+    >
       <ETIntroSequence onProgress={setIntroProgress} />
       <SEO
         title="Enes Teke — Full-Stack Developer & AI Systems Engineer"
@@ -73,12 +56,13 @@ export default function HomePage({
         setRoughness={setRoughness}
         noiseScale={noiseScale}
         setNoiseScale={setNoiseScale}
+        heroExitProgress={heroExitProgress}
       />
-      <WorksSection />
+      <WorksSection progress={worksProgress} active={worksActive} />
       <CapabilitiesSection />
       <ManifestoSection />
       <ContactSection />
       <FooterSection />
-    </>
+    </div>
   );
 }

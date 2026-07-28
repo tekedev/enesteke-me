@@ -101,18 +101,33 @@ varying vec2 vUv;
 void main() {
   vec3 normal = normalize(vNormal);
   vec3 viewDir = normalize(vViewPosition);
-  
-  float fresnel = pow(1.0 - max(0.0, dot(normal, viewDir)), 2.8);
-  vec3 baseColor = vec3(0.14, 0.145, 0.16);
-  vec3 specularColor = vec3(0.98, 0.98, 1.0);
-  vec3 limeRim = vec3(0.84, 1.0, 0.0) * 0.10;
-  
-  vec3 finalColor = mix(baseColor, specularColor, fresnel * 0.82) + limeRim * fresnel;
-  gl_FragColor = vec4(finalColor, uIntroProgress * 0.98);
+
+  // Studio Lighting Rig Setup
+  vec3 keyLightDir = normalize(vec3(1.4 + uPointer.x * 1.2, 1.8 + uPointer.y * 0.8, 2.2));
+  vec3 fillLightDir = normalize(vec3(-2.2, -0.8, 1.2));
+  vec3 rimLightDir = normalize(vec3(0.0, 2.5, -2.0));
+
+  float keyDiff = max(dot(normal, keyLightDir), 0.0);
+  float fillDiff = max(dot(normal, fillLightDir), 0.0);
+  float rimDiff = max(dot(normal, rimLightDir), 0.0);
+
+  vec3 halfVectorKey = normalize(keyLightDir + viewDir);
+  float specKey = pow(max(dot(normal, halfVectorKey), 0.0), mix(64.0, 16.0, uRoughness));
+
+  vec3 darkBase = vec3(0.04, 0.045, 0.052);
+  vec3 keyColor = vec3(0.88, 0.90, 0.95) * keyDiff * 0.75;
+  vec3 fillColor = vec3(0.22, 0.25, 0.32) * fillDiff * 0.35;
+  vec3 specularColor = vec3(1.0, 1.0, 0.95) * specKey * (1.0 - uRoughness * 0.6);
+
+  float fresnel = pow(1.0 - max(dot(normal, viewDir), 0.0), 3.5);
+  vec3 limeFresnel = vec3(0.84, 1.0, 0.0) * fresnel * 0.28 * uIntroProgress;
+
+  vec3 finalColor = darkBase + keyColor + fillColor + specularColor + limeFresnel;
+  gl_FragColor = vec4(finalColor, 1.0);
 }
 `;
 
-interface ETMonogramSceneProps {
+export interface ETMonogramSceneProps {
   roughness?: number;
   noiseScale?: number;
   scrollState?: 'hero' | 'works' | 'manifesto';
@@ -152,9 +167,16 @@ export default function ETMonogramScene({
 
   const getScrollTransform = (state: string) => {
     switch (state) {
-      case 'works':
       case 'manifesto':
         return { posX: 14.0, posY: 0, scale: 0.1, bgContrast: 0.0, wireframeOpacity: 0.0 };
+      case 'works':
+        return {
+          posX: isMobile ? -0.4 : -1.35,
+          posY: isMobile ? 0.8 : 0.05,
+          scale: isMobile ? 0.38 : 0.58,
+          bgContrast: 0.20,
+          wireframeOpacity: isMobile ? 0.008 : 0.018,
+        };
       case 'hero':
       default:
         return {
@@ -162,19 +184,19 @@ export default function ETMonogramScene({
           posY: isMobile ? -3.2 : 0.1,
           scale: isMobile ? 0.35 : 0.95,
           bgContrast: isMobile ? 0.16 : 0.34,
-          wireframeOpacity: isMobile ? 0.005 : 0.035
+          wireframeOpacity: isMobile ? 0.005 : 0.035,
         };
     }
   };
 
   const targetTransformRef = useRef(getScrollTransform(scrollState));
-  const sceneVisibleRef = useRef(scrollState === 'hero');
+  const sceneVisibleRef = useRef(scrollState !== 'manifesto');
   const onSceneReadyRef = useRef(onSceneReady);
   onSceneReadyRef.current = onSceneReady;
 
   useEffect(() => {
     targetTransformRef.current = getScrollTransform(scrollState);
-    sceneVisibleRef.current = scrollState === 'hero';
+    sceneVisibleRef.current = scrollState !== 'manifesto';
     if (renderSingleFrameRef.current) {
       renderSingleFrameRef.current();
     }
@@ -218,35 +240,33 @@ export default function ETMonogramScene({
     };
 
     const handleContextRestored = () => {
-      if (renderSingleFrameRef.current) renderSingleFrameRef.current();
+      if (renderer) {
+        renderer.dispose();
+      }
     };
 
-    canvasEl.addEventListener('webglcontextlost', handleContextLost);
-    canvasEl.addEventListener('webglcontextrestored', handleContextRestored);
+    canvasEl.addEventListener('webglcontextlost', handleContextLost, false);
+    canvasEl.addEventListener('webglcontextrestored', handleContextRestored, false);
 
-    renderer = new THREE.WebGLRenderer({
-      canvas: canvasEl,
-      antialias: true,
-      powerPreference: 'high-performance',
-      alpha: true,
-    });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1 : 1.5));
-    renderer.setSize(width, height);
-    renderer.setClearColor(0x000000, 1);
+    try {
+      renderer = new THREE.WebGLRenderer({ canvas: canvasEl, antialias: true, alpha: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1 : 2));
+      renderer.setSize(width, height);
+      renderer.setClearColor(0x000000, 0);
+    } catch {
+      if (onContextLost) onContextLost();
+      return;
+    }
 
-    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-    camera.position.z = 18;
     const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
+    camera.position.set(0, 0, 10);
 
-    // World-Space Inverted Cylinder Spatial Room Mesh
-    const roomGeometry = new THREE.CylinderGeometry(10, 10, 18, 48, 24, true);
-    roomGeometry.rotateZ(Math.PI / 2);
-
+    const roomGeometry = new THREE.CylinderGeometry(12, 12, 28, 64, 48, true);
     const roomMaterial = new THREE.ShaderMaterial({
-      side: THREE.BackSide,
-      transparent: true,
       vertexShader: roomVertexShader,
       fragmentShader: roomFragmentShader,
+      side: THREE.BackSide,
       uniforms: {
         uPointer: { value: new THREE.Vector2(0, 0) },
         uTime: { value: 0 },
@@ -260,21 +280,20 @@ export default function ETMonogramScene({
     const roomMesh = new THREE.Mesh(roomGeometry, roomMaterial);
     scene.add(roomMesh);
 
-    // Create Distinct 3D E and T Shapes with Distinct Spatial Depth Limits
+    // Create Distinct 3D E and T Shapes
     const logoGroup = new THREE.Group();
 
-    // Extended E Letter Shape
     const eShape = new THREE.Shape();
     eShape.moveTo(-3.2, 4.0);
-    eShape.lineTo(0.2, 4.0); // Extended top arm
+    eShape.lineTo(0.2, 4.0);
     eShape.lineTo(0.2, 2.6);
     eShape.lineTo(-1.8, 2.6);
     eShape.lineTo(-1.8, 0.7);
-    eShape.lineTo(0.1, 0.7); // Extended middle arm
+    eShape.lineTo(0.1, 0.7);
     eShape.lineTo(0.1, -0.7);
     eShape.lineTo(-1.8, -0.7);
     eShape.lineTo(-1.8, -2.6);
-    eShape.lineTo(0.2, -2.6); // Extended bottom arm
+    eShape.lineTo(0.2, -2.6);
     eShape.lineTo(0.2, -4.0);
     eShape.lineTo(-3.2, -4.0);
     eShape.closePath();
@@ -283,14 +302,13 @@ export default function ETMonogramScene({
     const eGeometry = new THREE.ExtrudeGeometry(eShape, eExtrudeSettings);
     eGeometry.center();
 
-    // Narrowed T Letter Shape
     const tShape = new THREE.Shape();
     tShape.moveTo(0.2, 4.0);
     tShape.lineTo(3.4, 4.0);
     tShape.lineTo(3.4, 2.6);
     tShape.lineTo(2.2, 2.6);
     tShape.lineTo(2.2, -4.0);
-    tShape.lineTo(1.4, -4.0); // 30% Narrower stem
+    tShape.lineTo(1.4, -4.0);
     tShape.lineTo(1.4, 2.6);
     tShape.lineTo(0.2, 2.6);
     tShape.closePath();
@@ -395,7 +413,6 @@ export default function ETMonogramScene({
 
         currentMouse.lerp(targetMouse, 0.055);
 
-        // Enhanced Camera Yaw & Pitch Pointer Parallax
         if (!isMobile) {
           camera.position.x = currentMouse.x * 0.62;
           camera.position.y = currentMouse.y * 0.38;
@@ -450,9 +467,6 @@ export default function ETMonogramScene({
         if (renderer) {
           renderer.setSize(width, height);
         }
-        if (prefersReducedMotion) {
-          renderPass(0);
-        }
       }, 100);
     };
     window.addEventListener('resize', handleResize);
@@ -487,6 +501,7 @@ export default function ETMonogramScene({
       ref={containerRef}
       data-scene-layer="true"
       data-scene-ready="false"
+      data-et-mode={scrollState}
       style={{
         position: 'fixed',
         top: 0,
@@ -496,7 +511,7 @@ export default function ETMonogramScene({
         zIndex: 2,
         pointerEvents: 'none',
         overflow: 'hidden',
-        backgroundColor: '#000000',
+        backgroundColor: 'transparent',
         transition: 'opacity 0.5s ease',
       }}
     />

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { projects } from '../data/portfolioData';
 import WorkVisual from '../components/work-visuals/WorkVisual';
@@ -11,15 +11,20 @@ const shortDescriptions: Record<string, string> = {
   'bist-whale-tracker': 'High-frequency stock data collector and real-time whale movement monitor.',
 };
 
-export default function WorksSection() {
+export interface WorksSectionProps {
+  progress?: number;
+  active?: boolean;
+}
+
+export default function WorksSection({ progress = 0, active = false }: WorksSectionProps) {
   const featured = projects.filter((project) => project.featured).slice(0, 4);
   const sectionRef = useRef<HTMLElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [worksReady, setWorksReady] = useState(false);
   const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth <= 900 : false);
 
   const visualRefs = useRef<Array<HTMLDivElement | null>>([]);
   const activeIndexRef = useRef(0);
-  const rafRef = useRef<number | null>(null);
 
   useEffect(() => {
     const handleResize = () => {
@@ -29,49 +34,37 @@ export default function WorksSection() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  useEffect(() => {
-    if (isMobile) return;
+  const applyProgress = useCallback(
+    (currentProgress: number) => {
+      if (isMobile) return;
+      const rawIndex = currentProgress * (featured.length - 1);
+      const viewportWidth = window.innerWidth || 1440;
+      const viewportHeight = window.innerHeight || 900;
 
-    const applyProgress = () => {
-      rafRef.current = null;
-      const el = sectionRef.current;
-      if (!el) return;
-
-      const rect = el.getBoundingClientRect();
-      const scrollableHeight = el.offsetHeight - window.innerHeight;
-      if (scrollableHeight <= 0) return;
-
-      const rawProgress = Math.max(0, Math.min(1, -rect.top / scrollableHeight));
-      const rawIndex = rawProgress * (featured.length - 1);
+      const orbitStepRadians = 1.02; // ~58 degrees
+      const radiusX = Math.min(viewportWidth * 0.34, 620);
+      const radiusY = Math.min(viewportHeight * 0.10, 86);
+      const radiusZ = 520;
+      const orbitCenterOffsetX = viewportWidth * 0.12;
 
       visualRefs.current.forEach((element, index) => {
         if (!element) return;
         const distance = index - rawIndex;
-        const absDist = Math.abs(distance);
+        const angle = distance * orbitStepRadians;
 
-        let translateX = 0;
-        let translateZ = 0;
-        let rotateY = 0;
-        let scale = 1;
+        const x = orbitCenterOffsetX + Math.sin(angle) * radiusX;
+        const y = Math.sin(angle * 0.65) * radiusY;
+        const z = (Math.cos(angle) - 1) * radiusZ;
+        const rotateY = ((-angle * 180) / Math.PI) * 0.72; // in degrees
 
-        if (distance < 0) {
-          translateX = distance * 55;
-          translateZ = Math.max(-400, distance * 220);
-          rotateY = Math.min(25, -distance * 20);
-          scale = Math.max(0.65, 1 - absDist * 0.25);
-        } else if (distance > 0) {
-          translateX = distance * 55;
-          translateZ = Math.max(-400, -distance * 220);
-          rotateY = Math.max(-25, -distance * 20);
-          scale = Math.max(0.65, 1 - absDist * 0.25);
-        }
+        const activeWeight = Math.max(0, 1 - Math.abs(distance));
+        const scale = 0.56 + activeWeight * 0.44;
+        const opacity = 0.10 + activeWeight * 0.90;
 
-        const nextActive = Math.round(rawIndex);
-        const opacity = index === nextActive ? 1 : Math.max(0, 0.18 - Math.max(0, absDist - 1) * 0.08);
-
-        element.style.transform = `translate3d(${translateX}vw, 0px, ${translateZ}px) rotateY(${rotateY}deg) scale(${scale})`;
-        element.style.opacity = String(opacity);
-        element.style.zIndex = String(Math.round(10 - absDist * 2));
+        element.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, ${z.toFixed(1)}px) rotateY(${rotateY.toFixed(1)}deg) scale(${scale.toFixed(2)})`;
+        element.style.opacity = opacity.toFixed(2);
+        element.style.zIndex = String(Math.round(100 - Math.abs(distance) * 20));
+        element.setAttribute('data-orbit-distance', distance.toFixed(2));
       });
 
       const nextActive = Math.round(rawIndex);
@@ -79,24 +72,17 @@ export default function WorksSection() {
         activeIndexRef.current = nextActive;
         setActiveIndex(nextActive);
       }
-    };
+    },
+    [isMobile, featured.length]
+  );
 
-    const handleScroll = () => {
-      if (rafRef.current !== null) return;
-      rafRef.current = requestAnimationFrame(applyProgress);
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    applyProgress();
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      if (rafRef.current !== null) {
-        cancelAnimationFrame(rafRef.current);
-      }
-    };
-  }, [isMobile, featured.length]);
+  useLayoutEffect(() => {
+    applyProgress(progress);
+    setWorksReady(true);
+  }, [progress, applyProgress]);
 
   const activeProject = featured[activeIndex] || featured[0];
+  const orbitAngle = progress * (featured.length - 1) * 1.02;
 
   // Mobile Render Architecture
   if (isMobile) {
@@ -148,9 +134,17 @@ export default function WorksSection() {
     );
   }
 
-  // Desktop 3D Corridor Architecture
+  // Desktop 3D Orbital Ring Architecture
   return (
-    <section id="works" ref={sectionRef} className={styles.worksSection}>
+    <section
+      id="works"
+      ref={sectionRef}
+      data-works-ready={worksReady ? 'true' : 'false'}
+      data-works-active={active ? 'true' : 'false'}
+      data-active-project-slug={activeProject.slug}
+      data-orbit-angle={orbitAngle.toFixed(2)}
+      className={styles.worksSection}
+    >
       <div className={styles.worksSticky}>
         {/* Compact Desktop Header */}
         <div className={styles.headerRow}>
@@ -178,9 +172,15 @@ export default function WorksSection() {
           </Link>
         </div>
 
-        {/* 3D Showcase Stage */}
+        {/* 3D Orbital Showcase Stage */}
         <div className={styles.showcaseStage}>
-          {/* Visual Planes Layer */}
+          {/* Spatial Orbital Ring Guide */}
+          <svg className={styles.orbitGuide} aria-hidden="true" viewBox="0 0 1000 400" fill="none">
+            <ellipse cx="450" cy="200" rx="380" ry="80" stroke="rgba(255,255,255,0.07)" strokeWidth="1.5" strokeDasharray="6 6" />
+            <circle cx="450" cy="200" r="140" stroke="rgba(215,255,0,0.12)" strokeWidth="1" />
+          </svg>
+
+          {/* Visual Planes Orbital Ring Layer */}
           <div className={styles.visualPlanesContainer}>
             {featured.map((project, index) => (
               <div
@@ -197,7 +197,7 @@ export default function WorksSection() {
             ))}
           </div>
 
-          {/* Single Active Metadata Overlay (Zero Ghosting, Anchored Bottom-Left) */}
+          {/* Single Active Metadata Overlay */}
           <div data-project-meta="true" data-active="true" className={styles.activeMetaOverlay}>
             <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '4px' }}>
               <span style={{ fontSize: '11px', color: '#73736e', letterSpacing: '0.2em' }}>
