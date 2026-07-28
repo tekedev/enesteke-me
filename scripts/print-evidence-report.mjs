@@ -4,15 +4,15 @@ import crypto from 'crypto';
 import { execSync } from 'child_process';
 
 const FFMPEG_BIN = 'C:\\Users\\enesj\\Desktop\\hareki.com\\harekistudio-main\\remotion-ad\\node_modules\\@remotion\\compositor-win32-x64-msvc\\ffmpeg.exe';
-const zipPath = path.resolve('interaction-evidence-v8.zip');
-const extractDir = path.resolve('interaction_evidence_v8_extracted');
+const zipPath = path.resolve('interaction-evidence-v9.zip');
+const extractDir = path.resolve('interaction_evidence_v9_extracted');
 
 if (fs.existsSync(extractDir)) {
   fs.rmSync(extractDir, { recursive: true, force: true });
 }
 fs.mkdirSync(extractDir, { recursive: true });
 
-console.log('=== EXTRACTING AND VERIFYING EVIDENCE V8 ARCHIVE ===');
+console.log('=== EXTRACTING AND VERIFYING EVIDENCE V9 ARCHIVE ===');
 execSync(`tar -xf "${zipPath}" -C "${extractDir}"`, { stdio: 'inherit' });
 
 const manifestPath = path.join(extractDir, 'evidence-manifest.json');
@@ -64,4 +64,4 @@ for (const file of manifestData.files) {
 // Clean up extracted temp folder after verification to keep git clean
 fs.rmSync(extractDir, { recursive: true, force: true });
 
-console.log('\n✅ EVIDENCE V8 VERIFICATION COMPLETE!');
+console.log('\n✅ EVIDENCE V9 VERIFICATION COMPLETE!');

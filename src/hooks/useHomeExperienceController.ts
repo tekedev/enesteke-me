@@ -46,9 +46,9 @@ export function useHomeExperienceController(): HomeExperienceState {
       let heroExitProgress = 0;
       if (heroEl) {
         const heroHeight = heroEl.offsetHeight || viewportHeight;
-        heroExitProgress = clamp(scrollY / (heroHeight * 0.75), 0, 1);
+        heroExitProgress = clamp(scrollY / (heroHeight * 0.65), 0, 1);
       } else {
-        heroExitProgress = clamp(scrollY / (viewportHeight * 0.75), 0, 1);
+        heroExitProgress = clamp(scrollY / (viewportHeight * 0.65), 0, 1);
       }
 
       // Works Entry Progress & Works Scroll Progress
@@ -60,12 +60,12 @@ export function useHomeExperienceController(): HomeExperienceState {
       if (worksEl) {
         const worksRect = worksEl.getBoundingClientRect();
         const entryStart = viewportHeight * 0.95;
-        const entryEnd = viewportHeight * 0.20;
+        const entryEnd = viewportHeight * 0.15;
 
         worksEntryProgress = clamp((entryStart - worksRect.top) / (entryStart - entryEnd), 0, 1);
 
-        const worksTriggerY = viewportHeight * 0.78;
-        worksActive = worksRect.top <= worksTriggerY && worksRect.bottom > viewportHeight * 0.18;
+        const worksTriggerY = viewportHeight * 0.88;
+        worksActive = worksRect.top <= worksTriggerY && worksRect.bottom > viewportHeight * 0.10;
 
         const scrollableHeight = worksRect.height - viewportHeight;
         if (scrollableHeight > 0) {
@@ -90,7 +90,6 @@ export function useHomeExperienceController(): HomeExperienceState {
       }
 
       setState((prev) => {
-        // Only update state if values changed noticeably to avoid unnecessary React renders
         if (
           prev.sceneState === sceneState &&
           Math.abs(prev.heroExitProgress - heroExitProgress) < 0.005 &&
