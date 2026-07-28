@@ -17,6 +17,7 @@ export default function WorkVisual({ slug, compact }: WorkVisualProps) {
       return <HarekiVisual compact={compact} />;
     case 'teke-app':
       return <TekeAppVisual compact={compact} />;
+    case 'bist-whale-tracker':
     case 'bist-engine':
       return <BistVisual compact={compact} />;
     default:

@@ -8,6 +8,7 @@ const shortDescriptions: Record<string, string> = {
   'nexus-ai': 'Autonomous multi-channel video production and content orchestration engine.',
   'hareki-dna': 'Turns brand websites into personalized editorial content systems.',
   'teke-app': 'Motion typography and automated multi-format video creation platform.',
+  'bist-whale-tracker': 'High-frequency stock data collector and real-time whale movement monitor.',
   'bist-engine': 'High-frequency stock data collector and real-time whale movement monitor.',
 };
 
