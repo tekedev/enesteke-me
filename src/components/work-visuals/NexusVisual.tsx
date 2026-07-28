@@ -18,10 +18,10 @@ export default function NexusVisual({ project, compact }: NexusVisualProps) {
       className={`${styles.visualCanvas} ${styles.nexusCanvas} ${compact ? styles.visualCanvasCompact : ''}`}
     >
       <div className={styles.headerRow}>
-        <span style={{ fontSize: '11px', color: '#d7ff00', letterSpacing: '0.2em', fontWeight: 600 }}>
+        <span className={styles.nexusTitle}>
           NEXUS
         </span>
-        <span style={{ fontSize: '10px', color: 'rgba(245,245,242,0.6)', letterSpacing: '0.15em' }}>
+        <span className={styles.nexusSubtitle}>
           MEDIA PIPELINE
         </span>
       </div>

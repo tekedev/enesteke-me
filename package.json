@@ -8,7 +8,8 @@
     "build": "vite build",
     "typecheck": "tsc --noEmit",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:repo-artifacts": "node scripts/check-repository-artifacts.mjs"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",

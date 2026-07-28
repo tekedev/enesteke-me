@@ -10,7 +10,9 @@ interface TekeAppVisualProps {
 
 export default function TekeAppVisual({ project, compact }: TekeAppVisualProps) {
   const media = project ? PROJECT_MEDIA[project.id] : PROJECT_MEDIA.tekeapp;
-  const imgSrc = compact && media?.mobileSrc ? media.mobileSrc : media?.desktopSrc || '/projects/tekeapp.jpg';
+  const verticalSrc = media?.variants?.vertical ?? media?.mobileSrc ?? media?.desktopSrc ?? '/projects/tekeapp-vertical.webp';
+  const squareSrc = media?.variants?.square ?? media?.desktopSrc ?? '/projects/tekeapp-square.webp';
+  const landscapeSrc = media?.variants?.landscape ?? media?.desktopSrc ?? '/projects/tekeapp-landscape.webp';
 
   return (
     <div
@@ -18,19 +20,19 @@ export default function TekeAppVisual({ project, compact }: TekeAppVisualProps) 
       className={`${styles.visualCanvas} ${styles.tekeCanvas} ${compact ? styles.visualCanvasCompact : ''}`}
     >
       <div className={styles.headerRow}>
-        <span style={{ fontSize: '11px', color: '#ff77aa', letterSpacing: '0.22em', fontWeight: 600 }}>
+        <span className={styles.tekeTitle}>
           TEKE.APP
         </span>
-        <span style={{ fontSize: '10px', color: 'rgba(245,245,242,0.6)', letterSpacing: '0.15em' }}>
+        <span className={styles.tekeSubtitle}>
           MOTION STUDIO
         </span>
       </div>
 
       <div className={`${styles.tekeStage} ${compact ? styles.tekeStageCompact : ''}`}>
-        {/* 9:16 Vertical Reel Plane */}
-        <div className={styles.tekePlaneVertical}>
+        {/* 9:16 Vertical Reel Format Plane */}
+        <div data-teke-format="vertical" className={styles.tekePlaneVertical}>
           <img
-            src={imgSrc}
+            src={verticalSrc}
             alt=""
             data-project-media-id={project?.id || 'tekeapp'}
             data-project-media-slug={project?.slug || 'teke-app'}
@@ -39,11 +41,12 @@ export default function TekeAppVisual({ project, compact }: TekeAppVisualProps) 
           />
         </div>
 
+        {/* 1:1 Square Campaign Format Plane (Desktop Only) */}
         {!compact && (
-          <div className={styles.tekePlaneSquare}>
-            <div style={{ height: '100%', borderRadius: '2px', overflow: 'hidden' }}>
+          <div data-teke-format="square" className={styles.tekePlaneSquare}>
+            <div className={styles.tekePlaneInner}>
               <img
-                src={imgSrc}
+                src={squareSrc}
                 alt=""
                 data-project-media-id={project?.id || 'tekeapp'}
                 data-project-media-slug={project?.slug || 'teke-app'}
@@ -54,11 +57,12 @@ export default function TekeAppVisual({ project, compact }: TekeAppVisualProps) 
           </div>
         )}
 
+        {/* 16:9 Cinematic Landscape Format Plane (Desktop Only) */}
         {!compact && (
-          <div className={styles.tekePlaneLandscape}>
-            <div style={{ height: '100%', borderRadius: '2px', overflow: 'hidden' }}>
+          <div data-teke-format="landscape" className={styles.tekePlaneLandscape}>
+            <div className={styles.tekePlaneInner}>
               <img
-                src={imgSrc}
+                src={landscapeSrc}
                 alt=""
                 data-project-media-id={project?.id || 'tekeapp'}
                 data-project-media-slug={project?.slug || 'teke-app'}

@@ -16,9 +16,14 @@
   "tekeapp": {
     "file": "public/projects/tekeapp.jpg",
     "type": "procedural-art",
-    "source": "custom social media motion studio art",
+    "source": "custom social media motion studio art with 3 format variants",
     "projectId": "tekeapp",
-    "projectSlug": "teke-app"
+    "projectSlug": "teke-app",
+    "variants": {
+      "vertical": "public/projects/tekeapp-vertical.webp",
+      "square": "public/projects/tekeapp-square.webp",
+      "landscape": "public/projects/tekeapp-landscape.webp"
+    }
   },
   "whaletrace": {
     "file": "public/projects/whaletrace.jpg",

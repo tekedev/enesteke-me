@@ -18,10 +18,10 @@ export default function BistVisual({ project, compact }: BistVisualProps) {
       className={`${styles.visualCanvas} ${styles.bistCanvas} ${compact ? styles.visualCanvasCompact : ''}`}
     >
       <div className={styles.headerRow}>
-        <span style={{ fontSize: '11px', color: '#00e5a3', letterSpacing: '0.22em', fontWeight: 600 }}>
+        <span className={styles.bistTitle}>
           WHALETRACE
         </span>
-        <span style={{ fontSize: '10px', color: 'rgba(245,245,242,0.6)', letterSpacing: '0.15em' }}>
+        <span className={styles.bistSubtitle}>
           ORDER FLOW
         </span>
       </div>
@@ -78,7 +78,7 @@ export default function BistVisual({ project, compact }: BistVisualProps) {
         </svg>
 
         {/* Real Project Asset Overlay */}
-        <div style={{ position: 'absolute', width: '50%', height: '55%', right: '5%', bottom: '10%', opacity: 0.25, borderRadius: '4px', overflow: 'hidden', border: '1px solid rgba(0,229,163,0.3)' }}>
+        <div className={styles.bistAssetOverlay}>
           <img
             src={imgSrc}
             alt=""

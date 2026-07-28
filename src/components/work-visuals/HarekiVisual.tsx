@@ -17,8 +17,8 @@ export default function HarekiVisual({ project, compact }: HarekiVisualProps) {
       data-work-visual="hareki-dna"
       className={`${styles.visualCanvas} ${styles.harekiCanvas} ${compact ? styles.visualCanvasCompact : ''}`}
     >
-      <div className={styles.headerRow} style={{ borderBottom: '1px solid rgba(10,10,10,0.15)', paddingBottom: '8px' }}>
-        <span style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.2em', color: '#0a0a0a' }}>
+      <div className={styles.harekiHeader}>
+        <span className={styles.harekiTitle}>
           HAREKI
         </span>
         <span className={styles.harekiRibbon}>
@@ -26,26 +26,52 @@ export default function HarekiVisual({ project, compact }: HarekiVisualProps) {
         </span>
       </div>
 
-      <div className={`${styles.harekiStage} ${compact ? styles.harekiStageCompact : ''}`}>
-        <div className={styles.harekiPage}>
-          <div className={styles.harekiImageContainer}>
+      <div className={`${styles.harekiCollage} ${compact ? styles.harekiCollageCompact : ''}`}>
+        {/* Main HAREKI Product Screen Capture */}
+        <div className={styles.harekiMainCapture}>
+          <img
+            src={imgSrc}
+            alt=""
+            data-project-media-id={project?.id || 'hareki'}
+            data-project-media-slug={project?.slug || 'hareki-dna'}
+            data-project-media-type={media?.mediaType || 'real-capture'}
+            className={`${styles.projectMedia} ${styles.harekiImgMain}`}
+          />
+        </div>
+
+        {/* Detail Crop A */}
+        <div className={styles.harekiDetailCropA}>
+          <img
+            src={imgSrc}
+            alt=""
+            data-project-media-id={project?.id || 'hareki'}
+            data-project-media-slug={project?.slug || 'hareki-dna'}
+            data-project-media-type={media?.mediaType || 'real-capture'}
+            className={`${styles.projectMedia} ${styles.harekiImgCropA}`}
+          />
+        </div>
+
+        {/* Detail Crop B (Desktop Only) */}
+        {!compact && (
+          <div className={styles.harekiDetailCropB}>
             <img
               src={imgSrc}
               alt=""
               data-project-media-id={project?.id || 'hareki'}
               data-project-media-slug={project?.slug || 'hareki-dna'}
               data-project-media-type={media?.mediaType || 'real-capture'}
-              className={styles.projectMedia}
+              className={`${styles.projectMedia} ${styles.harekiImgCropB}`}
             />
           </div>
+        )}
+
+        {/* Decorative Editorial Display Typography */}
+        <div aria-hidden="true" className={styles.harekiDisplayType}>
+          EDITORIAL
         </div>
 
-        {!compact && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', height: '100%' }}>
-            <div style={{ flex: 1, background: '#0a0a0a', color: '#f5f5f2', padding: '14px', borderRadius: '3px' }} />
-            <div style={{ flex: 1, background: '#ffffff', border: '1px solid rgba(10,10,10,0.15)', padding: '14px', borderRadius: '3px' }} />
-          </div>
-        )}
+        {/* Decorative Brand DNA Ribbon */}
+        <div aria-hidden="true" className={styles.harekiDnaRibbon} />
       </div>
     </div>
   );
