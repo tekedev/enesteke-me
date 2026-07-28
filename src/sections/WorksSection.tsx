@@ -17,6 +17,8 @@ export interface WorksSectionProps {
   progress?: number;
   active?: boolean;
   worksEntryProgress?: number;
+  worksExitProgress?: number;
+  layoutStable?: boolean;
   sceneState?: SceneState;
   etScreenRect?: {
     x: number;
@@ -32,7 +34,9 @@ export default function WorksSection({
   progress = 0,
   active = false,
   worksEntryProgress = 0,
-  sceneState = 'hero',
+  worksExitProgress = 0,
+  layoutStable = false,
+  sceneState: _sceneState = 'hero',
   etScreenRect,
 }: WorksSectionProps) {
   const featured = projects.filter((project) => project.featured).slice(0, 4);
@@ -63,9 +67,8 @@ export default function WorksSection({
   const etCenterX = etScreenRect?.centerX || Math.round(etX + etWidth / 2);
   const etCenterY = etScreenRect?.centerY || Math.round(etY + etHeight / 2);
 
-  const gap = 48; // minimum 40px visual gap!
-  const panelWidth = Math.min(viewportWidth * 0.40, 720);
-  const requiredRadiusX = etWidth / 2 + gap + panelWidth / 2;
+  const panelWidth = Math.min(viewportWidth * 0.37, 660);
+  const requiredRadiusX = etWidth / 2 + 36 + panelWidth / 2;
   const radiusX = Math.min(Math.max(requiredRadiusX, viewportWidth * 0.30), viewportWidth * 0.42);
   const radiusY = Math.min(viewportHeight * 0.16, 135);
 
@@ -81,14 +84,14 @@ export default function WorksSection({
       const currentEtRight = currentEtX + currentEtW;
       const currentEtCenterY = etScreenRect?.centerY || Math.round(vHeight * 0.460);
 
-      const pWidth = Math.min(vWidth * 0.40, 720);
-      const dLeft = currentEtRight + 48;
+      const pWidth = Math.min(vWidth * 0.37, 660);
+      const dLeft = currentEtRight + 36;
       const mLeft = vWidth - pWidth - 40;
       const aLeft = Math.min(dLeft, mLeft);
       const aCenterX = aLeft + pWidth / 2;
       const aTranslateX = aCenterX - vWidth / 2;
 
-      const reqRadiusX = currentEtW / 2 + 48 + pWidth / 2;
+      const reqRadiusX = currentEtW / 2 + 36 + pWidth / 2;
       const rX = Math.min(Math.max(reqRadiusX, vWidth * 0.30), vWidth * 0.42);
       const rY = Math.min(vHeight * 0.16, 135);
 
@@ -108,7 +111,7 @@ export default function WorksSection({
 
         element.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, ${z.toFixed(1)}px) rotateY(${rotateY.toFixed(1)}deg) scale(${scale.toFixed(2)})`;
         element.style.opacity = opacity.toFixed(2);
-        element.style.zIndex = String(Math.round(2 + activeWeight * 38)); // Inactive z-index 2-20, active z-index 40!
+        element.style.zIndex = String(Math.round(2 + activeWeight * 38));
         element.setAttribute('data-orbit-distance', distance.toFixed(2));
       });
 
@@ -128,10 +131,26 @@ export default function WorksSection({
 
   const activeProject = featured[activeIndex] || featured[0];
   const orbitAngle = progress * (featured.length - 1) * 1.05;
-  const experienceVisible = !isMobile && worksEntryProgress > 0.04 && sceneState !== 'manifesto';
-  const stageOpacity = isMobile ? 1 : Math.min(1, Math.max(0, (worksEntryProgress - 0.04) * 3.5));
 
-  // Portal Overlay Render Content
+  const entryOpacity = Math.min(1, Math.max(0, (worksEntryProgress - 0.04) * 3.5));
+  const exitOpacity = 1 - Math.min(1, Math.max(0, worksExitProgress * 1.5));
+  const stageOpacity = isMobile ? 1 : entryOpacity * exitOpacity;
+  const experienceVisible = !isMobile && stageOpacity > 0.01;
+
+  const markerX = etCenterX + Math.cos(orbitAngle) * radiusX;
+  const markerY = etCenterY + Math.sin(orbitAngle) * radiusY;
+
+  // Backdrop Portal Content
+  const desktopBackdropContent = (
+    <div
+      className={styles.worksBackdrop}
+      data-works-backdrop="true"
+      data-visible={experienceVisible ? 'true' : 'false'}
+      style={{ opacity: stageOpacity }}
+    />
+  );
+
+  // Overlay Portal Content
   const desktopOverlayContent = (
     <div
       className={styles.worksExperienceOverlay}
@@ -140,6 +159,7 @@ export default function WorksSection({
       data-works-ready={worksReady ? 'true' : 'false'}
       data-works-active={active ? 'true' : 'false'}
       data-active-project-slug={activeProject.slug}
+      data-layout-stable={layoutStable ? 'true' : 'false'}
       data-orbit-angle={orbitAngle.toFixed(2)}
       style={{ opacity: stageOpacity }}
     >
@@ -194,6 +214,13 @@ export default function WorksSection({
             r={Math.round(etWidth * 0.55)}
             stroke="rgba(215,255,0,0.22)"
             strokeWidth="1"
+          />
+          <circle
+            cx={markerX}
+            cy={markerY}
+            r="4"
+            fill="#d7ff00"
+            className={styles.activeOrbitMarker}
           />
         </svg>
 
@@ -298,7 +325,8 @@ export default function WorksSection({
         )}
       </section>
 
-      {/* Desktop Portal Overlay under document.body */}
+      {/* Desktop Portals under document.body */}
+      {!isMobile && typeof document !== 'undefined' && createPortal(desktopBackdropContent, document.body)}
       {!isMobile && typeof document !== 'undefined' && createPortal(desktopOverlayContent, document.body)}
     </>
   );

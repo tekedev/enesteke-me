@@ -35,7 +35,7 @@ export default function HomePage({
   introProgress: _introProgress,
   setIntroProgress,
 }: HomePageProps) {
-  const { sceneState, heroExitProgress, worksEntryProgress, worksProgress, worksActive, scrollDirection, etScreenRect } =
+  const { sceneState, heroExitProgress, worksEntryProgress, worksExitProgress, worksProgress, worksActive, scrollDirection, layoutStable, etScreenRect } =
     useHomeExperienceController();
 
   useEffect(() => {
@@ -52,8 +52,10 @@ export default function HomePage({
       data-scene-state={sceneState}
       data-hero-exit-progress={heroExitProgress.toFixed(2)}
       data-works-entry-progress={worksEntryProgress.toFixed(2)}
+      data-works-exit-progress={worksExitProgress.toFixed(2)}
       data-works-progress={worksProgress.toFixed(2)}
       data-scroll-direction={scrollDirection}
+      data-layout-stable={layoutStable ? 'true' : 'false'}
     >
       <ETIntroSequence onProgress={setIntroProgress} />
       <SEO
@@ -72,6 +74,8 @@ export default function HomePage({
         progress={worksProgress}
         active={worksActive}
         worksEntryProgress={worksEntryProgress}
+        worksExitProgress={worksExitProgress}
+        layoutStable={layoutStable}
         sceneState={sceneState}
         etScreenRect={etScreenRect}
       />

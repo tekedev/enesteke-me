@@ -7,9 +7,11 @@ export interface HomeExperienceState {
   sceneState: SceneState;
   heroExitProgress: number;
   worksEntryProgress: number;
+  worksExitProgress: number;
   worksProgress: number;
   worksActive: boolean;
   scrollDirection: ScrollDirection;
+  layoutStable: boolean;
   etScreenRect: {
     x: number;
     y: number;
@@ -29,9 +31,11 @@ export function useHomeExperienceController(): HomeExperienceState {
     sceneState: 'hero',
     heroExitProgress: 0,
     worksEntryProgress: 0,
+    worksExitProgress: 0,
     worksProgress: 0,
     worksActive: false,
     scrollDirection: 'down',
+    layoutStable: false,
     etScreenRect: {
       x: 380,
       y: 250,
@@ -43,6 +47,14 @@ export function useHomeExperienceController(): HomeExperienceState {
   });
 
   const lastScrollYRef = useRef<number>(0);
+  const stableCountRef = useRef<number>(0);
+  const lastMetricsRef = useRef<{ scrollY: number; worksProgress: number; etX: number; etY: number }>({
+    scrollY: 0,
+    worksProgress: 0,
+    etX: 0,
+    etY: 0,
+  });
+
   const rafIdRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -68,8 +80,9 @@ export function useHomeExperienceController(): HomeExperienceState {
         heroExitProgress = clamp(scrollY / (viewportHeight * 0.60), 0, 1);
       }
 
-      // Works Entry Progress & Works Scroll Progress
+      // Works Entry Progress, Exit Progress & Works Scroll Progress
       let worksEntryProgress = 0;
+      let worksExitProgress = 0;
       let worksProgress = 0;
       let worksActive = false;
       let manifestoActive = false;
@@ -78,8 +91,11 @@ export function useHomeExperienceController(): HomeExperienceState {
         const worksRect = worksEl.getBoundingClientRect();
         const entryStart = viewportHeight * 0.95;
         const entryEnd = viewportHeight * 0.15;
-
         worksEntryProgress = clamp((entryStart - worksRect.top) / (entryStart - entryEnd), 0, 1);
+
+        const exitStart = viewportHeight * 1.10;
+        const exitEnd = viewportHeight * 0.35;
+        worksExitProgress = clamp((exitStart - worksRect.bottom) / (exitStart - exitEnd), 0, 1);
 
         const worksTriggerY = viewportHeight * 0.88;
         worksActive = worksRect.top <= worksTriggerY && worksRect.bottom > viewportHeight * 0.10;
@@ -133,14 +149,32 @@ export function useHomeExperienceController(): HomeExperienceState {
         centerY: Math.round(etY + etH / 2),
       };
 
+      // Check stability for 8 consecutive RAFs
+      const last = lastMetricsRef.current;
+      const isStableFrame =
+        Math.abs(last.scrollY - scrollY) <= 1 &&
+        Math.abs(last.worksProgress - worksProgress) <= 0.002 &&
+        Math.abs(last.etX - etX) <= 1 &&
+        Math.abs(last.etY - etY) <= 1;
+
+      if (isStableFrame) {
+        stableCountRef.current = Math.min(20, stableCountRef.current + 1);
+      } else {
+        stableCountRef.current = 0;
+      }
+      lastMetricsRef.current = { scrollY, worksProgress, etX, etY };
+      const layoutStable = stableCountRef.current >= 8;
+
       setState((prev) => {
         if (
           prev.sceneState === sceneState &&
           Math.abs(prev.heroExitProgress - heroExitProgress) < 0.005 &&
           Math.abs(prev.worksEntryProgress - worksEntryProgress) < 0.005 &&
+          Math.abs(prev.worksExitProgress - worksExitProgress) < 0.005 &&
           Math.abs(prev.worksProgress - worksProgress) < 0.005 &&
           prev.worksActive === worksActive &&
           prev.scrollDirection === scrollDirection &&
+          prev.layoutStable === layoutStable &&
           Math.abs(prev.etScreenRect.centerX - etRect.centerX) < 2
         ) {
           return prev;
@@ -150,9 +184,11 @@ export function useHomeExperienceController(): HomeExperienceState {
           sceneState,
           heroExitProgress,
           worksEntryProgress,
+          worksExitProgress,
           worksProgress,
           worksActive,
           scrollDirection,
+          layoutStable,
           etScreenRect: etRect,
         };
       });

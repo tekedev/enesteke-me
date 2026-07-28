@@ -5,6 +5,24 @@
   font-family: var(--font-family-mono);
 }
 
+.worksBackdrop {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1;
+  background: #000000;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 260ms ease, visibility 0s linear 260ms;
+}
+
+.worksBackdrop[data-visible="true"] {
+  visibility: visible;
+  transition-delay: 0s;
+}
+
 .worksExperienceOverlay {
   position: fixed;
   inset: 0;
@@ -24,7 +42,6 @@
 }
 
 .worksExperienceOverlay[data-visible="true"] {
-  opacity: 1;
   visibility: visible;
   transition-delay: 0s;
 }
@@ -64,6 +81,11 @@
   opacity: 0.85;
 }
 
+.activeOrbitMarker {
+  filter: drop-shadow(0 0 6px rgba(215, 255, 0, 0.8));
+  transition: cx 0.2s ease, cy 0.2s ease;
+}
+
 .visualPlanesContainer {
   position: absolute;
   inset: 0;
@@ -76,8 +98,8 @@
 
 .projectVisualPlane {
   position: absolute;
-  width: min(40vw, 720px);
-  height: min(50vh, 520px);
+  width: min(37vw, 660px);
+  height: min(48vh, 490px);
   background: #08080a;
   border: 1px solid rgba(245, 245, 242, 0.14);
   border-radius: 2px;

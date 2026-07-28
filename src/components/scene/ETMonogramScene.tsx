@@ -350,8 +350,10 @@ export default function ETMonogramScene({
 
     let firstRenderSignaled = false;
     let currentOpacity = 1;
+    let frameId = 0;
 
     const renderPass = (time: number = 0) => {
+      frameId++;
       const entry = Math.max(0, Math.min(1, worksEntryProgressRef.current));
       const heroTransform = {
         posX: isMobile ? 1.8 : 3.8,
@@ -369,9 +371,10 @@ export default function ETMonogramScene({
         wireframeOpacity: isMobile ? 0.008 : 0.018,
       };
 
-      const currentTargetX = THREE.MathUtils.lerp(heroTransform.posX, worksTransformTarget.posX, entry);
-      const currentTargetY = THREE.MathUtils.lerp(heroTransform.posY, worksTransformTarget.posY, entry);
-      const currentTargetScale = THREE.MathUtils.lerp(heroTransform.scale, worksTransformTarget.scale, entry);
+      // Direct, Pure Scroll-Linked Position & Scale (No History-Dependent Positional Easing!)
+      const targetX = THREE.MathUtils.lerp(heroTransform.posX, worksTransformTarget.posX, entry);
+      const targetY = THREE.MathUtils.lerp(heroTransform.posY, worksTransformTarget.posY, entry);
+      const targetScale = THREE.MathUtils.lerp(heroTransform.scale, worksTransformTarget.scale, entry);
       const currentBgContrast = THREE.MathUtils.lerp(heroTransform.bgContrast, worksTransformTarget.bgContrast, entry);
       const currentWireframeOpacity = THREE.MathUtils.lerp(heroTransform.wireframeOpacity, worksTransformTarget.wireframeOpacity, entry);
 
@@ -382,11 +385,10 @@ export default function ETMonogramScene({
       if (currentOpacity < 0.01) return;
 
       const p = introProgressRef.current;
-      const currentHeroScale = THREE.MathUtils.lerp(0.25, currentTargetScale, p);
+      const currentHeroScale = THREE.MathUtils.lerp(0.25, targetScale, p);
 
+      logoGroup.position.set(targetX, targetY, 0);
       logoGroup.scale.set(currentHeroScale, currentHeroScale, currentHeroScale);
-      logoGroup.position.x += (currentTargetX - logoGroup.position.x) * 0.08;
-      logoGroup.position.y += (currentTargetY - logoGroup.position.y) * 0.08;
       logoGroup.rotation.z = Math.sin(worksProgressRef.current * Math.PI * 2) * 0.025;
 
       roomMesh.scale.setScalar(THREE.MathUtils.lerp(0.72, 1, p));
@@ -433,6 +435,7 @@ export default function ETMonogramScene({
         containerRef.current.setAttribute('data-et-screen-width', String(screenW));
         containerRef.current.setAttribute('data-et-screen-height', String(screenH));
         containerRef.current.setAttribute('data-et-opacity', currentOpacity.toFixed(2));
+        containerRef.current.setAttribute('data-et-frame-id', String(frameId));
       }
 
       if (!firstRenderSignaled) {
@@ -472,14 +475,15 @@ export default function ETMonogramScene({
         roomMaterial.uniforms.uPointer.value.copy(currentMouse);
 
         if (!isMobile) {
-          const targetRotX = currentMouse.y * -0.28;
-          const targetRotY = currentMouse.x * 0.42;
-          const idleRotX = isScrollAudit ? 0 : Math.sin(time * 0.3) * 0.02;
-          const idleRotY = isScrollAudit ? 0 : Math.cos(time * 0.25) * 0.02;
-
-          const q = new THREE.Quaternion();
-          q.setFromEuler(new THREE.Euler(targetRotX + idleRotX, targetRotY + idleRotY, 0));
-          logoGroup.quaternion.slerp(q, 0.08);
+          if (isScrollAudit) {
+            logoGroup.quaternion.identity();
+          } else {
+            const targetRotX = currentMouse.y * -0.28;
+            const targetRotY = currentMouse.x * 0.42;
+            const q = new THREE.Quaternion();
+            q.setFromEuler(new THREE.Euler(targetRotX + Math.sin(time * 0.3) * 0.02, targetRotY + Math.cos(time * 0.25) * 0.02, 0));
+            logoGroup.quaternion.slerp(q, 0.08);
+          }
         }
 
         renderPass(time);
