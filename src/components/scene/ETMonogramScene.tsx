@@ -49,7 +49,6 @@ varying vec3 vViewPosition;
 varying vec3 vNormal;
 
 void main() {
-  // World-space angular and depth coordinate calculation for spatial room
   float angularCoordinate = atan(vWorldPosition.z, vWorldPosition.y);
   float angularGrid = abs(sin(angularCoordinate * 12.0));
   float depthGrid = abs(sin(vWorldPosition.x * 1.2));
@@ -102,7 +101,6 @@ void main() {
   vec3 normal = normalize(vNormal);
   vec3 viewDir = normalize(vViewPosition);
 
-  // Studio Lighting Rig Setup
   vec3 keyLightDir = normalize(vec3(1.4 + uPointer.x * 1.2, 1.8 + uPointer.y * 0.8, 2.2));
   vec3 fillLightDir = normalize(vec3(-2.2, -0.8, 1.2));
   vec3 rimLightDir = normalize(vec3(0.0, 2.5, -2.0));
@@ -131,6 +129,9 @@ export interface ETMonogramSceneProps {
   roughness?: number;
   noiseScale?: number;
   scrollState?: 'hero' | 'works' | 'manifesto';
+  heroExitProgress?: number;
+  worksEntryProgress?: number;
+  worksProgress?: number;
   introProgress?: number;
   onContextLost?: () => void;
   onSceneReady?: () => void;
@@ -140,6 +141,9 @@ export default function ETMonogramScene({
   roughness = 0.10,
   noiseScale = 9.00,
   scrollState = 'hero',
+  heroExitProgress = 0,
+  worksEntryProgress = 0,
+  worksProgress = 0,
   introProgress = 1,
   onContextLost,
   onSceneReady,
@@ -151,9 +155,15 @@ export default function ETMonogramScene({
 
   const isMobile = window.innerWidth <= 900;
   const introProgressRef = useRef(introProgress);
+  const worksEntryProgressRef = useRef(worksEntryProgress);
+  const worksProgressRef = useRef(worksProgress);
+  const heroExitProgressRef = useRef(heroExitProgress);
 
   useEffect(() => {
     introProgressRef.current = introProgress;
+    worksEntryProgressRef.current = worksEntryProgress;
+    worksProgressRef.current = worksProgress;
+    heroExitProgressRef.current = heroExitProgress;
     if (bgMaterialRef.current) {
       bgMaterialRef.current.uniforms.uIntroProgress.value = introProgress;
     }
@@ -163,44 +173,17 @@ export default function ETMonogramScene({
     if (renderSingleFrameRef.current) {
       renderSingleFrameRef.current();
     }
-  }, [introProgress]);
+  }, [introProgress, worksEntryProgress, worksProgress, heroExitProgress]);
 
-  const getScrollTransform = (state: string) => {
-    switch (state) {
-      case 'manifesto':
-        return { posX: 14.0, posY: 0, scale: 0.1, bgContrast: 0.0, wireframeOpacity: 0.0 };
-      case 'works':
-        return {
-          posX: isMobile ? -0.4 : -1.35,
-          posY: isMobile ? 0.8 : 0.05,
-          scale: isMobile ? 0.38 : 0.58,
-          bgContrast: 0.20,
-          wireframeOpacity: isMobile ? 0.008 : 0.018,
-        };
-      case 'hero':
-      default:
-        return {
-          posX: isMobile ? 1.8 : 3.8,
-          posY: isMobile ? -3.2 : 0.1,
-          scale: isMobile ? 0.35 : 0.95,
-          bgContrast: isMobile ? 0.16 : 0.34,
-          wireframeOpacity: isMobile ? 0.005 : 0.035,
-        };
-    }
-  };
-
-  const targetTransformRef = useRef(getScrollTransform(scrollState));
   const sceneVisibleRef = useRef(scrollState !== 'manifesto');
   const onSceneReadyRef = useRef(onSceneReady);
   onSceneReadyRef.current = onSceneReady;
 
   useEffect(() => {
-    targetTransformRef.current = getScrollTransform(scrollState);
     sceneVisibleRef.current = scrollState !== 'manifesto';
     if (renderSingleFrameRef.current) {
       renderSingleFrameRef.current();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scrollState]);
 
   useEffect(() => {
@@ -280,7 +263,7 @@ export default function ETMonogramScene({
     const roomMesh = new THREE.Mesh(roomGeometry, roomMaterial);
     scene.add(roomMesh);
 
-    // Create Distinct 3D E and T Shapes
+    // Create 3D ET Logo Shapes
     const logoGroup = new THREE.Group();
 
     const eShape = new THREE.Shape();
@@ -366,7 +349,29 @@ export default function ETMonogramScene({
     let currentOpacity = 1;
 
     const renderPass = (time: number = 0) => {
-      const target = targetTransformRef.current;
+      const entry = Math.max(0, Math.min(1, worksEntryProgressRef.current));
+      const heroTransform = {
+        posX: isMobile ? 1.8 : 3.8,
+        posY: isMobile ? -3.2 : 0.1,
+        scale: isMobile ? 0.35 : 0.95,
+        bgContrast: isMobile ? 0.16 : 0.34,
+        wireframeOpacity: isMobile ? 0.005 : 0.035,
+      };
+
+      const worksTransformTarget = {
+        posX: isMobile ? -0.4 : -1.35,
+        posY: isMobile ? 0.8 : 0.05,
+        scale: isMobile ? 0.38 : 0.58,
+        bgContrast: 0.20,
+        wireframeOpacity: isMobile ? 0.008 : 0.018,
+      };
+
+      const currentTargetX = THREE.MathUtils.lerp(heroTransform.posX, worksTransformTarget.posX, entry);
+      const currentTargetY = THREE.MathUtils.lerp(heroTransform.posY, worksTransformTarget.posY, entry);
+      const currentTargetScale = THREE.MathUtils.lerp(heroTransform.scale, worksTransformTarget.scale, entry);
+      const currentBgContrast = THREE.MathUtils.lerp(heroTransform.bgContrast, worksTransformTarget.bgContrast, entry);
+      const currentWireframeOpacity = THREE.MathUtils.lerp(heroTransform.wireframeOpacity, worksTransformTarget.wireframeOpacity, entry);
+
       const targetOpacity = sceneVisibleRef.current ? 1 : 0;
       currentOpacity += (targetOpacity - currentOpacity) * 0.08;
       container.style.opacity = currentOpacity.toFixed(3);
@@ -374,17 +379,57 @@ export default function ETMonogramScene({
       if (currentOpacity < 0.01) return;
 
       const p = introProgressRef.current;
-      const currentHeroScale = THREE.MathUtils.lerp(0.25, target.scale, p);
+      const currentHeroScale = THREE.MathUtils.lerp(0.25, currentTargetScale, p);
+
       logoGroup.scale.set(currentHeroScale, currentHeroScale, currentHeroScale);
-      logoGroup.position.set(target.posX, target.posY, 0);
+      logoGroup.position.x += (currentTargetX - logoGroup.position.x) * 0.08;
+      logoGroup.position.y += (currentTargetY - logoGroup.position.y) * 0.08;
+      logoGroup.rotation.z = Math.sin(worksProgressRef.current * Math.PI * 2) * 0.025;
 
       roomMesh.scale.setScalar(THREE.MathUtils.lerp(0.72, 1, p));
-      outlineMaterial.opacity = target.wireframeOpacity * p;
-      roomMaterial.uniforms.uBgContrast.value = target.bgContrast;
+      outlineMaterial.opacity = currentWireframeOpacity * p;
+      roomMaterial.uniforms.uBgContrast.value = currentBgContrast;
       roomMaterial.uniforms.uTime.value = time;
 
       if (renderer) {
         renderer.render(scene, camera);
+      }
+
+      // Compute Projected Screen Bounds for ET Box in 2D Viewport Space
+      const box = new THREE.Box3().setFromObject(logoGroup);
+      const corners = [
+        new THREE.Vector3(box.min.x, box.min.y, box.min.z),
+        new THREE.Vector3(box.min.x, box.min.y, box.max.z),
+        new THREE.Vector3(box.min.x, box.max.y, box.min.z),
+        new THREE.Vector3(box.min.x, box.max.y, box.max.z),
+        new THREE.Vector3(box.max.x, box.min.y, box.min.z),
+        new THREE.Vector3(box.max.x, box.min.y, box.max.z),
+        new THREE.Vector3(box.max.x, box.max.y, box.min.z),
+        new THREE.Vector3(box.max.x, box.max.y, box.max.z),
+      ];
+
+      let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+      corners.forEach((corner) => {
+        corner.project(camera);
+        const x = (corner.x * 0.5 + 0.5) * width;
+        const y = (-corner.y * 0.5 + 0.5) * height;
+        if (x < minX) minX = x;
+        if (x > maxX) maxX = x;
+        if (y < minY) minY = y;
+        if (y > maxY) maxY = y;
+      });
+
+      const screenX = Math.round(minX);
+      const screenY = Math.round(minY);
+      const screenW = Math.round(maxX - minX);
+      const screenH = Math.round(maxY - minY);
+
+      if (containerRef.current) {
+        containerRef.current.setAttribute('data-et-screen-x', String(screenX));
+        containerRef.current.setAttribute('data-et-screen-y', String(screenY));
+        containerRef.current.setAttribute('data-et-screen-width', String(screenW));
+        containerRef.current.setAttribute('data-et-screen-height', String(screenH));
+        containerRef.current.setAttribute('data-et-opacity', currentOpacity.toFixed(2));
       }
 
       if (!firstRenderSignaled) {
@@ -420,10 +465,6 @@ export default function ETMonogramScene({
           roomMesh.rotation.y = currentMouse.x * 0.13;
           roomMesh.rotation.z = currentMouse.y * -0.055;
         }
-
-        const target = targetTransformRef.current;
-        logoGroup.position.x += (target.posX - logoGroup.position.x) * 0.05;
-        logoGroup.position.y += (target.posY - logoGroup.position.y) * 0.05;
 
         roomMaterial.uniforms.uPointer.value.copy(currentMouse);
 

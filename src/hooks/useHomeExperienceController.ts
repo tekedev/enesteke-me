@@ -10,6 +10,14 @@ export interface HomeExperienceState {
   worksProgress: number;
   worksActive: boolean;
   scrollDirection: ScrollDirection;
+  etScreenRect: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    centerX: number;
+    centerY: number;
+  };
 }
 
 function clamp(value: number, min: number, max: number): number {
@@ -24,6 +32,14 @@ export function useHomeExperienceController(): HomeExperienceState {
     worksProgress: 0,
     worksActive: false,
     scrollDirection: 'down',
+    etScreenRect: {
+      x: 380,
+      y: 250,
+      width: 280,
+      height: 360,
+      centerX: 520,
+      centerY: 430,
+    },
   });
 
   const lastScrollYRef = useRef<number>(0);
@@ -35,6 +51,7 @@ export function useHomeExperienceController(): HomeExperienceState {
     const updateState = () => {
       const scrollY = window.scrollY;
       const viewportHeight = window.innerHeight || 900;
+      const viewportWidth = window.innerWidth || 1440;
       const scrollDirection: ScrollDirection = scrollY >= lastScrollYRef.current ? 'down' : 'up';
       lastScrollYRef.current = scrollY;
 
@@ -46,9 +63,9 @@ export function useHomeExperienceController(): HomeExperienceState {
       let heroExitProgress = 0;
       if (heroEl) {
         const heroHeight = heroEl.offsetHeight || viewportHeight;
-        heroExitProgress = clamp(scrollY / (heroHeight * 0.65), 0, 1);
+        heroExitProgress = clamp(scrollY / (heroHeight * 0.60), 0, 1);
       } else {
-        heroExitProgress = clamp(scrollY / (viewportHeight * 0.65), 0, 1);
+        heroExitProgress = clamp(scrollY / (viewportHeight * 0.60), 0, 1);
       }
 
       // Works Entry Progress & Works Scroll Progress
@@ -89,6 +106,33 @@ export function useHomeExperienceController(): HomeExperienceState {
         sceneState = 'hero';
       }
 
+      // Read ET Screen Bounds from 3D projected attributes
+      let etX = Math.round(viewportWidth * 0.264);
+      let etY = Math.round(viewportHeight * 0.277);
+      let etW = Math.round(viewportWidth * 0.194);
+      let etH = Math.round(viewportHeight * 0.400);
+
+      const etElement = document.querySelector('[data-et-screen-x]');
+      if (etElement) {
+        const parsedX = Number(etElement.getAttribute('data-et-screen-x'));
+        const parsedY = Number(etElement.getAttribute('data-et-screen-y'));
+        const parsedW = Number(etElement.getAttribute('data-et-screen-width'));
+        const parsedH = Number(etElement.getAttribute('data-et-screen-height'));
+        if (!isNaN(parsedX) && parsedW > 0) etX = parsedX;
+        if (!isNaN(parsedY) && parsedH > 0) etY = parsedY;
+        if (parsedW > 0) etW = parsedW;
+        if (parsedH > 0) etH = parsedH;
+      }
+
+      const etRect = {
+        x: etX,
+        y: etY,
+        width: etW,
+        height: etH,
+        centerX: Math.round(etX + etW / 2),
+        centerY: Math.round(etY + etH / 2),
+      };
+
       setState((prev) => {
         if (
           prev.sceneState === sceneState &&
@@ -96,7 +140,8 @@ export function useHomeExperienceController(): HomeExperienceState {
           Math.abs(prev.worksEntryProgress - worksEntryProgress) < 0.005 &&
           Math.abs(prev.worksProgress - worksProgress) < 0.005 &&
           prev.worksActive === worksActive &&
-          prev.scrollDirection === scrollDirection
+          prev.scrollDirection === scrollDirection &&
+          Math.abs(prev.etScreenRect.centerX - etRect.centerX) < 2
         ) {
           return prev;
         }
@@ -108,6 +153,7 @@ export function useHomeExperienceController(): HomeExperienceState {
           worksProgress,
           worksActive,
           scrollDirection,
+          etScreenRect: etRect,
         };
       });
 

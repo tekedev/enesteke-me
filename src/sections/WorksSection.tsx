@@ -14,9 +14,21 @@ const shortDescriptions: Record<string, string> = {
 export interface WorksSectionProps {
   progress?: number;
   active?: boolean;
+  worksEntryProgress?: number;
+  etScreenRect?: {
+    centerX: number;
+    centerY: number;
+    width: number;
+    height: number;
+  };
 }
 
-export default function WorksSection({ progress = 0, active = false }: WorksSectionProps) {
+export default function WorksSection({
+  progress = 0,
+  active = false,
+  worksEntryProgress = 0,
+  etScreenRect,
+}: WorksSectionProps) {
   const featured = projects.filter((project) => project.featured).slice(0, 4);
   const sectionRef = useRef<HTMLElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -34,32 +46,45 @@ export default function WorksSection({ progress = 0, active = false }: WorksSect
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  const viewportWidth = typeof window !== 'undefined' ? window.innerWidth || 1440 : 1440;
+  const viewportHeight = typeof window !== 'undefined' ? window.innerHeight || 900 : 900;
+
+  const etCenterX = etScreenRect?.centerX || Math.round(viewportWidth * 0.285);
+  const etCenterY = etScreenRect?.centerY || Math.round(viewportHeight * 0.460);
+  const etWidth = etScreenRect?.width || Math.round(viewportWidth * 0.194);
+
+  const radiusX = Math.min(viewportWidth * 0.30, 520);
+  const radiusY = Math.min(viewportHeight * 0.16, 135);
+
   const applyProgress = useCallback(
     (currentProgress: number) => {
       if (isMobile) return;
       const rawIndex = currentProgress * (featured.length - 1);
-      const viewportWidth = window.innerWidth || 1440;
-      const viewportHeight = window.innerHeight || 900;
+      const vWidth = window.innerWidth || 1440;
+      const vHeight = window.innerHeight || 900;
 
-      const orbitStepRadians = 1.02; // ~58 degrees
-      const radiusX = Math.min(viewportWidth * 0.34, 620);
-      const radiusY = Math.min(viewportHeight * 0.10, 86);
-      const radiusZ = 520;
-      const orbitCenterOffsetX = viewportWidth * 0.12;
+      const currentEtCenterX = etScreenRect?.centerX || Math.round(vWidth * 0.285);
+      const currentEtCenterY = etScreenRect?.centerY || Math.round(vHeight * 0.460);
+
+      const orbitCenterX = currentEtCenterX - vWidth / 2;
+      const orbitCenterY = currentEtCenterY - vHeight / 2;
+
+      const rX = Math.min(vWidth * 0.30, 520);
+      const rY = Math.min(vHeight * 0.16, 135);
 
       visualRefs.current.forEach((element, index) => {
         if (!element) return;
         const distance = index - rawIndex;
-        const angle = distance * orbitStepRadians;
+        const angle = distance * 1.10; // ~63 degrees
 
-        const x = orbitCenterOffsetX + Math.sin(angle) * radiusX;
-        const y = Math.sin(angle * 0.65) * radiusY;
-        const z = (Math.cos(angle) - 1) * radiusZ;
-        const rotateY = ((-angle * 180) / Math.PI) * 0.72; // in degrees
+        const x = orbitCenterX + Math.cos(angle) * rX;
+        const y = orbitCenterY + Math.sin(angle) * rY;
+        const z = (Math.cos(angle) - 1) * 440;
+        const rotateY = ((-angle * 180) / Math.PI) * 0.65;
 
         const activeWeight = Math.max(0, 1 - Math.abs(distance));
-        const scale = 0.56 + activeWeight * 0.44;
-        const opacity = 0.10 + activeWeight * 0.90;
+        const scale = 0.48 + activeWeight * 0.52;
+        const opacity = 0.08 + activeWeight * 0.92;
 
         element.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, ${z.toFixed(1)}px) rotateY(${rotateY.toFixed(1)}deg) scale(${scale.toFixed(2)})`;
         element.style.opacity = opacity.toFixed(2);
@@ -73,7 +98,7 @@ export default function WorksSection({ progress = 0, active = false }: WorksSect
         setActiveIndex(nextActive);
       }
     },
-    [isMobile, featured.length]
+    [isMobile, featured.length, etScreenRect]
   );
 
   useLayoutEffect(() => {
@@ -82,7 +107,8 @@ export default function WorksSection({ progress = 0, active = false }: WorksSect
   }, [progress, applyProgress]);
 
   const activeProject = featured[activeIndex] || featured[0];
-  const orbitAngle = progress * (featured.length - 1) * 1.02;
+  const orbitAngle = progress * (featured.length - 1) * 1.10;
+  const stageOpacity = isMobile ? 1 : Math.min(1, Math.max(0, (worksEntryProgress - 0.02) * 3.5));
 
   // Mobile Render Architecture
   if (isMobile) {
@@ -134,7 +160,7 @@ export default function WorksSection({ progress = 0, active = false }: WorksSect
     );
   }
 
-  // Desktop 3D Orbital Ring Architecture
+  // Desktop 3D Orbital Ring Architecture Anchored to ET Center
   return (
     <section
       id="works"
@@ -145,7 +171,7 @@ export default function WorksSection({ progress = 0, active = false }: WorksSect
       data-orbit-angle={orbitAngle.toFixed(2)}
       className={styles.worksSection}
     >
-      <div className={styles.worksSticky}>
+      <div className={styles.worksSticky} style={{ opacity: stageOpacity }}>
         {/* Compact Desktop Header */}
         <div className={styles.headerRow}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
@@ -172,12 +198,31 @@ export default function WorksSection({ progress = 0, active = false }: WorksSect
           </Link>
         </div>
 
-        {/* 3D Orbital Showcase Stage */}
+        {/* 3D Orbital Showcase Stage Anchored to ET Projected Center */}
         <div className={styles.showcaseStage}>
-          {/* Spatial Orbital Ring Guide */}
-          <svg className={styles.orbitGuide} aria-hidden="true" viewBox="0 0 1000 400" fill="none">
-            <ellipse cx="450" cy="200" rx="380" ry="80" stroke="rgba(255,255,255,0.07)" strokeWidth="1.5" strokeDasharray="6 6" />
-            <circle cx="450" cy="200" r="140" stroke="rgba(215,255,0,0.12)" strokeWidth="1" />
+          {/* Spatial Orbital Ring Guide Centered at ET Screen Location */}
+          <svg
+            className={styles.orbitGuide}
+            aria-hidden="true"
+            viewBox={`0 0 ${viewportWidth} ${viewportHeight}`}
+            fill="none"
+          >
+            <ellipse
+              cx={etCenterX}
+              cy={etCenterY}
+              rx={radiusX}
+              ry={radiusY}
+              stroke="rgba(255,255,255,0.12)"
+              strokeWidth="1.5"
+              strokeDasharray="6 6"
+            />
+            <circle
+              cx={etCenterX}
+              cy={etCenterY}
+              r={Math.round(etWidth * 0.55)}
+              stroke="rgba(215,255,0,0.18)"
+              strokeWidth="1"
+            />
           </svg>
 
           {/* Visual Planes Orbital Ring Layer */}

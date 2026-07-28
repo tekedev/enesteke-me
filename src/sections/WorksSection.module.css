@@ -1,9 +1,7 @@
 .worksSection {
   position: relative;
-  isolation: isolate;
-  z-index: 2;
   min-height: 420svh;
-  background-color: #000000;
+  background: transparent;
   font-family: var(--font-family-mono);
 }
 
@@ -16,7 +14,8 @@
   flex-direction: column;
   justify-content: space-between;
   padding: calc(var(--header-height) + 16px) var(--page-padding) 32px;
-  background-color: #000000;
+  background: transparent;
+  transition: opacity 0.3s ease;
 }
 
 .headerRow {
@@ -25,7 +24,7 @@
   align-items: center;
   border-bottom: 1px solid var(--line-secondary);
   padding-bottom: 14px;
-  z-index: 25;
+  z-index: 6;
 }
 
 .showcaseStage {
@@ -45,7 +44,7 @@
   width: 100%;
   height: 100%;
   pointer-events: none;
-  z-index: 1;
+  z-index: 3;
   opacity: 0.85;
 }
 
@@ -61,8 +60,8 @@
 
 .projectVisualPlane {
   position: absolute;
-  width: min(46vw, 820px);
-  height: min(58vh, 590px);
+  width: min(40vw, 720px);
+  height: min(50vh, 520px);
   background: #08080a;
   border: 1px solid rgba(245, 245, 242, 0.14);
   border-radius: 2px;
@@ -76,7 +75,7 @@
   position: absolute;
   left: clamp(28px, 4vw, 72px);
   bottom: clamp(28px, 5vh, 64px);
-  z-index: 30;
+  z-index: 6;
   max-width: 340px;
   background: linear-gradient(90deg, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.70) 75%, transparent);
   padding: 24px 28px;

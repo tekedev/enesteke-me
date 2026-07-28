@@ -15,6 +15,12 @@ interface HomePageProps {
   noiseScale: number;
   setNoiseScale: (val: number) => void;
   onSceneStateChange?: (state: SceneState) => void;
+  onExperienceUpdate?: (update: {
+    sceneState: SceneState;
+    heroExitProgress: number;
+    worksEntryProgress: number;
+    worksProgress: number;
+  }) => void;
   introProgress?: number;
   setIntroProgress?: (progress: number) => void;
 }
@@ -25,17 +31,21 @@ export default function HomePage({
   noiseScale,
   setNoiseScale,
   onSceneStateChange,
+  onExperienceUpdate,
   introProgress: _introProgress,
   setIntroProgress,
 }: HomePageProps) {
-  const { sceneState, heroExitProgress, worksEntryProgress, worksProgress, worksActive, scrollDirection } =
+  const { sceneState, heroExitProgress, worksEntryProgress, worksProgress, worksActive, scrollDirection, etScreenRect } =
     useHomeExperienceController();
 
   useEffect(() => {
     if (onSceneStateChange) {
       onSceneStateChange(sceneState);
     }
-  }, [sceneState, onSceneStateChange]);
+    if (onExperienceUpdate) {
+      onExperienceUpdate({ sceneState, heroExitProgress, worksEntryProgress, worksProgress });
+    }
+  }, [sceneState, heroExitProgress, worksEntryProgress, worksProgress, onSceneStateChange, onExperienceUpdate]);
 
   return (
     <div
@@ -58,7 +68,12 @@ export default function HomePage({
         setNoiseScale={setNoiseScale}
         heroExitProgress={heroExitProgress}
       />
-      <WorksSection progress={worksProgress} active={worksActive} />
+      <WorksSection
+        progress={worksProgress}
+        active={worksActive}
+        worksEntryProgress={worksEntryProgress}
+        etScreenRect={etScreenRect}
+      />
       <CapabilitiesSection />
       <ManifestoSection />
       <ContactSection />

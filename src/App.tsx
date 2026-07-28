@@ -6,6 +6,7 @@ import Navbar from './components/layout/Navbar';
 import ErrorBoundary from './components/common/ErrorBoundary';
 import WebGLFallback from './components/common/WebGLFallback';
 import StaticMonogramFallback from './components/common/StaticMonogramFallback';
+import type { SceneState } from './hooks/useHomeExperienceController';
 
 const ETMonogramScene = lazy(() => import('./components/scene/ETMonogramScene'));
 const HomePage = lazy(() => import('./pages/HomePage'));
@@ -20,15 +21,16 @@ export default function App() {
   const [noiseScale, setNoiseScale] = useState<number>(9.00);
   const [webglFailed, setWebglFailed] = useState<boolean>(false);
   const [sceneReady, setSceneReady] = useState<boolean>(false);
-  const [scrollState, setScrollState] = useState<'hero' | 'works' | 'manifesto'>('hero');
+  const [scrollState, setScrollState] = useState<SceneState>('hero');
+  const [heroExitProgress, setHeroExitProgress] = useState<number>(0);
+  const [worksEntryProgress, setWorksEntryProgress] = useState<number>(0);
+  const [worksProgress, setWorksProgress] = useState<number>(0);
   const [introProgress, setIntroProgress] = useState<number>(0);
 
   const location = useLocation();
 
-  // Check if test parameter ?e2e=1 is present
   const isE2E = new URLSearchParams(location.search).get('e2e') === '1';
 
-  // Manage data-intro-active attribute on document body
   useEffect(() => {
     if (introProgress < 0.95) {
       document.body.setAttribute('data-intro-active', 'true');
@@ -37,13 +39,11 @@ export default function App() {
     }
   }, [introProgress]);
 
-  // Route Change Scroll Reset
   useEffect(() => {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     window.scrollTo({ top: 0, behavior: (prefersReducedMotion || isE2E) ? 'auto' : 'smooth' });
   }, [location.pathname, isE2E]);
 
-  // Smooth Scroll with Lenis & Clean RAF Cleanup
   useEffect(() => {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (prefersReducedMotion || isE2E) return;
@@ -69,6 +69,18 @@ export default function App() {
     };
   }, [isE2E]);
 
+  const handleExperienceUpdate = (update: {
+    sceneState: SceneState;
+    heroExitProgress: number;
+    worksEntryProgress: number;
+    worksProgress: number;
+  }) => {
+    setScrollState(update.sceneState);
+    setHeroExitProgress(update.heroExitProgress);
+    setWorksEntryProgress(update.worksEntryProgress);
+    setWorksProgress(update.worksProgress);
+  };
+
   return (
     <ErrorBoundary>
       <Navbar />
@@ -85,6 +97,9 @@ export default function App() {
             roughness={roughness}
             noiseScale={noiseScale}
             scrollState={scrollState}
+            heroExitProgress={heroExitProgress}
+            worksEntryProgress={worksEntryProgress}
+            worksProgress={worksProgress}
             introProgress={introProgress}
             onContextLost={() => setWebglFailed(true)}
             onSceneReady={() => setSceneReady(true)}
@@ -104,6 +119,7 @@ export default function App() {
                 noiseScale={noiseScale}
                 setNoiseScale={setNoiseScale}
                 onSceneStateChange={setScrollState}
+                onExperienceUpdate={handleExperienceUpdate}
                 introProgress={introProgress}
                 setIntroProgress={setIntroProgress}
               />
