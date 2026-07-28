@@ -1,21 +1,32 @@
-.worksSection {
+.worksScrollSpacer {
   position: relative;
   min-height: 420svh;
   background: transparent;
   font-family: var(--font-family-mono);
 }
 
-.worksSticky {
-  position: sticky;
-  top: 0;
-  height: 100svh;
+.worksExperienceOverlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 3;
+  pointer-events: none;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   padding: calc(var(--header-height) + 16px) var(--page-padding) 32px;
   background: transparent;
-  transition: opacity 0.3s ease;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 260ms ease, visibility 0s linear 260ms;
+}
+
+.worksExperienceOverlay[data-visible="true"] {
+  opacity: 1;
+  visibility: visible;
+  transition-delay: 0s;
 }
 
 .headerRow {
@@ -24,7 +35,12 @@
   align-items: center;
   border-bottom: 1px solid var(--line-secondary);
   padding-bottom: 14px;
-  z-index: 6;
+  z-index: 70;
+  pointer-events: auto;
+}
+
+.allProjectsLink {
+  pointer-events: auto;
 }
 
 .showcaseStage {
@@ -44,7 +60,7 @@
   width: 100%;
   height: 100%;
   pointer-events: none;
-  z-index: 3;
+  z-index: 1;
   opacity: 0.85;
 }
 
@@ -69,13 +85,14 @@
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.85);
   will-change: transform, opacity;
   transition: opacity 0.3s ease;
+  pointer-events: auto;
 }
 
 .activeMetaOverlay {
   position: absolute;
   left: clamp(28px, 4vw, 72px);
   bottom: clamp(28px, 5vh, 64px);
-  z-index: 6;
+  z-index: 60;
   max-width: 340px;
   background: linear-gradient(90deg, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.70) 75%, transparent);
   padding: 24px 28px;
@@ -84,6 +101,7 @@
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: auto;
 }
 
 .projectTitle {
@@ -110,6 +128,7 @@
   text-decoration: none;
   min-height: 44px;
   transition: all 0.2s ease;
+  pointer-events: auto;
 }
 
 .ctaButton:hover {

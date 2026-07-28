@@ -154,6 +154,8 @@ export default function ETMonogramScene({
   const renderSingleFrameRef = useRef<(() => void) | null>(null);
 
   const isMobile = window.innerWidth <= 900;
+  const isScrollAudit = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('scrollAudit') === '1';
+
   const introProgressRef = useRef(introProgress);
   const worksEntryProgressRef = useRef(worksEntryProgress);
   const worksProgressRef = useRef(worksProgress);
@@ -341,6 +343,7 @@ export default function ETMonogramScene({
     let currentMouse = new THREE.Vector2(0, 0);
 
     const handleMouseMove = (e: MouseEvent) => {
+      if (isScrollAudit) return;
       targetMouse.x = (e.clientX / width) * 2 - 1;
       targetMouse.y = -(e.clientY / height) * 2 + 1;
     };
@@ -447,7 +450,7 @@ export default function ETMonogramScene({
     let isPaused = false;
 
     if (!prefersReducedMotion) {
-      if (!isMobile) {
+      if (!isMobile && !isScrollAudit) {
         window.addEventListener('mousemove', handleMouseMove);
       }
 
@@ -471,8 +474,11 @@ export default function ETMonogramScene({
         if (!isMobile) {
           const targetRotX = currentMouse.y * -0.28;
           const targetRotY = currentMouse.x * 0.42;
+          const idleRotX = isScrollAudit ? 0 : Math.sin(time * 0.3) * 0.02;
+          const idleRotY = isScrollAudit ? 0 : Math.cos(time * 0.25) * 0.02;
+
           const q = new THREE.Quaternion();
-          q.setFromEuler(new THREE.Euler(targetRotX + Math.sin(time * 0.3) * 0.02, targetRotY + Math.cos(time * 0.25) * 0.02, 0));
+          q.setFromEuler(new THREE.Euler(targetRotX + idleRotX, targetRotY + idleRotY, 0));
           logoGroup.quaternion.slerp(q, 0.08);
         }
 
@@ -515,7 +521,7 @@ export default function ETMonogramScene({
     return () => {
       canvasEl.removeEventListener('webglcontextlost', handleContextLost);
       canvasEl.removeEventListener('webglcontextrestored', handleContextRestored);
-      if (!isMobile) {
+      if (!isMobile && !isScrollAudit) {
         window.removeEventListener('mousemove', handleMouseMove);
       }
       window.removeEventListener('resize', handleResize);

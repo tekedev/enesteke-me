@@ -34,5 +34,9 @@ export default function WorkVisual({ project, compact }: WorkVisualProps) {
     return <div data-work-visual-missing={project.id} aria-hidden="true" />;
   }
 
-  return <Visual project={project} compact={compact} />;
+  return (
+    <div data-work-visual={project.slug} data-visual-label={project.title} style={{ width: '100%', height: '100%' }}>
+      <Visual project={project} compact={compact} />
+    </div>
+  );
 }

@@ -72,6 +72,7 @@ export default function HomePage({
         progress={worksProgress}
         active={worksActive}
         worksEntryProgress={worksEntryProgress}
+        sceneState={sceneState}
         etScreenRect={etScreenRect}
       />
       <CapabilitiesSection />
