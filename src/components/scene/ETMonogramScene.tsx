@@ -58,8 +58,8 @@ void main() {
   float depthLine = smoothstep(0.960, 1.0, depthGrid);
   float distanceFade = smoothstep(14.0, 1.8, length(vViewPosition));
 
-  vec3 angularColor = vec3(0.22, 0.24, 0.28) * angularLine;
-  vec3 depthColor = vec3(0.14, 0.16, 0.18) * depthLine;
+  vec3 angularColor = vec3(0.26, 0.28, 0.32) * angularLine;
+  vec3 depthColor = vec3(0.18, 0.20, 0.22) * depthLine;
 
   float gridFactor = max(angularLine, depthLine) * distanceFade * uBgContrast * uIntroProgress;
 
@@ -320,15 +320,15 @@ export default function ETMonogramScene({
 
     const eMesh = new THREE.Mesh(eGeometry, logoMaterial);
     const eOutline = new THREE.Mesh(eGeometry, outlineMaterial);
-    eMesh.position.set(-0.72, 0, 0.18);
+    eMesh.position.set(-0.85, 0, 0.18);
     eOutline.position.copy(eMesh.position);
 
     const tMesh = new THREE.Mesh(tGeometry, logoMaterial);
     const tOutline = new THREE.Mesh(tGeometry, outlineMaterial);
-    tMesh.position.set(0.68, 0.10, -0.22);
-    tMesh.scale.x = 0.62;
+    tMesh.position.set(0.82, 0.14, -0.08);
+    tMesh.scale.x = 0.72;
     tOutline.position.copy(tMesh.position);
-    tOutline.scale.x = 0.62;
+    tOutline.scale.x = 0.72;
 
     logoGroup.add(eMesh);
     logoGroup.add(eOutline);

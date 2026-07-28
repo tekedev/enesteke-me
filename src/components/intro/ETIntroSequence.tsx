@@ -9,6 +9,7 @@ interface ETIntroSequenceProps {
 export default function ETIntroSequence({ onProgress, onComplete }: ETIntroSequenceProps) {
   const [exiting, setExiting] = useState(false);
   const [hidden, setHidden] = useState(false);
+  const [introProgress, setIntroProgress] = useState(0);
 
   useEffect(() => {
     const params = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
@@ -32,6 +33,7 @@ export default function ETIntroSequence({ onProgress, onComplete }: ETIntroSeque
       const elapsed = Date.now() - startTime;
       const progress = Math.min(1, elapsed / duration);
       if (onProgress) onProgress(progress);
+      setIntroProgress(progress);
 
       if (progress < 1) {
         animId = requestAnimationFrame(animateProgress);
@@ -65,6 +67,7 @@ export default function ETIntroSequence({ onProgress, onComplete }: ETIntroSeque
     <div
       className={`${styles.introOverlay} ${exiting ? styles.introOverlayExit : ''}`}
       data-intro-overlay="true"
+      data-intro-progress={introProgress.toFixed(2)}
       onClick={() => {
         setExiting(true);
         if (onProgress) onProgress(1);

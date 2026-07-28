@@ -1,17 +1,21 @@
+/* Semantic CSS Module for All Work Visual Components */
+
 .visualCanvas {
   width: 100%;
   height: 100%;
   position: relative;
+  border-radius: 4px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 32px;
-  font-family: var(--font-family-mono);
+  padding: 24px;
+  box-sizing: border-box;
 }
 
 .visualCanvasCompact {
-  padding: 20px;
+  padding: 16px;
+  height: min(48svh, 410px);
 }
 
 .headerRow {
@@ -25,175 +29,217 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding-top: 14px;
-  font-size: 10px;
-  color: #73736e;
+  font-size: 11px;
+  letter-spacing: 0.15em;
   z-index: 2;
 }
 
-/* NEXUS Art Direction */
+/* Common Image Layer */
+.projectMedia {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  border-radius: 2px;
+}
+
+/* 1. NEXUS Visual Styles */
 .nexusCanvas {
-  background: radial-gradient(circle at center, #1e1914 0%, #060504 100%);
+  background: radial-gradient(circle at 70% 30%, rgba(215, 255, 0, 0.08) 0%, rgba(10, 10, 10, 0.98) 70%);
+  border: 1px solid rgba(215, 255, 0, 0.2);
 }
 
-.nexusMediaStage {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-  margin: 20px 0;
+.nexusStage {
+  flex: 1;
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 16px 0;
+  overflow: hidden;
+}
+
+.nexusPrimarySurface {
+  width: 85%;
+  height: 85%;
+  position: relative;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(215, 255, 0, 0.15);
+  border: 1px solid rgba(215, 255, 0, 0.3);
   z-index: 2;
 }
 
-.nexusMediaStageCompact {
-  grid-template-columns: 1fr;
-  margin: 12px 0;
+.nexusBackgroundPlaneA {
+  position: absolute;
+  top: 5%;
+  left: 2%;
+  width: 75%;
+  height: 75%;
+  background: linear-gradient(135deg, rgba(215,255,0,0.15), rgba(0,229,163,0.1));
+  border: 1px solid rgba(215, 255, 0, 0.15);
+  transform: rotate(-4deg) scale(0.95);
+  border-radius: 4px;
+  z-index: 1;
 }
 
-.nexusFrame {
-  height: 240px;
-  background: linear-gradient(135deg, rgba(238, 153, 61, 0.2), rgba(16, 19, 27, 0.85));
-  border: 1px solid rgba(238, 153, 61, 0.4);
+.nexusBackgroundPlaneB {
+  position: absolute;
+  bottom: 5%;
+  right: 2%;
+  width: 75%;
+  height: 75%;
+  background: linear-gradient(135deg, rgba(255,119,170,0.12), rgba(10,10,10,0.8));
+  border: 1px solid rgba(255, 119, 170, 0.15);
+  transform: rotate(4deg) scale(0.95);
+  border-radius: 4px;
+  z-index: 1;
+}
+
+.nexusPlayhead {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  right: 12px;
+  height: 3px;
+  background: rgba(245, 245, 242, 0.2);
   border-radius: 2px;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  overflow: hidden;
 }
 
-.nexusFrameActive {
-  height: 270px;
-  background: linear-gradient(135deg, rgba(42, 210, 220, 0.25), rgba(37, 22, 42, 0.95));
-  border: 1px solid #2ad2dc;
-  border-radius: 2px;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  transform: translateY(-12px);
-  box-shadow: 0 10px 30px rgba(42, 210, 220, 0.25);
+.nexusPlayheadBar {
+  width: 65%;
+  height: 100%;
+  background: #d7ff00;
+  box-shadow: 0 0 8px #d7ff00;
 }
 
-.nexusFrameCompact {
-  height: 220px;
-  transform: none !important;
-}
-
-/* HAREKI Editorial Art Direction */
+/* 2. HAREKI Visual Styles */
 .harekiCanvas {
-  background: linear-gradient(135deg, #f0eee6 0%, #dcd8cc 100%);
+  background: #f0eee6;
   color: #0a0a0a;
+  border: 1px solid rgba(10, 10, 10, 0.15);
 }
 
 .harekiStage {
+  flex: 1;
   display: grid;
-  grid-template-columns: 1.3fr 1fr;
-  gap: 24px;
-  margin: 24px 0;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 16px;
+  margin: 12px 0;
   align-items: center;
 }
 
 .harekiStageCompact {
   grid-template-columns: 1fr;
-  gap: 12px;
-  margin: 12px 0;
 }
 
 .harekiPage {
-  height: 250px;
   background: #ffffff;
-  border: 1px solid rgba(10, 10, 10, 0.2);
-  padding: 24px;
-  border-radius: 2px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(10, 10, 10, 0.12);
+  padding: 16px;
+  height: 100%;
+  border-radius: 3px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 }
 
-.harekiPageCompact {
-  height: 200px;
-  padding: 16px;
+.harekiImageContainer {
+  height: 140px;
+  overflow: hidden;
+  border-radius: 2px;
+  margin: 8px 0;
+  border: 1px solid rgba(10, 10, 10, 0.08);
 }
 
-/* TEKE.APP 3D Spatial Formats Art Direction */
+.harekiRibbon {
+  background: #0a0a0a;
+  color: #d7ff00;
+  padding: 6px 12px;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  font-weight: 600;
+  border-radius: 2px;
+  display: inline-block;
+}
+
+/* 3. TEKE.APP Visual Styles */
 .tekeCanvas {
-  background: radial-gradient(circle at center, #1b1624 0%, #060408 100%);
+  background: radial-gradient(circle at 30% 70%, rgba(255, 119, 170, 0.12) 0%, rgba(10, 10, 10, 0.98) 70%);
+  border: 1px solid rgba(255, 119, 170, 0.25);
 }
 
 .tekeStage {
-  display: flex;
-  gap: 24px;
-  justify-content: center;
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 14px;
   align-items: center;
-  margin: 20px 0;
-  z-index: 2;
+  margin: 12px 0;
 }
 
 .tekeStageCompact {
-  flex-direction: column;
-  gap: 12px;
-  margin: 12px 0;
+  grid-template-columns: 1fr;
 }
 
-.tekeVerticalPlane {
-  width: 150px;
-  height: 260px;
-  background: linear-gradient(180deg, rgba(42, 90, 240, 0.4), rgba(255, 119, 170, 0.25));
-  border: 1px solid #ff77aa;
-  border-radius: 2px;
-  padding: 16px;
+.tekePlaneVertical {
+  background: linear-gradient(180deg, rgba(255, 119, 170, 0.2), rgba(10, 10, 10, 0.9));
+  border: 1px solid rgba(255, 119, 170, 0.4);
+  border-radius: 6px;
+  height: 220px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+}
+
+.tekePlaneSquare {
+  background: linear-gradient(135deg, rgba(0, 229, 163, 0.2), rgba(10, 10, 10, 0.9));
+  border: 1px solid rgba(0, 229, 163, 0.4);
+  border-radius: 4px;
+  height: 180px;
+  overflow: hidden;
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  box-shadow: 0 12px 30px rgba(255, 119, 170, 0.2);
+  padding: 12px;
 }
 
-.tekeSquarePlane {
-  width: 210px;
-  height: 210px;
-  background: linear-gradient(135deg, rgba(255, 119, 170, 0.35), rgba(255, 170, 88, 0.25));
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 2px;
-  padding: 16px;
+.tekePlaneLandscape {
+  background: linear-gradient(135deg, rgba(215, 255, 0, 0.15), rgba(10, 10, 10, 0.9));
+  border: 1px solid rgba(215, 255, 0, 0.3);
+  border-radius: 4px;
+  height: 140px;
+  overflow: hidden;
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  padding: 12px;
 }
 
-.tekeWidePlane {
-  width: 230px;
-  height: 150px;
-  background: linear-gradient(135deg, rgba(42, 90, 240, 0.3), rgba(10, 10, 12, 0.85));
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 2px;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-/* BIST Order Flow Art Direction */
+/* 4. WHALETRACE (Order Flow Ribbon Art) Visual Styles */
 .bistCanvas {
-  background: radial-gradient(circle at center, #0f221e 0%, #030806 100%);
+  background: radial-gradient(circle at 50% 50%, rgba(0, 229, 163, 0.08) 0%, rgba(5, 15, 12, 0.98) 80%);
+  border: 1px solid rgba(0, 229, 163, 0.3);
 }
 
 .bistStage {
-  height: 260px;
-  background: rgba(0, 0, 0, 0.75);
-  border: 1px solid rgba(0, 229, 163, 0.35);
-  border-radius: 2px;
-  padding: 24px;
+  flex: 1;
+  position: relative;
+  margin: 12px 0;
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  margin: 20px 0;
-  z-index: 2;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
 }
 
-.bistStageCompact {
-  height: 200px;
-  padding: 16px;
-  margin: 12px 0;
+.bistSvgRibbon {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
 }

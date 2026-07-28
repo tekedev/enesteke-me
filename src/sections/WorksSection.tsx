@@ -9,11 +9,10 @@ const shortDescriptions: Record<string, string> = {
   'hareki-dna': 'Turns brand websites into personalized editorial content systems.',
   'teke-app': 'Motion typography and automated multi-format video creation platform.',
   'bist-whale-tracker': 'High-frequency stock data collector and real-time whale movement monitor.',
-  'bist-engine': 'High-frequency stock data collector and real-time whale movement monitor.',
 };
 
 export default function WorksSection() {
-  const featured = projects.slice(0, 4);
+  const featured = projects.filter((project) => project.featured).slice(0, 4);
   const sectionRef = useRef<HTMLElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth <= 900 : false);
@@ -129,7 +128,7 @@ export default function WorksSection() {
             </div>
 
             <div className={styles.mobileVisualWrapper}>
-              <WorkVisual slug={project.slug} compact />
+              <WorkVisual project={project} compact />
             </div>
 
             <h3 style={{ fontFamily: 'var(--font-family-sans)', fontSize: '28px', fontWeight: 300, color: '#f5f5f2', textTransform: 'uppercase', margin: '4px 0' }}>
@@ -187,12 +186,13 @@ export default function WorksSection() {
               <div
                 key={project.id}
                 ref={(el) => { visualRefs.current[index] = el; }}
+                data-project-id={project.id}
                 data-project-slug={project.slug}
                 data-project-index={index}
                 data-project-active={index === activeIndex ? 'true' : 'false'}
                 className={styles.projectVisualPlane}
               >
-                <WorkVisual slug={project.slug} />
+                <WorkVisual project={project} />
               </div>
             ))}
           </div>

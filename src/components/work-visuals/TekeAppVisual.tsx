@@ -1,49 +1,61 @@
 import React from 'react';
+import type { Project } from '../../types/portfolio';
 import styles from './WorkVisuals.module.css';
 
 interface TekeAppVisualProps {
+  project?: Project;
   compact?: boolean;
 }
 
-export default function TekeAppVisual({ compact }: TekeAppVisualProps) {
+export default function TekeAppVisual({ project, compact }: TekeAppVisualProps) {
+  const imgSrc = project?.image || '/projects/tekeapp.jpg';
+
   return (
     <div
       data-work-visual="teke-app"
       className={`${styles.visualCanvas} ${styles.tekeCanvas} ${compact ? styles.visualCanvasCompact : ''}`}
     >
       <div className={styles.headerRow}>
-        <span style={{ fontSize: '11px', color: '#ff77aa', letterSpacing: '0.22em' }}>TEKE.APP // MOTION STUDIO</span>
-        <span style={{ fontSize: '10px', color: 'rgba(245,245,242,0.6)', letterSpacing: '0.15em' }}>SPATIAL REFRAMING</span>
+        <span style={{ fontSize: '11px', color: '#ff77aa', letterSpacing: '0.22em', fontWeight: 600 }}>
+          TEKE.APP
+        </span>
+        <span style={{ fontSize: '10px', color: 'rgba(245,245,242,0.6)', letterSpacing: '0.15em' }}>
+          MOTION STUDIO
+        </span>
       </div>
 
       <div className={`${styles.tekeStage} ${compact ? styles.tekeStageCompact : ''}`}>
-        {/* 9:16 Vertical Plane */}
-        <div className={styles.tekeVerticalPlane} style={{ height: compact ? '180px' : '260px', width: compact ? '100%' : '150px' }}>
-          <span style={{ fontSize: '10px', color: '#ff77aa', letterSpacing: '0.1em' }}>[9:16 REELS]</span>
-          <div style={{ fontSize: '12px', color: '#f5f5f2', fontWeight: 500 }}>VERTICAL MOTION CROP</div>
-          <span style={{ fontSize: '9px', color: '#d7ff00' }}>60 FPS RENDER</span>
+        {/* 9:16 Vertical Reel Plane */}
+        <div className={styles.tekePlaneVertical}>
+          <img src={imgSrc} alt="" className={styles.projectMedia} />
         </div>
 
         {!compact && (
-          <div className={styles.tekeSquarePlane}>
-            <span style={{ fontSize: '10px', color: '#f5f5f2', letterSpacing: '0.1em' }}>[1:1 FEED]</span>
-            <div style={{ fontSize: '14px', color: '#f5f5f2', fontWeight: 300 }}>SQUARE TYPOGRAPHY</div>
-            <span style={{ fontSize: '9px', color: 'rgba(245,245,242,0.6)' }}>AUTO REFRAME</span>
+          <div className={styles.tekePlaneSquare}>
+            <div style={{ fontSize: '14px', color: '#f5f5f2', fontWeight: 300 }}>
+              KINETIC TYPOGRAPHY
+            </div>
+            <div style={{ height: '70px', borderRadius: '2px', overflow: 'hidden' }}>
+              <img src={imgSrc} alt="" className={styles.projectMedia} />
+            </div>
           </div>
         )}
 
         {!compact && (
-          <div className={styles.tekeWidePlane}>
-            <span style={{ fontSize: '10px', color: 'rgba(245,245,242,0.6)', letterSpacing: '0.1em' }}>[16:9 LANDSCAPE]</span>
-            <div style={{ fontSize: '12px', color: '#f5f5f2' }}>CINEMATIC WIDE</div>
-            <span style={{ fontSize: '9px', color: 'rgba(245,245,242,0.4)' }}>HIGH BITRATE</span>
+          <div className={styles.tekePlaneLandscape}>
+            <div style={{ fontSize: '12px', color: '#f5f5f2', textTransform: 'uppercase' }}>
+              CINEMATIC MOTION
+            </div>
+            <div style={{ height: '60px', borderRadius: '2px', overflow: 'hidden' }}>
+              <img src={imgSrc} alt="" className={styles.projectMedia} />
+            </div>
           </div>
         )}
       </div>
 
       <div className={styles.footerRow}>
-        <span>TEKE.APP PLATFORM</span>
-        <span style={{ color: '#d7ff00' }}>CREATIVE STUDIO ONLINE ✓</span>
+        <span style={{ color: 'rgba(245,245,242,0.5)' }}>MULTI-FORMAT MOTION PIPELINE</span>
+        <span style={{ color: '#ff77aa' }}>ACTIVE ✓</span>
       </div>
     </div>
   );
