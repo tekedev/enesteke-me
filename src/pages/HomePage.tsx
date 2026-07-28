@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import ETIntroSequence from '../components/intro/ETIntroSequence';
 import HeroSection from '../sections/HeroSection';
-import IntroSection from '../sections/IntroSection';
 import WorksSection from '../sections/WorksSection';
 import CapabilitiesSection from '../sections/CapabilitiesSection';
 import ManifestoSection from '../sections/ManifestoSection';
@@ -15,6 +14,8 @@ interface HomePageProps {
   noiseScale: number;
   setNoiseScale: (val: number) => void;
   onSceneStateChange?: (state: 'hero' | 'works' | 'manifesto') => void;
+  introProgress?: number;
+  setIntroProgress?: (progress: number) => void;
 }
 
 export default function HomePage({
@@ -23,6 +24,8 @@ export default function HomePage({
   noiseScale,
   setNoiseScale,
   onSceneStateChange,
+  introProgress: _introProgress,
+  setIntroProgress,
 }: HomePageProps) {
   useEffect(() => {
     if (!onSceneStateChange) return;
@@ -37,7 +40,6 @@ export default function HomePage({
       (entries) => {
         const visibleEntries = entries.filter((e) => e.isIntersecting);
         if (visibleEntries.length > 0) {
-          // Select entry closest to viewport center
           const highestRatio = visibleEntries.reduce((prev, curr) =>
             curr.intersectionRatio > prev.intersectionRatio ? curr : prev
           );
@@ -47,9 +49,7 @@ export default function HomePage({
           }
         }
       },
-      {
-        threshold: [0.1, 0.4, 0.7],
-      }
+      { threshold: [0.1, 0.4, 0.7] }
     );
 
     sections.forEach(({ id }) => {
@@ -62,7 +62,7 @@ export default function HomePage({
 
   return (
     <>
-      <ETIntroSequence />
+      <ETIntroSequence onProgress={setIntroProgress} />
       <SEO
         title="Enes Teke — Full-Stack Developer & AI Systems Engineer"
         description="Engineering systems that think, act and scale. Portfolio of Enes Teke spanning Agentic AI systems, FinTech intelligence, and digital experiences."
@@ -74,7 +74,6 @@ export default function HomePage({
         noiseScale={noiseScale}
         setNoiseScale={setNoiseScale}
       />
-      <IntroSection />
       <WorksSection />
       <CapabilitiesSection />
       <ManifestoSection />

@@ -5,10 +5,12 @@ const roomVertexShader = `
 uniform float uTime;
 uniform vec2 uPointer;
 uniform float uDisplacement;
+uniform float uIntroProgress;
 
 varying vec2 vUv;
+varying vec3 vWorldPosition;
+varying vec3 vViewPosition;
 varying vec3 vNormal;
-varying vec3 vPosition;
 
 float waveNoise(vec3 p) {
   float a = sin(p.x * 0.72 + uTime * 0.22);
@@ -22,75 +24,51 @@ void main() {
   vec3 transformed = position;
   float pointerFalloff = smoothstep(1.2, 0.0, distance(uv, vec2(0.5 + uPointer.x * 0.12, 0.5 - uPointer.y * 0.12)));
   float displacement = waveNoise(position * 0.36) * uDisplacement + pointerFalloff * uPointer.x * 0.18;
-  transformed += normal * displacement;
+  transformed += normal * displacement * uIntroProgress;
 
-  vPosition = transformed;
+  vec4 worldPosition = modelMatrix * vec4(transformed, 1.0);
+  vec4 viewPosition = modelViewMatrix * vec4(transformed, 1.0);
+
+  vWorldPosition = worldPosition.xyz;
+  vViewPosition = viewPosition.xyz;
   vNormal = normalize(normalMatrix * normal);
-  gl_Position = projectionMatrix * modelViewMatrix * vec4(transformed, 1.0);
+
+  gl_Position = projectionMatrix * viewPosition;
 }
 `;
 
 const roomFragmentShader = `
 uniform vec2 uPointer;
 uniform float uTime;
-uniform float uNoiseScale;
 uniform float uBgContrast;
+uniform float uIntroProgress;
+
 varying vec2 vUv;
+varying vec3 vWorldPosition;
+varying vec3 vViewPosition;
 varying vec3 vNormal;
-varying vec3 vPosition;
-
-// Simplex Noise Utilities
-vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
-vec2 mod289(vec2 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
-vec3 permute(vec3 x) { return mod289(((x*34.0)+1.0)*x); }
-
-float snoise(vec2 v){
-  const vec4 C = vec4(0.211324865405187, 0.366025403784439,
-                     -0.577350269189626, 0.024390243902439);
-  vec2 i  = floor(v + dot(v, C.yy) );
-  vec2 x0 = v -   i + dot(i, C.xx);
-  vec2 i1;
-  i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
-  vec4 x12 = x0.xyxy + C.xxzz;
-  x12.xy -= i1;
-  i = mod289(i);
-  vec3 p = permute( permute( i.y + vec3(0.0, i1.y, 1.0 ))
-        + i.x + vec3(0.0, i1.x, 1.0 ));
-  vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy), dot(x12.zw,x12.zw)), 0.0);
-  m = m*m ;
-  m = m*m ;
-  vec3 x = 2.0 * fract(p * C.www) - 1.0;
-  vec3 h = abs(x) - 0.5;
-  vec3 ox = floor(x + 0.5);
-  vec3 a0 = x - ox;
-  m *= 1.79284291400159 - 0.85373472095314 * ( a0*a0 + h*h );
-  vec3 g;
-  g.x  = a0.x  * x0.x  + h.x  * x0.y;
-  g.yz = a0.yz * x12.xz + h.yz * x12.yw;
-  return 130.0 * dot(m, g);
-}
 
 void main() {
-  vec2 st = vUv;
+  // World-space angular and depth coordinate calculation
+  float angularCoordinate = atan(vWorldPosition.z, vWorldPosition.y);
+  float angularGrid = abs(sin(angularCoordinate * 12.0));
+  float depthGrid = abs(sin(vWorldPosition.x * 1.2));
+
+  float angularLine = smoothstep(0.965, 1.0, angularGrid);
+  float depthLine = smoothstep(0.970, 1.0, depthGrid);
+  float distanceFade = smoothstep(13.0, 2.0, length(vViewPosition));
+
+  float gridFactor = max(angularLine, depthLine) * distanceFade * uBgContrast * uIntroProgress;
+
   vec2 pointerCenter = vec2(0.5 + uPointer.x * 0.16, 0.5 - uPointer.y * 0.12);
   float pointerLight = smoothstep(0.72, 0.0, distance(vUv, pointerCenter));
-  float depthFade = smoothstep(-8.0, 6.0, vPosition.z);
-  
-  // Curved Spatial Grid Chords
-  vec2 grid = abs(fract(st * uNoiseScale - uTime * 0.03) - 0.5);
-  float line = smoothstep(0.0, 0.04, min(grid.x, grid.y));
-  float gridFactor = (1.0 - line) * 0.14 * uBgContrast;
-  
-  // Volumetric Spatial Noise
-  float n = snoise(st * uNoiseScale * 0.6 + uTime * 0.04);
-  float noiseVal = (n + 1.0) * 0.5 * uBgContrast * 0.22;
-  
+
   vec3 baseRoom = vec3(0.015, 0.017, 0.021);
-  vec3 gridColor = vec3(noiseVal + gridFactor);
+  vec3 gridColor = vec3(gridFactor * 0.85);
   vec3 neutralLight = vec3(0.20, 0.22, 0.27) * pointerLight * 0.22;
-  vec3 limeRim = vec3(0.84, 1.0, 0.0) * 0.04 * pointerLight;
-  
-  vec3 finalRoom = baseRoom + gridColor + neutralLight * depthFade + limeRim;
+  vec3 limeRim = vec3(0.84, 1.0, 0.0) * 0.04 * pointerLight * uIntroProgress;
+
+  vec3 finalRoom = baseRoom + gridColor + neutralLight * distanceFade + limeRim;
   gl_FragColor = vec4(finalRoom, 1.0);
 }
 `;
@@ -112,6 +90,7 @@ void main() {
 const logoFragmentShader = `
 uniform float uRoughness;
 uniform vec2 uPointer;
+uniform float uIntroProgress;
 varying vec3 vNormal;
 varying vec3 vViewPosition;
 varying vec2 vUv;
@@ -120,17 +99,13 @@ void main() {
   vec3 normal = normalize(vNormal);
   vec3 viewDir = normalize(vViewPosition);
   
-  // Fresnel Edge Specular
   float fresnel = pow(1.0 - max(0.0, dot(normal, viewDir)), 2.8);
-  
-  // Studio Neutral Dark Specular Surface
   vec3 baseColor = vec3(0.14, 0.145, 0.16);
   vec3 specularColor = vec3(0.98, 0.98, 1.0);
   vec3 limeRim = vec3(0.84, 1.0, 0.0) * 0.10;
   
   vec3 finalColor = mix(baseColor, specularColor, fresnel * 0.82) + limeRim * fresnel;
-  
-  gl_FragColor = vec4(finalColor, 0.98);
+  gl_FragColor = vec4(finalColor, uIntroProgress * 0.98);
 }
 `;
 
@@ -138,6 +113,7 @@ interface ETMonogramSceneProps {
   roughness?: number;
   noiseScale?: number;
   scrollState?: 'hero' | 'works' | 'manifesto';
+  introProgress?: number;
   onContextLost?: () => void;
   onSceneReady?: () => void;
 }
@@ -146,6 +122,7 @@ export default function ETMonogramScene({
   roughness = 0.10,
   noiseScale = 9.00,
   scrollState = 'hero',
+  introProgress = 1,
   onContextLost,
   onSceneReady,
 }: ETMonogramSceneProps) {
@@ -155,6 +132,20 @@ export default function ETMonogramScene({
   const renderSingleFrameRef = useRef<(() => void) | null>(null);
 
   const isMobile = window.innerWidth <= 900;
+  const introProgressRef = useRef(introProgress);
+
+  useEffect(() => {
+    introProgressRef.current = introProgress;
+    if (bgMaterialRef.current) {
+      bgMaterialRef.current.uniforms.uIntroProgress.value = introProgress;
+    }
+    if (logoMaterialRef.current) {
+      logoMaterialRef.current.uniforms.uIntroProgress.value = introProgress;
+    }
+    if (renderSingleFrameRef.current) {
+      renderSingleFrameRef.current();
+    }
+  }, [introProgress]);
 
   const getScrollTransform = (state: string) => {
     switch (state) {
@@ -244,7 +235,7 @@ export default function ETMonogramScene({
     camera.position.z = 18;
     const scene = new THREE.Scene();
 
-    // Inverted Cylinder Spatial Room Mesh with Vertex Displacement
+    // World-Space Inverted Cylinder Spatial Room Mesh
     const roomGeometry = new THREE.CylinderGeometry(10, 10, 18, 48, 24, true);
     roomGeometry.rotateZ(Math.PI / 2);
 
@@ -259,13 +250,14 @@ export default function ETMonogramScene({
         uNoiseScale: { value: noiseScale },
         uBgContrast: { value: 0.28 },
         uDisplacement: { value: isMobile ? 0.025 : 0.085 },
+        uIntroProgress: { value: introProgressRef.current },
       },
     });
     bgMaterialRef.current = roomMaterial;
     const roomMesh = new THREE.Mesh(roomGeometry, roomMaterial);
     scene.add(roomMesh);
 
-    // Create Distinct 3D ET Monogram Geometry (E and T with distinct spatial depth layers)
+    // Create Distinct 3D E and T Shapes with Distinct Spatial Depth Limits
     const logoGroup = new THREE.Group();
 
     // E Letter Shape
@@ -288,7 +280,7 @@ export default function ETMonogramScene({
     const eGeometry = new THREE.ExtrudeGeometry(eShape, eExtrudeSettings);
     eGeometry.center();
 
-    // T Letter Shape (Offset slightly forward for clear 'ET' spatial separation)
+    // T Letter Shape
     const tShape = new THREE.Shape();
     tShape.moveTo(-0.2, 4.0);
     tShape.lineTo(3.8, 4.0);
@@ -310,6 +302,7 @@ export default function ETMonogramScene({
       uniforms: {
         uRoughness: { value: roughness },
         uPointer: { value: new THREE.Vector2(0, 0) },
+        uIntroProgress: { value: introProgressRef.current },
       },
       transparent: true,
     });
@@ -324,13 +317,15 @@ export default function ETMonogramScene({
 
     const eMesh = new THREE.Mesh(eGeometry, logoMaterial);
     const eOutline = new THREE.Mesh(eGeometry, outlineMaterial);
-    eMesh.position.z = 0;
-    eOutline.position.z = 0;
+    eMesh.position.set(-0.52, 0, 0.12);
+    eOutline.position.copy(eMesh.position);
 
     const tMesh = new THREE.Mesh(tGeometry, logoMaterial);
     const tOutline = new THREE.Mesh(tGeometry, outlineMaterial);
-    tMesh.position.z = 0.24; // Slight forward z-offset for T separation
-    tOutline.position.z = 0.24;
+    tMesh.position.set(0.56, 0.08, -0.14);
+    tMesh.scale.x = 0.76;
+    tOutline.position.copy(tMesh.position);
+    tOutline.scale.x = 0.76;
 
     logoGroup.add(eMesh);
     logoGroup.add(eOutline);
@@ -357,9 +352,13 @@ export default function ETMonogramScene({
 
       if (currentOpacity < 0.01) return;
 
+      const p = introProgressRef.current;
+      const currentHeroScale = THREE.MathUtils.lerp(0.25, target.scale, p);
+      logoGroup.scale.set(currentHeroScale, currentHeroScale, currentHeroScale);
       logoGroup.position.set(target.posX, target.posY, 0);
-      logoGroup.scale.set(target.scale, target.scale, target.scale);
-      outlineMaterial.opacity = target.wireframeOpacity;
+
+      roomMesh.scale.setScalar(THREE.MathUtils.lerp(0.72, 1, p));
+      outlineMaterial.opacity = target.wireframeOpacity * p;
       roomMaterial.uniforms.uBgContrast.value = target.bgContrast;
       roomMaterial.uniforms.uTime.value = time;
 
@@ -391,31 +390,25 @@ export default function ETMonogramScene({
         animId = requestAnimationFrame(animate);
         const time = clock.getElapsedTime();
 
-        // Mouse Pointer Damped Lerp
         currentMouse.lerp(targetMouse, 0.055);
 
-        // Camera Yaw & Pitch Interaction
+        // Enhanced Camera Yaw & Pitch Interaction
         if (!isMobile) {
-          camera.position.x = currentMouse.x * 0.35;
-          camera.position.y = currentMouse.y * 0.22;
-          camera.lookAt(0, 0, 0);
+          camera.position.x = currentMouse.x * 0.48;
+          camera.position.y = currentMouse.y * 0.30;
+          camera.lookAt(currentMouse.x * 0.22, currentMouse.y * 0.12, -0.8);
+          roomMesh.rotation.y = currentMouse.x * 0.09;
         }
 
         const target = targetTransformRef.current;
         logoGroup.position.x += (target.posX - logoGroup.position.x) * 0.05;
         logoGroup.position.y += (target.posY - logoGroup.position.y) * 0.05;
 
-        const currentScale = logoGroup.scale.x;
-        const newScale = currentScale + (target.scale - currentScale) * 0.05;
-        logoGroup.scale.set(newScale, newScale, newScale);
-
-        outlineMaterial.opacity += (target.wireframeOpacity - outlineMaterial.opacity) * 0.05;
-        roomMaterial.uniforms.uBgContrast.value += (target.bgContrast - roomMaterial.uniforms.uBgContrast.value) * 0.05;
         roomMaterial.uniforms.uPointer.value.copy(currentMouse);
 
         if (!isMobile) {
-          const targetRotX = currentMouse.y * -0.18;
-          const targetRotY = currentMouse.x * 0.24;
+          const targetRotX = currentMouse.y * -0.22;
+          const targetRotY = currentMouse.x * 0.34;
           const q = new THREE.Quaternion();
           q.setFromEuler(new THREE.Euler(targetRotX + Math.sin(time * 0.3) * 0.02, targetRotY + Math.cos(time * 0.25) * 0.02, 0));
           logoGroup.quaternion.slerp(q, 0.08);

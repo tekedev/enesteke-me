@@ -23,6 +23,7 @@ export default function App() {
   const [webglFailed, setWebglFailed] = useState<boolean>(false);
   const [sceneReady, setSceneReady] = useState<boolean>(false);
   const [scrollState, setScrollState] = useState<'hero' | 'works' | 'manifesto'>('hero');
+  const [introProgress, setIntroProgress] = useState<number>(0);
 
   const location = useLocation();
 
@@ -79,6 +80,7 @@ export default function App() {
             roughness={roughness}
             noiseScale={noiseScale}
             scrollState={scrollState}
+            introProgress={introProgress}
             onContextLost={() => setWebglFailed(true)}
             onSceneReady={() => setSceneReady(true)}
           />
@@ -97,6 +99,8 @@ export default function App() {
                 noiseScale={noiseScale}
                 setNoiseScale={setNoiseScale}
                 onSceneStateChange={setScrollState}
+                introProgress={introProgress}
+                setIntroProgress={setIntroProgress}
               />
             }
           />
